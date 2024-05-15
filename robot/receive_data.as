@@ -21,8 +21,14 @@
         END
         IF $recv_buf[1] == "2" THEN
           PRINT "IT IS 2"
-          SPEED 80 ALWAYS
-          JMOVE #[ -160.000,-59.995,9.834,13.745,8.050,50.603]
+            SPEED 100 ALWAYS
+            JMOVE #[0, 0, 0, 0, 0, 0]
+            FOR .i = 1 TO 3
+              PRINT "Moving inside loop", .i, " from 5"
+              JMOVE #[25.704, -50, 18.275, -18.404, -1.851, 9.318]
+              ;TWAIT 1
+              JMOVE #[36.603, -60, 18.275, -18.404, 36.537, 151.41]
+            END
         END
       END
       ELSE

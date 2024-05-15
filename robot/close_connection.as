@@ -1,4 +1,4 @@
-.PROGRAM tcp_close2() ;
+.PROGRAM closeconnection() ;
   ret = 0
   IF sock_id1 >= 0 THEN
     TCP_CLOSE ret, sock_id1

@@ -1,4 +1,4 @@
-.PROGRAM smr2() ; Shiyar
+.PROGRAM smr2() 
   tout_open = 60
   ip[1] = 192
   ip[2] = 168

@@ -1,4 +1,4 @@
-.PROGRAM test() ;
+.PROGRAM receive_data() ;
 
   WHILE TRUE DO
     numbytes = 10

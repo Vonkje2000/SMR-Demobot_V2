@@ -29,3 +29,9 @@ if __name__ == '__main__':
     HOST = '192.168.0.2'  # Your PC's IP address
     PORT = 10001  # Port to listen on (non-privileged ports are > 1023)
     start_server(HOST, PORT)
+
+
+
+
+
+

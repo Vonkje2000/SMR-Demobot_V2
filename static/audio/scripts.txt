@@ -1,0 +1,14 @@
+voice: 
+Daphne (Child)
+
+humen_detection_started
+   "Hi humans, I have started the human detection process to detect people with my smart eyes."
+
+humen_detection_stopped
+    The human detection process has stopped.
+
+
+active_system
+    The system has been activated.    
+deactivate_system
+    The system has been disactivated.    

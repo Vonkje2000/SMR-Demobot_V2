@@ -12,3 +12,8 @@ active_system
     The system has been activated.    
 deactivate_system
     The system has been disactivated.    
+
+dancing_started
+Dancing mode activated! Let's dance and make unforgettable memories together
+
+    https://www.narakeet.com/create/robot-voice-text-to-speech.html

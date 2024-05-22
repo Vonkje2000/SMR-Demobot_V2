@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Emotion Detection</title>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/blazeface"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/mobilenet"></script>
+</head>
+<body>
+  <h1>Emotion Detection</h1>
+  <video id="video" width="640" height="480" autoplay></video>
+  <script>
+    async function setupCamera() {
+      const video = document.getElementById('video');
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+      video.srcObject = stream;
+      return new Promise((resolve) => {
+        video.onloadedmetadata = () => {
+          resolve(video);
+        };
+      });
+    }
+
+    async function main() {
+      const video = await setupCamera();
+      video.play();
+
+      const model = await blazeface.load();
+      const mobilenetModel = await mobilenet.load();
+
+      setInterval(async () => {
+        const predictions = await model.estimateFaces(video, false);
+
+        if (predictions.length > 0) {
+          const img = tf.browser.fromPixels(video);
+          const resized = tf.image.resizeBilinear(img, [224, 224]);
+          const tensor = resized.expandDims(0).toFloat().div(tf.scalar(127)).sub(tf.scalar(1));
+
+          const result = await mobilenetModel.classify(tensor);
+          console.log(result);
+          // عرض النتائج على الشاشة
+        }
+      }, 100);
+    }
+
+    main();
+  </script>
+</body>
+</html>

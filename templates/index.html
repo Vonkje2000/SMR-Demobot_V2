@@ -6,12 +6,14 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-        main img{
-            border-radius: 20px;
+        main img, main video{
+            border-radius: 25px;
+        }#emergency{
+          position: absolute;
+          transform: translate(-106%,296px);
+          width: 100%;
         }
-    .control-btns {
-        display: none;
-    }
+    .control-btns {  display: none; }
     </style>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
 
@@ -26,10 +28,11 @@
       </nav>
 
       <main class="container text-center">
+
         <audio src="/static/audio/trendsetter-mood.mp3" id="music"></audio>
       <section class="py-5 row" >
         <video class="col-6" id="dancingVideo" width="100%" style="display:none;"></video>
-        <img class="col" id="videoFeed" style="display:none;" width="100%"> 
+        <img class="col" id="videoFeed" style="display:none; max-width: 50%;" > 
         <img  class="col-6 " src="/static/images/wallpaper.jpg" style="object-fit: cover;" id="staticImage" width="100%" >
         <article id="spinners" class=" mt-5 pt-5 text-center col" style="display: none;">
           <div>
@@ -40,17 +43,21 @@
             <span class="btn">Loading..</span>
         </article>
         <article class="text-center mx-3 col" style="transform: translateY(32%);">
+            <div class="text-center" id="emergency">
+              <img class="btn" title="Emergency button to stop the robot in dangerous situations."  src="/static/images/sos.png" width="100" >
+            </div>
             <button style="background-color: #9ea700;" class=" btn mb-2 w-100 fw-bold text-white" id="startBtn" onclick="handleStartStop()">Start System</button>
             <!-- <button class="btn btn-light mb-2 w-100" onclick="stopServer()">Stop Server</button> -->
-            <button id="danceBTN"  class="control-btns btn btn-light mb-2 w-100">Dance for me</button>
+            <button id="danceBtn"  class="control-btns btn btn-light mb-2 w-100">Dance for me</button>
             <button id="playGameBTN"  class="control-btns btn btn-light mb-2 w-100" >Play Game</button>     
-            <button id="visionDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Detect People</button>     
+            <button id="objectsDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Detect Peoples</button>     
             <button id="poseDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Seeing how you move</button>   
             <button id="emotionDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Read feelings</button>   
         </article>
       </section>
 </main>
 <script src="/static/scripts/main.js"></script>
-<script src="/static/scripts/socketio.js"></script>
+<script src="/static/scripts/speechRecognition.js"></script>
+
 </body>
 </html>

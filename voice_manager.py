@@ -1,7 +1,6 @@
 
 import pyttsx3
 import pygame
-from app import socketio
 def get_engine():
     engine = pyttsx3.init()
     voices = engine.getProperty('voices')
@@ -33,4 +32,3 @@ def play_sound(sound_file):
 
     # Keep the script running long enough for the sound to play
     pygame.time.wait(int(click_sound.get_length() * 1000))
-    socketio.emit('response', {"status": "success", "action": "voice", "message": "sound played"})

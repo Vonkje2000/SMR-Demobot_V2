@@ -8,6 +8,8 @@ import json
 from fer import FER
 import os
 import logging
+import random
+import time
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -28,6 +30,12 @@ def send_message(message):
         except Exception as e:
             print(f"Error sending message to robot: {e}")
 
+
+def play_rock_paper_scissors():
+    options = ["Rock", "Paper", "Scissors"]
+    computer_choice = random.choice(options)
+    return computer_choice
+
 def getAudioPath(fileName):
     return 'static/audio/' + fileName + '.wav'
 
@@ -40,6 +48,9 @@ def handle_message(data):
     print(['received message: ', data])
     if data['type'] == 'voice':
         voice_manager.play_sound(getAudioPath(data['message']))
+    if data['type'] == 'game':
+        time.sleep(2)
+        data['robotchoise'] = play_rock_paper_scissors()
     elif data['type'] == 'robot':
         if data['message'] == 'dancing_started':
             send_message('1')

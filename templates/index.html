@@ -14,6 +14,18 @@
           width: 100%;
         }
     .control-btns {  display: none; }
+    #gameBox{
+          background: linear-gradient(70deg, #f8f9fa 90%,#4c5e74 10%);
+         border-radius: 25px;
+          text-align: center !important;
+          display: none;
+    }#gameBox img{
+      margin: auto;
+      display: none;
+    }
+    #counter {
+      font-size: 150px !important;
+    }
     </style>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <link rel="shortcut icon" href="/static/images/logo.png" type="image/x-icon">
@@ -23,14 +35,18 @@
     <nav class="navbar bg-light">
         <div class="container-fluid">
           <span class="navbar-brand mb-0 h1">SMR DELFT </span>
-          <img height="70" src="/static/images/logo.png" alt="">
+          <img height="70" src="/static/images/logo.png" alt="SMR DELFT">
         </div>
       </nav>
 
       <main class="container text-center">
-
         <audio src="" id="music"></audio>
-      <section class="py-5 row" >
+        <section class="py-5 row" >
+        <div class=" col-6" id="gameBox">
+          <span class="fw-bold" id="counter">  1 </span>
+          <img class="p-3" id="gameImg"  src="" height="150" />
+        </div>
+
         <video class="col-6" id="dancingVideo" width="100%" style="display:none;"></video>
         <img class="col" id="videoFeed" style="display:none; max-width: 50%;" > 
         <img  class="col-6 " src="/static/images/wallpaper.jpg" style="object-fit: cover;" id="staticImage" width="100%" >

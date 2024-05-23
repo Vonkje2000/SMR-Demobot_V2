@@ -20,8 +20,11 @@ const MESSAGES = {
         START:"Dancing mode activated! Let's dance and make unforgettable memories together",
         END: "Thanks for dancing with me"
     },
-    HI:"Hi my friend",
-    GREETINGS_ANSWER: "I am doing great, my friend, and I hope you are too."
+    HI:"Hi my lovely friend",
+    GREETINGS_ANSWER: "I am doing great, and I hope you are too.",
+    HAPPY_TO_HEAR: "I am happy to hear that",
+    PLAY_GAME: 'Let\'s play rock paper scissors game. On count 3 start',
+    COUNT123: '1.  2.  3. Go!'
 }
 const MUSICS = {
     HUMANS_DETECTION: "Corporate.mp3",

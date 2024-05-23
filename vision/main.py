@@ -48,7 +48,7 @@ def getFramesByModel(model, frame):
 
     try:
         # Detect objects in the frame using the model
-        results = model.track(frame, conf=confidence_threshold, imgsz=image_size,  verbose=verbose_mode)
+        results = model.track(frame, conf=confidence_threshold, imgsz=image_size, classes=0,  verbose=verbose_mode)
         if results:
             # Assuming results[0] exists and can be plotted
             return results[0].plot()  # Render the first result's plot on the frame

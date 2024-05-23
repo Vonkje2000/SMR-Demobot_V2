@@ -11,19 +11,12 @@ def start_server(host, port):
         client_socket, addr = server_socket.accept()
         print(f"Connected by {addr}")
         while True:
-            # data = client_socket.recv(1024)
-            # if not data:
-            #     break
-            # print("Received:", data.decode())
-            # You can send a response here if needed
-
             response = '1'
             client_socket.sendall(response.encode())
             time.sleep(2)
             response = '2'
             client_socket.sendall(response.encode())
             time.sleep(3)
-        client_socket.close()
 
 if __name__ == '__main__':
     HOST = '192.168.0.2'  # Your PC's IP address

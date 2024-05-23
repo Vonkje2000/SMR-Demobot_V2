@@ -16,7 +16,7 @@
     .control-btns {  display: none; }
     </style>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
-
+    <link rel="shortcut icon" href="/static/images/logo.png" type="image/x-icon">
 </head>
 <body>
 
@@ -29,7 +29,7 @@
 
       <main class="container text-center">
 
-        <audio src="/static/audio/trendsetter-mood.mp3" id="music"></audio>
+        <audio src="" id="music"></audio>
       <section class="py-5 row" >
         <video class="col-6" id="dancingVideo" width="100%" style="display:none;"></video>
         <img class="col" id="videoFeed" style="display:none; max-width: 50%;" > 
@@ -50,12 +50,13 @@
             <!-- <button class="btn btn-light mb-2 w-100" onclick="stopServer()">Stop Server</button> -->
             <button id="danceBtn"  class="control-btns btn btn-light mb-2 w-100">Dance for me</button>
             <button id="playGameBTN"  class="control-btns btn btn-light mb-2 w-100" >Play Game</button>     
-            <button id="objectsDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Detect Peoples</button>     
+            <button id="peopleDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Detect Peoples</button>     
             <button id="poseDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Seeing how you move</button>   
             <button id="emotionDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Read feelings</button>   
         </article>
       </section>
 </main>
+<script src="/static/scripts/textToSpeechAI.js"></script>
 <script src="/static/scripts/main.js"></script>
 <script src="/static/scripts/speechRecognition.js"></script>
 

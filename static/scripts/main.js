@@ -112,24 +112,27 @@ function handleDetectionByVision(detectText, src, btn, MESSAGES, musicFile) {
 function handleDance(btn) {
     gameBox.style.display = 'none'
     showOptions()
-    // sendMessage('robot', 'dancing_started');
+    if (!danceBtn.innerText.includes("running")) {
+            // sendMessage('robot', 'dancing_started');
     speak(MESSAGES.DANCING_MODE.START, ()=>{
         disableVideoFeed(btn,'Dance mode is running')
         dancingVideo.style.display = 'block';
         dancingVideo.src = '/static/videos/dancing_robot.mp4';
         staticImage.style.display = 'none';
         dancingVideo.play()
-        disableButtons()
-        dancingVideo.onended = () => {
-            disableButtons(false)
-            // sendMessage('robot', 'dancing_ended');
-            speak(MESSAGES.DANCING_MODE.END)
-            dancingVideo.style.display = 'none';
-            staticImage.style.display = 'block';
-            btn.innerText ='Dance for me'
-        };
+        dancingVideo.onended = () => {  end()};
     })
+    }else{ end()}
 
+function end(){
+    mute()
+    disableButtons(false)
+    // sendMessage('robot', 'dancing_ended');
+    speak(MESSAGES.DANCING_MODE.END)
+    dancingVideo.style.display = 'none';
+    staticImage.style.display = 'block';
+    btn.innerText ='Dance for me'
+}
   
 }
 

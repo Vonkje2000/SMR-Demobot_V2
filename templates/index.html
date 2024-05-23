@@ -8,7 +8,8 @@
     <style>
         main img, main video{
             border-radius: 25px;
-        }#emergency{
+        }
+        #emergency{
           position: absolute;
           transform: translate(-106%,296px);
           width: 100%;
@@ -23,9 +24,7 @@
       margin: auto;
       display: none;
     }
-    #counter {
-      font-size: 150px !important;
-    }
+    #counter { font-size: 150px !important;}
     </style>
     <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
     <link rel="shortcut icon" href="/static/images/logo.png" type="image/x-icon">
@@ -58,7 +57,9 @@
           </div>
             <span class="btn">Loading..</span>
         </article>
-        <article class="text-center mx-3 col" style="transform: translateY(32%);">
+        <article class="text-center mx-3 col" style="transform: translateY(7%);">
+          <div class="alert small" id="transcript"></div>
+
             <div class="text-center" id="emergency">
               <img class="btn" title="Emergency button to stop the robot in dangerous situations."  src="/static/images/sos.png" width="100" >
             </div>
@@ -70,8 +71,13 @@
             <button id="poseDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Seeing how you move</button>   
             <button id="emotionDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Read feelings</button>   
         </article>
+        
       </section>
+  
 </main>
+
+<script src="/static/scripts/data.js"></script>
+<script src="/static/scripts/ai.js"></script>
 <script src="/static/scripts/textToSpeechAI.js"></script>
 <script src="/static/scripts/main.js"></script>
 <script src="/static/scripts/speechRecognition.js"></script>

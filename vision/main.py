@@ -72,15 +72,25 @@ def detect_emotions(detector, frame):
         The frame with detected emotions and annotations drawn on it.
     """
     # Define constants for drawing
-    circle_color = (0, 255, 0)  # Green color for the circle
-    circle_thickness = 5  # Thickness of the circle border
-    font_scale = 1  # Font scale for the text
-    text_color = (0, 255, 0)  # Green color for the text
+    circle_thickness = 8  # Thickness of the circle border
+    font_scale = 1.5  # Font scale for the text
     text_thickness = 4  # Thickness of the text
     text_offset = 20  # Offset for the text position above the face
     circle_y_offset = 10  # Vertical offset for the circle position above the face center
     circle_radius_multiplier = 1.1  # Multiplier to increase the circle radius
 
+
+    # Color mapping for emotions
+    emotion_colors = {
+        "happy": (0, 255, 0),  # Green
+        "angry": (0, 0, 255),  # Red
+        "sad": (255, 0, 0),  # Blue
+        "surprise": (0, 255, 255),  # Cyan
+        "neutral": (128, 128, 128),  # Gray
+        "disgust": (34, 139, 34),  # Dark Green
+        "fear": (255, 140, 0)  # Dark Orange
+    }
+    
     try:
         # Detect emotions in the frame
         result = detector.detect_emotions(frame)
@@ -89,16 +99,16 @@ def detect_emotions(detector, frame):
             # Extract face bounding box and emotion data
             (x, y, w, h) = face["box"]
             emotion = max(face["emotions"], key=face["emotions"].get)
-            
+            color = emotion_colors.get(emotion, (255, 255, 255))
             # Calculate center coordinates for the circle, slightly above the center
             center_coordinates = (x + w // 2, y + h // 2 - circle_y_offset)
             # Increase the radius by a defined multiplier
             radius = int(w * circle_radius_multiplier)
             
             # Draw a circle around the detected face
-            cv2.circle(frame, center_coordinates, radius, circle_color, circle_thickness)
+            cv2.circle(frame, center_coordinates, radius, color, circle_thickness)
             # Annotate the detected emotion above the face
-            cv2.putText(frame, emotion, (x, y - text_offset), cv2.FONT_HERSHEY_SIMPLEX, font_scale, text_color, text_thickness, cv2.LINE_AA)
+            cv2.putText(frame, emotion, (x, y - text_offset), cv2.FONT_HERSHEY_SIMPLEX, font_scale, color, text_thickness, cv2.LINE_AA)
         
         return frame
     

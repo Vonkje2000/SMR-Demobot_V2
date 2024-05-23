@@ -1,75 +1,93 @@
-const MESSAGES = {
-    HUMANS_DETECTION: {
-        START:'Humans detection process started.',
-        STOP:"Humans detection stopped"
-    },
-    POSE_DETECTION: {
-        START:'Pose detection started',
-        STOP:"Pose detection stopped"
-    },
-    EMOTIONS_DETECTION: {
-        START:'Detect emotions has been started',
-        STOP:"Emotions detection stopped"
-    },
-    SYSTEM:{
-        START:'The system has been activated',
-        STOP:"The system has been disactivated"
-    },
-    EMERGENCY:"Emergency mode started, Please stay away from the robot. Robot stopping immediately. ",
-    DANCING_MODE:{
-        START:"Dancing mode activated! Let's dance and make unforgettable memories together",
-        END: "Thanks for dancing with me"
-    },
-    HI:"Hi my lovely friend",
-    GREETINGS_ANSWER: "I am doing great, and I hope you are too.",
-    HAPPY_TO_HEAR: "I am happy to hear that",
-    PLAY_GAME: 'Let\'s play rock paper scissors game. On count 3 start',
-    COUNT123: '1.  2.  3. Go!'
-}
-const MUSICS = {
-    HUMANS_DETECTION: "Corporate.mp3",
-    POSE_DETECTION:"3.The Positive Rock(Short Version).wav",
-    EMOTIONS_DETECTION:"Get That Feeling - Happy Upbeat Indie Pop (60s).mp3",
-    SAD: "Emotional Piano.mp3",
-}
 
 const synth = window.speechSynthesis;
 const voices = synth.getVoices();
 
-function speak(text,callback) {
-    disableButtons()
+function speak(text, callback) {
+    console.log("From speak");
+    
+    // Cancel any ongoing speech to ensure a clean state
+    if (window.speechSynthesis.speaking) {
+        console.error("Speech synthesis is already in progress.");
+        window.speechSynthesis.cancel();
+    }
+
+    disableButtons(true); // Disable buttons at the start of the speech
+
     const synth = window.speechSynthesis;
-    const utterance = new SpeechSynthesisUtterance(text);    
-    
-    // Choose a voice
-    utterance.voice =voices.find(voice => voice.name === 'Microsoft Susan - English (United Kingdom)' || voice.name === 'Microsoft Hazel - English (United Kingdom)');
-    
-    // Adjust pitch and rate to make the voice sound more child-like
+    const utterance = new SpeechSynthesisUtterance(text);
+
+    // Select a voice; defaulting to the first compatible one if multiple are valid
+    utterance.voice = voices.find(voice =>
+        ['Microsoft Susan - English (United Kingdom)', 
+         'Microsoft Hazel - English (United Kingdom)', 
+         'Google UK English Male'].includes(voice.name));
+
+    // Configure the voice properties
     utterance.pitch = 1.25; // Higher pitch
     utterance.rate = 1.1;  // Slightly faster rate
-    
-     // Call the callback function when the speech ends
-     utterance.onend = function() {
-        disableButtons(false)
+
+    // Event when speech starts
+    utterance.onstart = function() {
+        console.log("Speech has started.");
+        setSpeechTimeout(); // Set a timeout to handle hanging
+    };
+
+    // Event when speech ends
+    utterance.onend = function() {
+        console.log("Speech has ended.");
+        clearSpeechTimeout();
+        finalizeSpeech();
+    };
+
+    // Handle speech synthesis errors
+    utterance.onerror = function(event) {
+        console.error("Speech synthesis error:", event.error);
+        clearSpeechTimeout();
+        finalizeSpeech();
+    };
+
+    // Speak the utterance
+    synth.speak(utterance);
+
+    // Helper functions
+    let speechTimeout;
+    function setSpeechTimeout() {
+        clearSpeechTimeout(); // Clear existing timeout before setting a new one
+        speechTimeout = setTimeout(() => {
+            console.error("Speech timeout reached. Forcing stop.");
+            synth.cancel(); // Force stop any speech that is hanging
+            finalizeSpeech();
+        }, 25000); // Set timeout for 20 seconds
+    }
+
+    function clearSpeechTimeout() {
+        if (speechTimeout) {
+            clearTimeout(speechTimeout);
+            speechTimeout = null;
+        }
+    }
+
+    function finalizeSpeech() {
+        disableButtons(false); // Re-enable buttons when speech is complete or stopped
         if (callback) {
             callback();
         }
-    };
-
-    utterance.onerror = function(event) {
-        console.error("Speech synthesis error:", event.error);
-        if (callback) {
-            callback(event);
-        }
-    };
-
-    synth.speak(utterance);
+    }
 }
 
-// window.speechSynthesis.onvoiceschanged = () => {
-//     const voices = window.speechSynthesis.getVoices();
-//     console.log(voices);
-// };
+function disableButtons(disable) {
+    // Example: Disable/enable all buttons on the page
+    const buttons = document.querySelectorAll("button");
+    buttons.forEach(button => {
+        button.disabled = disable;
+    });
+}
+
+
+window.speechSynthesis.onvoiceschanged = () => {
+    const voices = window.speechSynthesis.getVoices();
+    // console.log(voices);
+};
 
 function disableButtons(disable = true) {
     document.querySelectorAll('.control-btns, #startBtn').forEach(button => button.disabled = disable);

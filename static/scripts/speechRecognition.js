@@ -1,19 +1,4 @@
 
-const commandsList = [
-    'start system',
-    'stop system',
-    'detect people', 'people detect', 'detecting people', 'detection people',
-    'pose detection','see how i move','move detection', 'detect move', 'detect pose',
-    'stop detect','stop', 'turn off',
-    'hi','hello', 'hey',
-    'how are you','your day','do you do','how is it going','how\'s it going','how is going',
-    'doing great', 'good','doing well',
-    'feelings','read my feel','emotion',
-    'emergency',
-    'dance','dancing',
-    'start game', 'gaming','play again', 'start again'
-];
-
 
 function executeTasks(command) {
         const isSystemStarted = startBtn.innerText.includes("Stop");
@@ -24,7 +9,7 @@ function executeTasks(command) {
         const isGameStarted = danceBtn.innerText.includes("Started");
 
         switch (command) {
-            case 'start system':
+            case 'start system': case 'star system':
                 if (!isSystemStarted) startBtn.click();
                 break;
             case 'stop system':
@@ -48,27 +33,34 @@ function executeTasks(command) {
             case 'emotion':
                 if (!isEmotionDetectionStarted) emotionDetectionBTN.click();
                 break;
-            case 'dance': 
-            case 'dancing':
+            case 'start dance': 
+            case 'start dancing':
+            case 'dance for':
                 if (!isDancingModeOn) danceBtn.click();
                 break;
+            case 'stop danc':
+                    if (isDancingModeOn) danceBtn.click();
+                    break;  
+
             case 'stop detect': 
             case 'stop': 
             case 'turn off':
                 document.querySelectorAll('.control-btns, #startBtn').forEach(btn => {
-                    if (btn.innerText.includes("Stop") || btn.innerText.includes("started")) btn.click();
+                    if (btn.innerText.includes("Stop") || btn.innerText.includes("started")|| btn.innerText.includes("running")) btn.click();
                 });
                 break;
             case 'emergency':
                 speak(MESSAGES.EMERGENCY);
                 break;
             case 'start game':
+            case 'play game':
+            case 'playing game':     
             case 'gaming':
             case 'play again':
             case 'start again':     
                 if(!isGameStarted) playGameBTN.click();
                 break;    
-            case 'hi': 
+            case 'hi robo': 
             case 'hey': 
             case 'hello':
                 speak(MESSAGES.HI);
@@ -78,6 +70,9 @@ function executeTasks(command) {
             case 'doing well':
                 speak(MESSAGES.HAPPY_TO_HEAR);
                 break;    
+            case 'name':
+                speak(MESSAGES.SAYING_ROBOT_NAME);
+                break;   
             case 'how are you':
             case 'your day':
             case 'do you do':
@@ -93,40 +88,59 @@ function executeTasks(command) {
 }
 
 let lastCommand = ''
+let lastAiCommand=''
 function startContinuousRecognition() {
     const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
-    recognition.interimResults = true;  // Enable interim results
+    recognition.interimResults = true;
     recognition.continuous = true;
 
+    let lastCommand = '';
+    let lastAiCommand = '';
+
     recognition.onresult = (event) => {
-        const results = Array.from(event.results);
-        const interimResult = results.filter(result => !result.isFinal).map(result => result[0].transcript.toLowerCase().trim().replace("  "," ")).join(' ');
-        // console.log(`Interim transcript: ${interimResult}`);
+        if(lastTaskDone){
+            const results = Array.from(event.results);
+            const interimResult = results.filter(result => !result.isFinal).map(result => result[0].transcript.toLowerCase().trim().replace("  "," ")).join(' ');
+            const finalResults = results.filter(result => result.isFinal);
+            const finalResult = finalResults.length > 0 ? finalResults[finalResults.length - 1][0].transcript.toLowerCase().trim().replace("  "," ") : '';
     
-        const checkAndExecute = (transcript) => {
-            for (let command of commandsList) {
-                if (transcript.includes(command)) {
-                    if (lastCommand !=command) {
-                        console.log(`Command sent: ${command}`);
-                        executeTasks(command);
-                        lastCommand = command;
-                    } break;
+            console.log(`Interim transcript: ${interimResult}`);
+            console.log(`Final transcript: ${finalResult}`);
+    
+            let textInCommands = false;
+            const checkAndExecute = (transcript) => {
+                for (let command of commandsList) {
+                    if (transcript.includes(command)) {
+                        textInCommands = true;
+                        if (lastCommand != command || command.includes("stop danc")) {
+                            console.log(`Command sent: ${command}`);
+                            executeTasks(command);
+                            lastCommand = command;
+                            break;
+                        }
+                    }
                 }
+            };
+    
+            if (interimResult.trim()) {
+                checkAndExecute(interimResult.trim());
+            }
+            if (!textInCommands && finalResult.trim().startsWith('smart robot') && lastTaskDone && finalResult.trim().length>15 && finalResult !== lastAiCommand) {
+                console.log("Called Ai", finalResult, lastTaskDone, lastAiCommand, textInCommands);
+                useAiToGetAnswer(finalResult.trim());
+                lastAiCommand = finalResult;
             }
         };
-        
-        if (interimResult.trim()) {
-            checkAndExecute(interimResult.trim());
-        }
-    };
     
-    recognition.onerror = (event) => { console.error(`Recognition error: ${event.error}`);};
+        }
+     
+    recognition.onerror = (event) => { console.error(`Recognition error: ${event.error}`); };
     recognition.onend = () => {
         console.log('Speech recognition service disconnected');
         setTimeout(() => {
             recognition.start(); // Restart recognition with a slight delay to prevent immediate end/start loop
-        }, 100);
+        }, 150);
     };
 
     recognition.start();

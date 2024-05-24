@@ -26,8 +26,8 @@
     END
     PRINT "Message: ", $cnt[0]
     ; Send confirmation message
-    $message = $ENCODE (/D, numbytes)
-    UDP_SENDTO ret, ip[1], 10003, $message, 20, timeout
+    $cnt[0] = $ENCODE (/D, numbytes)
+    UDP_SENDTO ret, ip[1], port, $cnt[0], 1, 9
     IF ret <> 0 THEN
       PRINT "Error with the UDP send, code: ", ret
       HALT

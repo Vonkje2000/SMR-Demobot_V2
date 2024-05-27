@@ -149,6 +149,7 @@ function handleStartStop() {
         showOptions()
         document.getElementById('startBtn').style.display = 'block';
     }else{
+        sendMessage('robot', 'tvMode')
         startBtn.innerText = 'Start System'
         // sendMessage('voice', 'deactivate_system')
         speak(MESSAGES.SYSTEM.STOP)

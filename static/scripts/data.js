@@ -1,3 +1,4 @@
+const ROBOT_NAME = 'smart robot'
 const MESSAGES = {
     HUMANS_DETECTION: {
         START:'Humans detection process started.',
@@ -25,31 +26,36 @@ const MESSAGES = {
     HAPPY_TO_HEAR: "I am happy to hear that",
     PLAY_GAME: 'Let\'s play rock paper scissors game. On count 3 start',
     COUNT123: '1.  2.  3. Go!',
-    SAYING_ROBOT_NAME: 'My name is Smart Robot',
-    ROBOT_NAME: 'Smart Robot'
-
+    SAYING_ROBOT_NAME: `My name is ${ROBOT_NAME}`,
+    ROBOT_LISTENING:'I am listening',
+    ROBOT_NAME,
+    STOP_SPEECH: 'Speech Recognition feature has been stopped',
+    START_SPEECH: 'Speech Recognition feature has been started'
 }
 const MUSICS = {
     HUMANS_DETECTION: "Corporate.mp3",
     POSE_DETECTION:"3.The Positive Rock(Short Version).wav",
     EMOTIONS_DETECTION:"Get That Feeling - Happy Upbeat Indie Pop (60s).mp3",
     SAD: "Emotional Piano.mp3",
+    LAPTOP_TYPING: "TypingEffect.wav",
 }
 
 
 
 const commandsList = [
     'start system', 'star system',
-    'stop system',
+    'stop system','turn off system','turn off the system',
     'detect people', 'people detect', 'detecting people', 'detection people',
     'pose detection','see how i move','move detection', 'detect move', 'detect pose',
-    'stop detect','stop', 'turn off',
-    'hi robo','hello', 'hey',
+    'stop detect', 'turn off detect',
+    'hi robo','hey robo', 'hello robo',
     'how are you','your day','do you do','how is it going','how\'s it going','how is going',
     'doing great', 'good','doing well',
     'feelings','read my feel','emotion',
     'emergency',
     'start dance','start dancing','dance for',
     'start game', 'gaming','play again', 'start again', 'play game', 'playing game',
-    'name'
+    'what is your name','what\'s your name',
+    'stop speech recognition',
 ];
+

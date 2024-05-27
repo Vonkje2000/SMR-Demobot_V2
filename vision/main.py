@@ -1,33 +1,65 @@
 import cv2
 from ultralytics import YOLO
+import pyrealsense2 as rs
+import numpy as np
 
-webcamera = cv2.VideoCapture(0)
-webcamera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
-webcamera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-def gen_frames(model=None,detector=None): 
+CAMERA_RESOLUTION = (1280, 720)
+
+def get_camera():
+    # Attempt to connect to a RealSense camera
+    try:
+        # Configure depth and color streams from the RealSense camera
+        pipeline = rs.pipeline()
+        config = rs.config()
+        # config.enable_stream(rs.stream.depth, *CAMERA_RESOLUTION, rs.format.z16
+        # , 30)
+        config.enable_stream(rs.stream.color,*CAMERA_RESOLUTION, rs.format.bgr8, 30)
+        
+        # Start streaming from RealSense
+        pipeline.start(config)
+        print("Using Intel RealSense camera")
+        return pipeline, True
+    except Exception as e:
+        print(f"RealSense camera not found: {e}, using standard webcam")
+        # Fallback to standard webcam
+        webcamera = cv2.VideoCapture(0)
+        webcamera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
+        webcamera.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+        return webcamera, False
+
+
+def gen_frames(model=None, detector=None):
+    camera, using_realsense = get_camera()
+    
     while True:
-        success, frame = webcamera.read()
-        if not success:
-            break
+        if using_realsense:
+            frames = camera.wait_for_frames()
+            color_frame = frames.get_color_frame()
+            if not color_frame:
+                continue
+            frame = np.asanyarray(color_frame.get_data())
         else:
-              # Object detection
-            if model is not None:  
-                frame = getFramesByModel(model,frame) 
-            elif detector is not None:  
-                frame =  detect_emotions(detector, frame)
-            if frame is not None:
-                # Encode the frame in JPEG format
-                (flag, encodedImage) = cv2.imencode(".jpg", frame)
-                if not flag:
-                    continue
-                
-                # Yield the output frame in byte format
-                yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
-                    bytearray(encodedImage) + b'\r\n')
-            else:
-                continue     
+            success, frame = camera.read()
+            if not success:
+                break
 
-    # webcamera.release()
+        # Object detection
+        if model is not None:
+            frame = getFramesByModel(model, frame)
+        elif detector is not None:
+            frame = detect_emotions(detector, frame)
+
+        if frame is not None:
+            # Encode the frame in JPEG format
+            (flag, encodedImage) = cv2.imencode(".jpg", frame)
+            if not flag:
+                continue
+
+            # Yield the output frame in byte format
+            yield(b'--frame\r\n' b'Content-Type: image/jpeg\r\n\r\n' + 
+                  bytearray(encodedImage) + b'\r\n')
+        else:
+            continue
 
 def getFramesByModel(model, frame):
     """
@@ -86,7 +118,7 @@ def detect_emotions(detector, frame):
         "angry": (0, 0, 255),  # Red
         "sad": (255, 0, 0),  # Blue
         "surprise": (0, 255, 255),  # Cyan
-        "neutral": (128, 128, 128),  # Gray
+        "neutral": (255, 255, 255),  # White
         "disgust": (34, 139, 34),  # Dark Green
         "fear": (255, 140, 0)  # Dark Orange
     }

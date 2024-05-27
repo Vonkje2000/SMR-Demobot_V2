@@ -4,7 +4,8 @@ const transcript=  document.getElementById('transcript')
 function useAiToGetAnswer(text) {
     lastTaskDone = false
     console.log("request sent to ai", text)
-    transcript.innerText = 'Thinking ...'
+    music.src = `/static/music/${MUSICS.LAPTOP_TYPING}`
+    music.play()
     fetch('https://api.openai.com/v1/completions', {
         method: 'POST',
         headers: {
@@ -14,7 +15,8 @@ function useAiToGetAnswer(text) {
         body: JSON.stringify({
             model: 'gpt-3.5-turbo-instruct',
             // prompt:`${text}? answer in English`,
-            prompt:`Answer briefly: ${text} `,
+            prompt:`${text}, in less then 150 characters and text as human talking.
+            `,
             max_tokens: 150
         })
     })
@@ -22,10 +24,13 @@ function useAiToGetAnswer(text) {
     .then(data => {
         console.log(data.choices[0])
         // responseDiv.innerText = data.choices[0].text.trim();
+        music.pause()
         const aiAnswer = data.choices[0].text.trim().replaceAll("OpenAI", MESSAGES.ROBOT_NAME)
+
         speak(aiAnswer, ()=>{
-            lastTaskDone=true;
             transcript.innerText = ''
+            startListening = false;
+            lastTaskDone=true;
         })
 
         showTextOneByOne(aiAnswer,transcript)

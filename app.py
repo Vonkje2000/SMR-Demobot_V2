@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, Response
 from flask_socketio import SocketIO, emit
 import threading
 import socket
+import select
 import vision.main as vision
 import voice_manager
 import json
@@ -17,16 +18,39 @@ socketio = SocketIO(app)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'  # This hides informational and warning messages
 logging.getLogger('tensorflow').setLevel(logging.FATAL)  # Set TensorFlow logging to only log fatal errors
 
-ROBOT_IP = '192.168.0.1'  # Replace with your robot's IP address
+ROBOT1_IP = '192.168.0.1'  # Replace with your robot's IP address
+ROBOT2_IP = '192.168.0.2'  # Replace with your robot's IP address
+
 ROBOT_PORT = 10010  # Replace with the port your robot is listening on
 
 def send_message(message):
     # Create a UDP socket
-    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         try:
-            # Send message to the robot
-            sock.sendto(message.encode(), (ROBOT_IP, ROBOT_PORT))
-            print(f"Message '{message}' sent to robot")
+            # Send message to the first robot
+            try:  
+                server_socket.sendto(message.encode(), (ROBOT1_IP, ROBOT_PORT))
+                print(f"Message '{message}' sent to robot at {ROBOT1_IP}")
+            except: 
+                print(f"Error sending message to robot: 1") 
+            
+            try:  
+                server_socket.sendto(message.encode(), (ROBOT2_IP, ROBOT_PORT))
+                print(f"Message '{message}' sent to robot at {ROBOT2_IP}")
+            except: 
+                print(f"Error sending message to robot: 2") 
+
+            # Wait for confirmation messages from both robots
+            ready = select.select([server_socket], [], [], 5)
+            if ready[0]:
+                while True:
+                    data, addr = server_socket.recvfrom(1024)
+                    if addr[0] == ROBOT1_IP:
+                        print(f"Received confirmation from robot at {ROBOT1_IP}: {data.decode()}")
+                    elif addr[0] == ROBOT2_IP:
+                        print(f"Received confirmation from robot at {ROBOT2_IP}: {data.decode()}")
+                    else:
+                        print(f"Received message from unknown address {addr[0]}: {data.decode()}")
         except Exception as e:
             print(f"Error sending message to robot: {e}")
 
@@ -46,17 +70,19 @@ def responseSocket(message):
 def handle_message(data):
     data = json.loads(data)
     print(['received message: ', data])
-    if data['type'] == 'voice':
-        voice_manager.play_sound(getAudioPath(data['message']))
     if data['type'] == 'game':
+        send_message('2')
         time.sleep(2)
         data['robotchoise'] = play_rock_paper_scissors()
     elif data['type'] == 'robot':
-        if data['message'] == 'dancing_started':
+        if data['message'] == 'tvMode':
+            send_message('0')   
+        elif data['message'] == 'dancing_started':
             send_message('1')
             voice_manager.play_sound(getAudioPath(data['message']))
         elif data['message'] == 'game_started':
             send_message('2')
+  
     responseSocket(data)
 
 @app.route('/')
@@ -73,7 +99,7 @@ def load_models_async():
     print("All models loaded")
 
 # Start model loading in a separate thread after the server starts
-threading.Thread(target=load_models_async).start()
+threading.Thread(target=load_models_async, daemon=True).start()
 
 def generate_feed(model_type):
     model = models.get(model_type, None)

@@ -1,4 +1,4 @@
-
+const speechRecognitionCheckbox = document.getElementById('SpeechRecognition');
 
 function executeTasks(command) {
         const isSystemStarted = startBtn.innerText.includes("Stop");
@@ -12,75 +12,52 @@ function executeTasks(command) {
             case 'start system': case 'star system':
                 if (!isSystemStarted) startBtn.click();
                 break;
-            case 'stop system':
+            case 'stop system': case'turn off system': case'turn off the system':
                 if (isSystemStarted) startBtn.click();
                 break;
-            case 'detect people': 
-            case 'people detect': 
-            case 'detecting people': 
-            case 'detection people':
+            case 'detect people': case 'people detect': case 'detecting people': case 'detection people':
                 if (!isHumanDetectionStarted) peopleDetectionBTN.click();
                 break;
-            case 'pose detection':
-            case 'see how i move': 
-            case 'move detection': 
-            case 'detect move': 
-            case 'detect pose':
+            case 'pose detection': case 'see how i move': case 'move detection': case 'detect move': case 'detect pose':
                 if (!isPoseDetectionStarted) poseDetectionBTN.click();
                 break;
-            case 'feelings':
-            case 'read my feel': 
-            case 'emotion':
+            case 'feelings': case 'read my feel': case 'emotion':
                 if (!isEmotionDetectionStarted) emotionDetectionBTN.click();
                 break;
-            case 'start dance': 
-            case 'start dancing':
-            case 'dance for':
+            case 'start dance':  case 'start dancing': case 'dance for':
                 if (!isDancingModeOn) danceBtn.click();
                 break;
             case 'stop danc':
-                    if (isDancingModeOn) danceBtn.click();
-                    break;  
-
-            case 'stop detect': 
-            case 'stop': 
-            case 'turn off':
+                if (isDancingModeOn) danceBtn.click();
+                break;  
+            case 'stop detect':  case 'turn off detect':
                 document.querySelectorAll('.control-btns, #startBtn').forEach(btn => {
                     if (btn.innerText.includes("Stop") || btn.innerText.includes("started")|| btn.innerText.includes("running")) btn.click();
                 });
                 break;
-            case 'emergency':
-                speak(MESSAGES.EMERGENCY);
+            case 'emergency':  
+                speak(MESSAGES.EMERGENCY); 
                 break;
-            case 'start game':
-            case 'play game':
-            case 'playing game':     
-            case 'gaming':
-            case 'play again':
-            case 'start again':     
+            case 'start game':   case 'play game':  case 'playing game': case 'gaming': case 'play again': case 'start again':     
                 if(!isGameStarted) playGameBTN.click();
                 break;    
-            case 'hi robo': 
-            case 'hey': 
-            case 'hello':
+            case 'hi robo': case 'hey robo': case 'hello robo':
                 speak(MESSAGES.HI);
             break;
-            case 'good': 
-            case 'great': 
-            case 'doing well':
+            case 'good': case 'great': case 'doing well':
                 speak(MESSAGES.HAPPY_TO_HEAR);
                 break;    
-            case 'name':
+            case 'what is your name':  case 'what\'s your name':
                 speak(MESSAGES.SAYING_ROBOT_NAME);
                 break;   
-            case 'how are you':
-            case 'your day':
-            case 'do you do':
-            case 'how is it going':
-            case 'how\'s it going':
-            case 'how is going':
+            case 'how are you': case 'your day': case 'do you do': case 'how is it going': case 'how\'s it going': case 'how is going':
                 speak(MESSAGES.GREETINGS_ANSWER);
                 break;
+            case 'stop speech recognition':
+                    speechRecognitionCheckbox.click()
+                    break; 
+            case ROBOT_NAME:
+                speak(MESSAGES.ROBOT_LISTENING)           
             default:
                 console.log(`Command "${command}" not recognized.`);
                 break;
@@ -89,14 +66,13 @@ function executeTasks(command) {
 
 let lastCommand = ''
 let lastAiCommand=''
+let recognition
+let startListening = false;
 function startContinuousRecognition() {
-    const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+    recognition = new (window.speechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
     recognition.interimResults = true;
     recognition.continuous = true;
-
-    let lastCommand = '';
-    let lastAiCommand = '';
 
     recognition.onresult = (event) => {
         if(lastTaskDone){
@@ -107,14 +83,18 @@ function startContinuousRecognition() {
     
             console.log(`Interim transcript: ${interimResult}`);
             console.log(`Final transcript: ${finalResult}`);
-    
+            transcript.innerText = interimResult
             let textInCommands = false;
             const checkAndExecute = (transcript) => {
                 for (let command of commandsList) {
-                    if (transcript.includes(command)) {
+                    if (transcript.includes(command) ) {
+                        startListening = false;
                         textInCommands = true;
-                        if (lastCommand != command || command.includes("stop danc")) {
+                        if (lastCommand != command) {
                             console.log(`Command sent: ${command}`);
+                            if(transcript === ROBOT_NAME){
+                                setTimeout(() => {  lastCommand = ''}, 5000);
+                            }
                             executeTasks(command);
                             lastCommand = command;
                             break;
@@ -123,14 +103,21 @@ function startContinuousRecognition() {
                 }
             };
     
-            if (interimResult.trim()) {
-                checkAndExecute(interimResult.trim());
+            if (interimResult) checkAndExecute(interimResult);
+            
+
+            if(startListening && finalResult.length>15 && (!finalResult.startsWith(ROBOT_NAME)) && (!textInCommands)){
+                console.log('sending data', finalResult)
+                startListening = false;
+                useAiToGetAnswer(finalResult);
             }
-            if (!textInCommands && finalResult.trim().startsWith('smart robot') && lastTaskDone && finalResult.trim().length>15 && finalResult !== lastAiCommand) {
-                console.log("Called Ai", finalResult, lastTaskDone, lastAiCommand, textInCommands);
-                useAiToGetAnswer(finalResult.trim());
-                lastAiCommand = finalResult;
+
+            if (finalResult.startsWith(ROBOT_NAME) && (!textInCommands)) {
+                startListening = true
+                console.log('starting listening')
             }
+
+            
         };
     
         }
@@ -138,12 +125,33 @@ function startContinuousRecognition() {
     recognition.onerror = (event) => { console.error(`Recognition error: ${event.error}`); };
     recognition.onend = () => {
         console.log('Speech recognition service disconnected');
-        setTimeout(() => {
-            recognition.start(); // Restart recognition with a slight delay to prevent immediate end/start loop
-        }, 150);
+        if (speechRecognitionCheckbox.checked) {
+            setTimeout(() => {
+              recognition.start(); // Restart recognition with a slight delay to prevent immediate end/start loop
+            }, 150);
+          }
     };
 
     recognition.start();
 }
 
-startContinuousRecognition();
+function stopSpeechRecognition() {
+    if (recognition) {
+      console.log('Stopping speech recognition');
+      recognition.onend = null; // Temporarily remove the onend handler to avoid auto-restart
+      recognition.stop();
+      recognition = null;
+      console.log('Speech recognition stopped');
+    }
+  }
+if(speechRecognitionCheckbox.checked) startContinuousRecognition()
+speechRecognitionCheckbox.addEventListener('change', (event) => {
+      if (event.target.checked) {
+        speak(MESSAGES.START_SPEECH); 
+        startContinuousRecognition()
+      } 
+      else {
+        stopSpeechRecognition()
+        speak(MESSAGES.STOP_SPEECH); 
+      }
+});

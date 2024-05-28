@@ -24,7 +24,7 @@ ROBOT2_IP = '192.168.0.2'  # Replace with your robot's IP address
 
 ROBOT_PORT = 10010  # Replace with the port your robot is listening on
 
-def send_message(robot_ip: str, message):
+def send_message(robot_ip: str, message) -> bool:
     # This function implements basic UDP secure communication, with response and acknowledgment
     # Error/Confirmation codes to send to the robot
     CONFIRMED_RECOVERY = "1000"
@@ -33,46 +33,49 @@ def send_message(robot_ip: str, message):
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         server_socket.bind((HOST_IP, ROBOT_PORT))
         message_confirmed = False
-        while not message_confirmed:
-            try:
-                # Send message to the first robot
-                try:  
-                    server_socket.sendto(message.encode(), (robot_ip, ROBOT_PORT))
-                    print(f"Message '{message}' sent to robot at {robot_ip}")
-                except: 
-                    print(f"Error sending message to robot: {robot_ip}") 
+        try:
+            # Send message to the first robot
+            try:  
+                server_socket.sendto(message.encode(), (robot_ip, ROBOT_PORT))
+                print(f"Message '{message}' sent to robot at {robot_ip}")
+            except: 
+                server_socket.close()
+                print(f"Error sending message to robot: {robot_ip}") 
 
-                # Wait for confirmation messages from both robots
-                ready = select.select([server_socket], [], [], 5) # 5 second timeout
-                if ready[0]:
-                    data, addr = server_socket.recvfrom(1024)
-                    if addr[0] == robot_ip:
-                        print(f"Received confirmation from robot at {robot_ip}: {data.decode()}")
-                        if (data.decode() == message):
-                            try: 
-                                time.sleep(3) 
-                                server_socket.sendto(CONFIRMED_RECOVERY.encode(), (robot_ip, ROBOT_PORT))
-                                print(f"Confirmation code '{CONFIRMED_RECOVERY}' sent to robot at {robot_ip}")
-                                # This is the only way to end the loop
-                                message_confirmed = True
-                            except: 
-                                print(f"Error sending confirmation code to robot: {robot_ip}")
+            # Wait for confirmation messages from both robots
+            ready = select.select([server_socket], [], [], 5) # 5 second timeout
+            if ready[0]:
+                data, addr = server_socket.recvfrom(1024)
+                if addr[0] == robot_ip:
+                    print(f"Received confirmation from robot at {robot_ip}: {data.decode()}")
+                    if (data.decode() == message):
+                        try: 
+                            time.sleep(3) 
+                            server_socket.sendto(CONFIRMED_RECOVERY.encode(), (robot_ip, ROBOT_PORT))
+                            print(f"Confirmation code '{CONFIRMED_RECOVERY}' sent to robot at {robot_ip}")
+                            # This is the only way to end the loop
+                            message_confirmed = True
+                        except: 
+                            server_socket.close()
+                            print(f"Error sending confirmation code to robot: {robot_ip}")
 
-                        else:
-                            try:  
-                                time.sleep(3)
-                                server_socket.sendto(ERROR_RECOVERY.encode(), (robot_ip, ROBOT_PORT))
-                                print(f"Error code '{ERROR_RECOVERY}' sent to robot at {robot_ip}")
-                            except: 
-                                print(f"Error sending error code to robot: {robot_ip}")
                     else:
-                        print(f"Received message from unknown address {addr[0]}: {data.decode()}")
-            except Exception as e:
-                print(f"Error sending message to robot: {e}. Trying again")
+                        try:  
+                            time.sleep(3)
+                            server_socket.sendto(ERROR_RECOVERY.encode(), (robot_ip, ROBOT_PORT))
+                            print(f"Error code '{ERROR_RECOVERY}' sent to robot at {robot_ip}")
+                        except: 
+                            server_socket.close()
+                            print(f"Error sending error code to robot: {robot_ip}")
+                else:
+                    print(f"Received message from unknown address {addr[0]}: {data.decode()}")
+        except Exception as e:
+            server_socket.close()
+            print(f"Error sending message to robot: {e}. Trying again")
 
         # Close the socket (never reached in this example)
         server_socket.close()
-            
+        return message_confirmed    
 
 
 def play_rock_paper_scissors():
@@ -97,7 +100,12 @@ def handle_message(data):
         if data['message'] == 'tvMode':
             send_message('0')   
         elif data['message'] == 'dancingMode':
-            send_message('1')
+            # Try to send dance command to the robot, until robot confirms message recieved.
+            while not send_message(ROBOT1_IP, '1'):
+                time.sleep(3)
+            # Same with the other robot.
+            while not send_message(ROBOT2_IP, '1'):
+                time.sleep(3)
             voice_manager.play_sound(getAudioPath(data['message']))
   
     responseSocket(data)

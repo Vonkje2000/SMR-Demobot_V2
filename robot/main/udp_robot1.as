@@ -1,5 +1,5 @@
-.PROGRAM udp_robot2()
-  ; This is the main program of robot2, for the DEMOBOT project, SMR2.
+.PROGRAM udp_robot1()
+  ; This is the main udp communication program of robot1, for the DEMOBOT project, SMR2.
   ; It implements UDP communication to server with acknowledgments.
   ; github.com/icorn1
   ;
@@ -15,7 +15,9 @@
   port = 10010
   numbytes = 1
   ret = 0
-  WHILE TRUE DO
+  rec_buffer = "0"
+
+  WHILE rec_buffer == "0" DO
     TWAIT 3
     UDP_RECVFROM ret, port, $cnt[0], numbytes, timeout, ip[1]
     IF ret <> 0 THEN
@@ -35,7 +37,7 @@
       END
 
       ; Send confirmation message
-      $cnt[0] = $ENCODE (/D, numbytes)
+      $cnt[0] = $ENCODE (/D, $cnt[0])
       UDP_SENDTO ret, ip[1], port, $cnt[0], 1, timeout
       IF ret <> 0 THEN
         PRINT "Error with the UDP send, code: ", ret
@@ -48,6 +50,7 @@
         ELSE
           IF $cnt[0] == "1000" THEN
             PRINT "Communication successfull with server. Confirmation code: ", $cnt[0]
+            $rec_buffer = $cnt[0]
           ELSE
             PRINT "Communication error with server. Error code: ", $cnt[0]
           END

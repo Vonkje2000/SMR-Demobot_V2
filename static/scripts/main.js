@@ -1,14 +1,16 @@
-const peopleDetectionBTN = document.getElementById('peopleDetectionBTN');
-const poseDetectionBTN = document.getElementById('poseDetectionBTN');
-const emotionDetectionBTN = document.getElementById('emotionDetectionBTN');
-const playGameBTN = document.getElementById('playGameBTN');
-const emergencyBtn = document.getElementById('emergency');
+const peopleDetectionBtn = document.getElementById('peopleDetectionBtn');
+const poseDetectionBtn = document.getElementById('poseDetectionBtn');
+const emotionDetectionBtn = document.getElementById('emotionDetectionBtn');
+const playGameBtn = document.getElementById('playGameBtn');
+const emergencyBtn = document.getElementById('emergencyBtn');
 const danceBtn = document.getElementById('danceBtn');
 
 const videoFeed = document.getElementById('videoFeed');
 const staticImage = document.getElementById('staticImage');
 const spinners = document.getElementById('spinners');
 const startBtn = document.getElementById('startBtn');
+const tvModeBtn = document.getElementById('tvModeBTN');
+
 const music = document.getElementById('music');
 const dancingVideo = document.getElementById('dancingVideo');
 const socket = io();
@@ -16,21 +18,22 @@ const counterElement = document.getElementById("counter");
 const gameImg = document.getElementById("gameImg");
 const gameBox = document.getElementById("gameBox");
 
-peopleDetectionBTN.addEventListener('click', () => handleDetectionByVision('AI: Detect People', '/objects_detection', peopleDetectionBTN, MESSAGES.HUMANS_DETECTION, MUSICS.HUMANS_DETECTION));
-poseDetectionBTN.addEventListener('click', () => handleDetectionByVision('AI: Seeing how you move', '/pose_detection', poseDetectionBTN,MESSAGES.POSE_DETECTION,MUSICS.POSE_DETECTION));
-emotionDetectionBTN.addEventListener('click', () => handleDetectionByVision('AI: Detect emotions', '/emotion_detection', emotionDetectionBTN,MESSAGES.EMOTIONS_DETECTION, MUSICS.EMOTIONS_DETECTION));
+peopleDetectionBtn.addEventListener('click', () => handleDetectionByVision('AI: Detect People', '/objects_detection', peopleDetectionBtn, MESSAGES.HUMANS_DETECTION, MUSICS.HUMANS_DETECTION));
+poseDetectionBtn.addEventListener('click', () => handleDetectionByVision('AI: Seeing how you move', '/pose_detection', poseDetectionBtn,MESSAGES.POSE_DETECTION,MUSICS.POSE_DETECTION));
+emotionDetectionBtn.addEventListener('click', () => handleDetectionByVision('AI: Detect emotions', '/emotion_detection', emotionDetectionBtn,MESSAGES.EMOTIONS_DETECTION, MUSICS.EMOTIONS_DETECTION));
 danceBtn.addEventListener('click', ()=>{handleDance(danceBtn)});
-playGameBTN.addEventListener('click',handlePlayGame)
-emergencyBtn.addEventListener('click', () => {
-    speak(MESSAGES.EMERGENCY, ()=>{  mute(); disableButtons(false) })
-});
+playGameBtn.addEventListener('click',handlePlayGame)
+
+tvModeBtn.addEventListener('click', () => { speak(MESSAGES.TV_MODE, ()=>{ sendMessage('robot', 'tvMode')})});
+emergencyBtn.addEventListener('click', () => { speak(MESSAGES.EMERGENCY, ()=>{  mute(); disableButtons(false) })});
+
 
 let loopInterval;
 function handlePlayGame() {
     gameBox.style.display = "block"
     gameImg.style.display = 'block';
     gameImg.src = "/static/images/rock-paper-scissors.png"
-    playGameBTN.innerText = 'Rock Paper Scissors Game started';
+    playGameBtn.innerText = 'Rock Paper Scissors Game started';
 
     speak(MESSAGES.PLAY_GAME, ()=>{ 
     showOptions()
@@ -113,7 +116,7 @@ function handleDance(btn) {
     gameBox.style.display = 'none'
     showOptions()
     if (!danceBtn.innerText.includes("running")) {
-            // sendMessage('robot', 'dancing_started');
+    sendMessage('robot', 'dancingMode');
     speak(MESSAGES.DANCING_MODE.START, ()=>{
         disableVideoFeed(btn,'Dance mode is running')
         dancingVideo.style.display = 'block';
@@ -149,7 +152,6 @@ function handleStartStop() {
         showOptions()
         document.getElementById('startBtn').style.display = 'block';
     }else{
-        sendMessage('robot', 'tvMode')
         startBtn.innerText = 'Start System'
         // sendMessage('voice', 'deactivate_system')
         speak(MESSAGES.SYSTEM.STOP)

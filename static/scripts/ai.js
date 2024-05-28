@@ -26,15 +26,12 @@ function useAiToGetAnswer(text) {
         // responseDiv.innerText = data.choices[0].text.trim();
         music.pause()
         const aiAnswer = data.choices[0].text.trim().replaceAll("OpenAI", MESSAGES.ROBOT_NAME)
-
         speak(aiAnswer, ()=>{
             transcript.innerText = ''
-            startListening = false;
             lastTaskDone=true;
+            startListening = false;
         })
-
         showTextOneByOne(aiAnswer,transcript)
-
     })
     .catch(error => {
         console.log('Error:', error);

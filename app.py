@@ -72,16 +72,13 @@ def handle_message(data):
     print(['received message: ', data])
     if data['type'] == 'game':
         send_message('2')
-        time.sleep(2)
         data['robotchoise'] = play_rock_paper_scissors()
     elif data['type'] == 'robot':
         if data['message'] == 'tvMode':
             send_message('0')   
-        elif data['message'] == 'dancing_started':
+        elif data['message'] == 'dancingMode':
             send_message('1')
             voice_manager.play_sound(getAudioPath(data['message']))
-        elif data['message'] == 'game_started':
-            send_message('2')
   
     responseSocket(data)
 

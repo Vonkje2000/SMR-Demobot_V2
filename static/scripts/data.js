@@ -1,4 +1,5 @@
-const ROBOT_NAME = 'smart robot'
+const ROBOT_NAME = 'hero'
+
 const MESSAGES = {
     HUMANS_DETECTION: {
         START:'Humans detection process started.',
@@ -30,7 +31,8 @@ const MESSAGES = {
     ROBOT_LISTENING:'I am listening',
     ROBOT_NAME,
     STOP_SPEECH: 'Speech Recognition feature has been stopped',
-    START_SPEECH: 'Speech Recognition feature has been started'
+    START_SPEECH: 'Speech Recognition feature has been started',
+    TV_MODE: 'Requests have been sent to the both robots to move to tv mode'
 }
 const MUSICS = {
     HUMANS_DETECTION: "Corporate.mp3",
@@ -52,10 +54,11 @@ const commandsList = [
     'how are you','your day','do you do','how is it going','how\'s it going','how is going',
     'doing great', 'good','doing well',
     'feelings','read my feel','emotion',
-    'emergency',
+    'turn on emergency', 'start emergency', 'call emergency',
     'start dance','start dancing','dance for',
     'start game', 'gaming','play again', 'start again', 'play game', 'playing game',
     'what is your name','what\'s your name',
     'stop speech recognition',
+    'tv mode', 'mode tv'
 ];
 

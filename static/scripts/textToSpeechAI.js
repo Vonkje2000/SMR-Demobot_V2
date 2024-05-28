@@ -3,7 +3,6 @@ const synth = window.speechSynthesis;
 const voices = synth.getVoices();
 
 function speak(text, callback) {
-    console.log("From speak");
     
     // Cancel any ongoing speech to ensure a clean state
     if (window.speechSynthesis.speaking) {
@@ -84,10 +83,10 @@ function disableButtons(disable) {
 }
 
 
-window.speechSynthesis.onvoiceschanged = () => {
-    const voices = window.speechSynthesis.getVoices();
-    // console.log(voices);
-};
+// window.speechSynthesis.onvoiceschanged = () => {
+//     const voices = window.speechSynthesis.getVoices();
+//     // console.log(voices);
+// };
 
 function disableButtons(disable = true) {
     document.querySelectorAll('.control-btns, #startBtn').forEach(button => button.disabled = disable);

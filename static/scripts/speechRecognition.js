@@ -2,9 +2,9 @@ const speechRecognitionCheckbox = document.getElementById('SpeechRecognition');
 
 function executeTasks(command) {
         const isSystemStarted = startBtn.innerText.includes("Stop");
-        const isPoseDetectionStarted = poseDetectionBTN.innerText.includes("Stop");
-        const isHumanDetectionStarted = peopleDetectionBTN.innerText.includes("Stop");
-        const isEmotionDetectionStarted = emotionDetectionBTN.innerText.includes("Stop");
+        const isPoseDetectionStarted = poseDetectionBtn.innerText.includes("Stop");
+        const isHumanDetectionStarted = peopleDetectionBtn.innerText.includes("Stop");
+        const isEmotionDetectionStarted = emotionDetectionBtn.innerText.includes("Stop");
         const isDancingModeOn = danceBtn.innerText.includes("running");
         const isGameStarted = danceBtn.innerText.includes("Started");
 
@@ -16,13 +16,13 @@ function executeTasks(command) {
                 if (isSystemStarted) startBtn.click();
                 break;
             case 'detect people': case 'people detect': case 'detecting people': case 'detection people':
-                if (!isHumanDetectionStarted) peopleDetectionBTN.click();
+                if (!isHumanDetectionStarted) peopleDetectionBtn.click();
                 break;
             case 'pose detection': case 'see how i move': case 'move detection': case 'detect move': case 'detect pose':
-                if (!isPoseDetectionStarted) poseDetectionBTN.click();
+                if (!isPoseDetectionStarted) poseDetectionBtn.click();
                 break;
             case 'feelings': case 'read my feel': case 'emotion':
-                if (!isEmotionDetectionStarted) emotionDetectionBTN.click();
+                if (!isEmotionDetectionStarted) emotionDetectionBtn.click();
                 break;
             case 'start dance':  case 'start dancing': case 'dance for':
                 if (!isDancingModeOn) danceBtn.click();
@@ -35,11 +35,11 @@ function executeTasks(command) {
                     if (btn.innerText.includes("Stop") || btn.innerText.includes("started")|| btn.innerText.includes("running")) btn.click();
                 });
                 break;
-            case 'emergency':  
+            case 'turn on emergency': case 'start emergency': case 'call emergency':
                 speak(MESSAGES.EMERGENCY); 
                 break;
             case 'start game':   case 'play game':  case 'playing game': case 'gaming': case 'play again': case 'start again':     
-                if(!isGameStarted) playGameBTN.click();
+                if(!isGameStarted) playGameBtn.click();
                 break;    
             case 'hi robo': case 'hey robo': case 'hello robo':
                 speak(MESSAGES.HI);
@@ -56,8 +56,9 @@ function executeTasks(command) {
             case 'stop speech recognition':
                     speechRecognitionCheckbox.click()
                     break; 
-            case ROBOT_NAME:
-                speak(MESSAGES.ROBOT_LISTENING)           
+            case 'tv mode': case 'mode tv':
+                    tvModeBtn.click();
+                    break;     
             default:
                 console.log(`Command "${command}" not recognized.`);
                 break;
@@ -92,9 +93,6 @@ function startContinuousRecognition() {
                         textInCommands = true;
                         if (lastCommand != command) {
                             console.log(`Command sent: ${command}`);
-                            if(transcript === ROBOT_NAME){
-                                setTimeout(() => {  lastCommand = ''}, 5000);
-                            }
                             executeTasks(command);
                             lastCommand = command;
                             break;
@@ -105,16 +103,16 @@ function startContinuousRecognition() {
     
             if (interimResult) checkAndExecute(interimResult);
             
-
             if(startListening && finalResult.length>15 && (!finalResult.startsWith(ROBOT_NAME)) && (!textInCommands)){
                 console.log('sending data', finalResult)
-                startListening = false;
                 useAiToGetAnswer(finalResult);
             }
 
-            if (finalResult.startsWith(ROBOT_NAME) && (!textInCommands)) {
-                startListening = true
-                console.log('starting listening')
+            if (finalResult.startsWith(ROBOT_NAME) && (!textInCommands) && !startListening) {
+                speak(MESSAGES.ROBOT_LISTENING, ()=>{
+                    startListening = true
+                    console.log('starting listening')
+                })
             }
 
             

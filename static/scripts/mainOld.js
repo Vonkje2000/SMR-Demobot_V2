@@ -1,7 +1,7 @@
-const peopleDetectionBTN = document.getElementById('peopleDetectionBTN');
-const poseDetectionBTN = document.getElementById('poseDetectionBTN');
-const emotionDetectionBTN = document.getElementById('emotionDetectionBTN');
-const playGameBTN = document.getElementById('playGameBTN');
+const peopleDetectionBtn = document.getElementById('peopleDetectionBtn');
+const poseDetectionBtn = document.getElementById('poseDetectionBtn');
+const emotionDetectionBtn = document.getElementById('emotionDetectionBtn');
+const playGameBtn = document.getElementById('playGameBtn');
 const emergencyBtn = document.getElementById('emergency');
 const danceBtn = document.getElementById('danceBtn');
 
@@ -15,11 +15,11 @@ const dancingVideo = document.getElementById('dancingVideo');
 
 const socket = io();
 
-peopleDetectionBTN.addEventListener('click', () => toggleDetection('AI: Detect People', '/objects_detection', peopleDetectionBTN));
-poseDetectionBTN.addEventListener('click', () => toggleDetection('AI: Seeing how you move', '/pose_detection', poseDetectionBTN));
-emotionDetectionBTN.addEventListener('click', () => toggleDetection('AI: Detect emotions', '/emotion_detection', emotionDetectionBTN));
+peopleDetectionBtn.addEventListener('click', () => toggleDetection('AI: Detect People', '/objects_detection', peopleDetectionBtn));
+poseDetectionBtn.addEventListener('click', () => toggleDetection('AI: Seeing how you move', '/pose_detection', poseDetectionBtn));
+emotionDetectionBtn.addEventListener('click', () => toggleDetection('AI: Detect emotions', '/emotion_detection', emotionDetectionBtn));
 danceBtn.addEventListener('click', ()=>{handleDance(danceBtn)});
-playGameBTN.addEventListener('click', () => sendMessage('robot', 'game_started'));
+playGameBtn.addEventListener('click', () => sendMessage('robot', 'game_started'));
 
 emergencyBtn.addEventListener('click', () => {
     sendMessage('voice', 'emergency')

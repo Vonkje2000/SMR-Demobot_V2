@@ -9,7 +9,7 @@
         main img, main video{
             border-radius: 25px;
         }
-        #emergency{
+        #emergencyBtn{
           position: absolute;
           transform: translate(-106%,296px);
           width: 100%;
@@ -60,16 +60,18 @@
         <article class="text-center mx-3 col" style="transform: translateY(7%);">
           <div class="alert small" id="transcript"></div>
 
-            <div class="text-center" id="emergency">
+            <div class="text-center" id="emergencyBtn">
               <img class="btn" title="Emergency button to stop the robot in dangerous situations."  src="/static/images/sos.png" width="100" >
             </div>
             <button style="background-color: #9ea700;" class=" btn mb-2 w-100 fw-bold text-white" id="startBtn" onclick="handleStartStop()">Start System</button>
             <!-- <button class="btn btn-light mb-2 w-100" onclick="stopServer()">Stop Server</button> -->
             <button id="danceBtn"  class="control-btns btn btn-light mb-2 w-100">Dance for me</button>
-            <button id="playGameBTN"  class="control-btns btn btn-light mb-2 w-100" >Play Game</button>     
-            <button id="peopleDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Detect Peoples</button>     
-            <button id="poseDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Seeing how you move</button>   
-            <button id="emotionDetectionBTN"  class="control-btns btn btn-light mb-2 w-100">AI: Read feelings</button>   
+            <button id="playGameBtn"  class="control-btns btn btn-light mb-2 w-100" >Play Game</button>    
+            <button id="peopleDetectionBtn"  class="control-btns btn btn-light mb-2 w-100">AI: Detect Peoples</button>     
+            <button id="poseDetectionBtn"  class="control-btns btn btn-light mb-2 w-100">AI: Seeing how you move</button>   
+            <button id="emotionDetectionBtn"  class="control-btns btn btn-light mb-2 w-100">AI: Read feelings</button>  
+            <button id="tvModeBTN"  class="control-btns btn btn-light mb-2 w-100">Move Robot to TV Mode</button>   
+
         </article>
         
       </section>

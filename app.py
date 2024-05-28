@@ -18,41 +18,61 @@ socketio = SocketIO(app)
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'  # This hides informational and warning messages
 logging.getLogger('tensorflow').setLevel(logging.FATAL)  # Set TensorFlow logging to only log fatal errors
 
+HOST_IP   = '192.168.0.10'
 ROBOT1_IP = '192.168.0.1'  # Replace with your robot's IP address
 ROBOT2_IP = '192.168.0.2'  # Replace with your robot's IP address
 
 ROBOT_PORT = 10010  # Replace with the port your robot is listening on
 
-def send_message(message):
+def send_message(robot_ip: str, message):
+    # This function implements basic UDP secure communication, with response and acknowledgment
+    # Error/Confirmation codes to send to the robot
+    CONFIRMED_RECOVERY = "1000"
+    ERROR_RECOVERY = "4000"
     # Create a UDP socket
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
-        try:
-            # Send message to the first robot
-            try:  
-                server_socket.sendto(message.encode(), (ROBOT1_IP, ROBOT_PORT))
-                print(f"Message '{message}' sent to robot at {ROBOT1_IP}")
-            except: 
-                print(f"Error sending message to robot: 1") 
-            
-            try:  
-                server_socket.sendto(message.encode(), (ROBOT2_IP, ROBOT_PORT))
-                print(f"Message '{message}' sent to robot at {ROBOT2_IP}")
-            except: 
-                print(f"Error sending message to robot: 2") 
+        server_socket.bind((HOST_IP, ROBOT_PORT))
+        message_confirmed = False
+        while not message_confirmed:
+            try:
+                # Send message to the first robot
+                try:  
+                    server_socket.sendto(message.encode(), (robot_ip, ROBOT_PORT))
+                    print(f"Message '{message}' sent to robot at {robot_ip}")
+                except: 
+                    print(f"Error sending message to robot: {robot_ip}") 
 
-            # Wait for confirmation messages from both robots
-            ready = select.select([server_socket], [], [], 5)
-            if ready[0]:
-                while True:
+                # Wait for confirmation messages from both robots
+                ready = select.select([server_socket], [], [], 5) # 5 second timeout
+                if ready[0]:
                     data, addr = server_socket.recvfrom(1024)
-                    if addr[0] == ROBOT1_IP:
-                        print(f"Received confirmation from robot at {ROBOT1_IP}: {data.decode()}")
-                    elif addr[0] == ROBOT2_IP:
-                        print(f"Received confirmation from robot at {ROBOT2_IP}: {data.decode()}")
+                    if addr[0] == robot_ip:
+                        print(f"Received confirmation from robot at {robot_ip}: {data.decode()}")
+                        if (data.decode() == message):
+                            try: 
+                                time.sleep(3) 
+                                server_socket.sendto(CONFIRMED_RECOVERY.encode(), (robot_ip, ROBOT_PORT))
+                                print(f"Confirmation code '{CONFIRMED_RECOVERY}' sent to robot at {robot_ip}")
+                                # This is the only way to end the loop
+                                message_confirmed = True
+                            except: 
+                                print(f"Error sending confirmation code to robot: {robot_ip}")
+
+                        else:
+                            try:  
+                                time.sleep(3)
+                                server_socket.sendto(ERROR_RECOVERY.encode(), (robot_ip, ROBOT_PORT))
+                                print(f"Error code '{ERROR_RECOVERY}' sent to robot at {robot_ip}")
+                            except: 
+                                print(f"Error sending error code to robot: {robot_ip}")
                     else:
                         print(f"Received message from unknown address {addr[0]}: {data.decode()}")
-        except Exception as e:
-            print(f"Error sending message to robot: {e}")
+            except Exception as e:
+                print(f"Error sending message to robot: {e}. Trying again")
+
+        # Close the socket (never reached in this example)
+        server_socket.close()
+            
 
 
 def play_rock_paper_scissors():

@@ -1,22 +1,20 @@
 let lastTaskDone = true
 const transcript=  document.getElementById('transcript')
-
+const models = ['gpt-4o','gpt-4-turbo', 'gpt-3.5-turbo' ]
 function useAiToGetAnswer(text) {
     lastTaskDone = false
     console.log("request sent to ai", text)
     music.src = `/static/music/${MUSICS.LAPTOP_TYPING}`
     music.play()
-    fetch('https://api.openai.com/v1/completions', {
+    fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
             'Authorization': `Bearer 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`
         },
         body: JSON.stringify({
-            model: 'gpt-3.5-turbo-instruct',
-            // prompt:`${text}? answer in English`,
-            prompt:`${text}, in less then 150 characters and text as human talking.
-            `,
+            model: models[2],
+            messages: [{ role: 'user', content: `${text}, in less then 150 characters and text as human talking.` }],
             max_tokens: 150
         })
     })
@@ -25,7 +23,7 @@ function useAiToGetAnswer(text) {
         console.log(data.choices[0])
         // responseDiv.innerText = data.choices[0].text.trim();
         music.pause()
-        const aiAnswer = data.choices[0].text.trim().replaceAll("OpenAI", MESSAGES.ROBOT_NAME)
+        const aiAnswer = data.choices[0].message.content.trim().replaceAll("OpenAI", MESSAGES.ROBOT_NAME)
         speak(aiAnswer, ()=>{
             transcript.innerText = ''
             lastTaskDone=true;

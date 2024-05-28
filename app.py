@@ -54,7 +54,6 @@ def send_message(message):
         except Exception as e:
             print(f"Error sending message to robot: {e}")
 
-
 def play_rock_paper_scissors():
     options = ["Rock", "Paper", "Scissors"]
     computer_choice = random.choice(options)

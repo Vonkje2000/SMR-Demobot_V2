@@ -53,7 +53,10 @@ function executeTasks(command) {
             case 'how are you': case 'your day': case 'do you do': case 'how is it going': case 'how\'s it going': case 'how is going':
                 speak(MESSAGES.GREETINGS_ANSWER);
                 break;
-            case 'stop speech recognition':
+            case 'thanks': case 'thank you':
+                    speak(MESSAGES.THANKS_RESPONSE);
+                break;    
+            case 'stop speech recognition': case 'turn off speech': case 'turn off the speech':
                     speechRecognitionCheckbox.click()
                     break; 
             case 'tv mode': case 'mode tv':
@@ -78,10 +81,10 @@ function startContinuousRecognition() {
     recognition.onresult = (event) => {
         if(lastTaskDone){
             const results = Array.from(event.results);
-            const interimResult = results.filter(result => !result.isFinal).map(result => result[0].transcript.toLowerCase().trim().replace("  "," ")).join(' ');
+            let interimResult = results.filter(result => !result.isFinal).map(result => result[0].transcript.toLowerCase().trim().replace("  "," ")).join(' ');
             const finalResults = results.filter(result => result.isFinal);
-            const finalResult = finalResults.length > 0 ? finalResults[finalResults.length - 1][0].transcript.toLowerCase().trim().replace("  "," ") : '';
-    
+            let finalResult = finalResults.length > 0 ? finalResults[finalResults.length - 1][0].transcript.toLowerCase().trim().replace("  "," ") : '';
+            interimResult = interimResult.trim().replaceAll('  ', ' ')
             console.log(`Interim transcript: ${interimResult}`);
             console.log(`Final transcript: ${finalResult}`);
             transcript.innerText = interimResult
@@ -100,21 +103,28 @@ function startContinuousRecognition() {
                     }
                 }
             };
-    
-            if (interimResult) checkAndExecute(interimResult);
-            
-            if(startListening && finalResult.length>15 && (!finalResult.startsWith(ROBOT_NAME)) && (!textInCommands)){
-                console.log('sending data', finalResult)
-                useAiToGetAnswer(finalResult);
-            }
 
-            if (finalResult.startsWith(ROBOT_NAME) && (!textInCommands) && !startListening) {
-                speak(MESSAGES.ROBOT_LISTENING, ()=>{
-                    startListening = true
-                    console.log('starting listening')
-                })
-            }
+        // Ensure consistent indentation and spacing
+        if (interimResult) {
+            checkAndExecute(interimResult);
+        }
+        // Replace all instances of ROBOT_NAME in finalResult
+        finalResult = finalResult.replaceAll(ROBOT_NAME, '');
 
+        // Check if conditions to send data are met
+        if (lastTaskDone && startListening && finalResult.length > 15 && !textInCommands && finalResult != lastCommand) {
+            // console.log('sending data', finalResult);
+            lastCommand = finalResult
+            useAiToGetAnswer(finalResult);
+        }
+
+        // Check if the robot's name is in the interim result and other conditions
+        if (interimResult.includes(ROBOT_NAME) && !textInCommands && !startListening) {
+            speak(MESSAGES.ROBOT_LISTENING, () => {
+                startListening = true;
+                // console.log('starting listening');
+            });
+        }
             
         };
     

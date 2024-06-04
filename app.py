@@ -40,17 +40,17 @@ def send_message(message):
             except: 
                 print(f"Error sending message to robot: 2") 
 
-            # Wait for confirmation messages from both robots
-            ready = select.select([server_socket], [], [], 5)
-            if ready[0]:
-                while True:
-                    data, addr = server_socket.recvfrom(1024)
-                    if addr[0] == ROBOT1_IP:
-                        print(f"Received confirmation from robot at {ROBOT1_IP}: {data.decode()}")
-                    elif addr[0] == ROBOT2_IP:
-                        print(f"Received confirmation from robot at {ROBOT2_IP}: {data.decode()}")
-                    else:
-                        print(f"Received message from unknown address {addr[0]}: {data.decode()}")
+            # # Wait for confirmation messages from both robots
+            # ready = select.select([server_socket], [], [], 5)
+            # if ready[0]:
+            #     while True:
+            #         data, addr = server_socket.recvfrom(1024)
+            #         if addr[0] == ROBOT1_IP:
+            #             print(f"Received confirmation from robot at {ROBOT1_IP}: {data.decode()}")
+            #         elif addr[0] == ROBOT2_IP:
+            #             print(f"Received confirmation from robot at {ROBOT2_IP}: {data.decode()}")
+            #         else:
+            #             print(f"Received message from unknown address {addr[0]}: {data.decode()}")
         except Exception as e:
             print(f"Error sending message to robot: {e}")
 
@@ -69,16 +69,15 @@ def responseSocket(message):
 def handle_message(data):
     data = json.loads(data)
     print(['received message: ', data])
-    if data['type'] == 'game':
-        send_message('2')
-        data['robotchoise'] = play_rock_paper_scissors()
-    elif data['type'] == 'robot':
-        if data['message'] == 'tvMode':
-            send_message('0')   
-        elif data['message'] == 'dancingMode':
+    if data['message'] == 'danceMode':
             send_message('1')
-            voice_manager.play_sound(getAudioPath(data['message']))
-  
+    elif data['message'] == 'gameMode':
+            data['robotchoise'] = play_rock_paper_scissors()
+            send_message('2')
+    elif data['message'] == 'tvMode':
+            send_message('3')   
+    elif data['message'] == 'visionMode':
+            send_message('4')               
     responseSocket(data)
 
 @app.route('/')
@@ -112,4 +111,4 @@ def detection_feed(model_type):
         return "Invalid model type", 404
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

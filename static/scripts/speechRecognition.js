@@ -1,13 +1,12 @@
 const speechRecognitionCheckbox = document.getElementById('SpeechRecognition');
+const isSystemStarted = startBtn.innerText.includes("Stop");
+const isPoseDetectionStarted = poseDetectionBtn.innerText.includes("Stop");
+const isHumanDetectionStarted = peopleDetectionBtn.innerText.includes("Stop");
+const isEmotionDetectionStarted = emotionDetectionBtn.innerText.includes("Stop");
+const isDancingModeOn = danceBtn.innerText.includes("running");
+const isGameStarted = danceBtn.innerText.includes("Game started");
 
 function executeTasks(command) {
-        const isSystemStarted = startBtn.innerText.includes("Stop");
-        const isPoseDetectionStarted = poseDetectionBtn.innerText.includes("Stop");
-        const isHumanDetectionStarted = peopleDetectionBtn.innerText.includes("Stop");
-        const isEmotionDetectionStarted = emotionDetectionBtn.innerText.includes("Stop");
-        const isDancingModeOn = danceBtn.innerText.includes("running");
-        const isGameStarted = danceBtn.innerText.includes("Started");
-
         switch (command) {
             case 'start system': case 'star system':
                 if (!isSystemStarted) startBtn.click();
@@ -41,7 +40,7 @@ function executeTasks(command) {
             case 'start game':   case 'play game':  case 'playing game': case 'gaming': case 'play again': case 'start again':     
                 if(!isGameStarted) playGameBtn.click();
                 break;    
-            case 'hi robo': case 'hey robo': case 'hello robo':
+            case `hi ${ROBOT_NAME}`: case `hey ${ROBOT_NAME}`: case `hello ${ROBOT_NAME}`:
                 speak(MESSAGES.HI);
             break;
             case 'good': case 'great': case 'doing well':
@@ -72,6 +71,8 @@ let lastCommand = ''
 let lastAiCommand=''
 let recognition
 let startListening = false;
+let textInCommands = false;
+
 function startContinuousRecognition() {
     recognition = new (window.speechRecognition || window.webkitSpeechRecognition)();
     recognition.lang = 'en-US';
@@ -80,55 +81,35 @@ function startContinuousRecognition() {
 
     recognition.onresult = (event) => {
         if(lastTaskDone){
-            const results = Array.from(event.results);
-            let interimResult = results.filter(result => !result.isFinal).map(result => result[0].transcript.toLowerCase().trim().replace("  "," ")).join(' ');
-            const finalResults = results.filter(result => result.isFinal);
-            let finalResult = finalResults.length > 0 ? finalResults[finalResults.length - 1][0].transcript.toLowerCase().trim().replace("  "," ") : '';
-            interimResult = interimResult.trim().replaceAll('  ', ' ')
-            console.log(`Interim transcript: ${interimResult}`);
-            console.log(`Final transcript: ${finalResult}`);
-            transcript.innerText = interimResult
-            let textInCommands = false;
-            const checkAndExecute = (transcript) => {
-                for (let command of commandsList) {
-                    if (transcript.includes(command) ) {
-                        startListening = false;
-                        textInCommands = true;
-                        if (lastCommand != command) {
-                            console.log(`Command sent: ${command}`);
-                            executeTasks(command);
-                            lastCommand = command;
-                            break;
-                        }
-                    }
-                }
-            };
+          const results = Array.from(event.results);
+          let interimResult = results.filter(result => !result.isFinal).map(result => result[0].transcript.toLowerCase().trim().replace("  ", " ")).join(' ');
+          const finalResults = results.filter(result => result.isFinal);
+          let finalResult = finalResults.length > 0 ? finalResults[finalResults.length - 1][0].transcript.toLowerCase().trim().replace("  ", " ") : '';
+          interimResult = interimResult.trim().replaceAll('  ', ' ');
+        
+          console.log(`Interim transcript: ${interimResult}`);
+          console.log(`Final transcript: ${finalResult}`);
+          transcript.innerText = interimResult;
 
-        // Ensure consistent indentation and spacing
-        if (interimResult) {
-            checkAndExecute(interimResult);
-        }
+        if (interimResult) processTranscript(interimResult)
+        
         // Replace all instances of ROBOT_NAME in finalResult
         finalResult = finalResult.replaceAll(ROBOT_NAME, '');
 
-        // Check if conditions to send data are met
         if (lastTaskDone && startListening && finalResult.length > 15 && !textInCommands && finalResult != lastCommand) {
-            // console.log('sending data', finalResult);
-            lastCommand = finalResult
-            useAiToGetAnswer(finalResult);
+          lastCommand = finalResult;
+          useAiToGetAnswer(finalResult);
         }
-
-        // Check if the robot's name is in the interim result and other conditions
+      
         if (interimResult.includes(ROBOT_NAME) && !textInCommands && !startListening) {
-            speak(MESSAGES.ROBOT_LISTENING, () => {
-                startListening = true;
-                // console.log('starting listening');
-            });
+          speak(MESSAGES.ROBOT_LISTENING, () => {
+            startListening = true;
+          });
         }
             
-        };
+      };
     
-        }
+    }
      
     recognition.onerror = (event) => { console.error(`Recognition error: ${event.error}`); };
     recognition.onend = () => {
@@ -163,3 +144,19 @@ speechRecognitionCheckbox.addEventListener('change', (event) => {
         speak(MESSAGES.STOP_SPEECH); 
       }
 });
+
+function processTranscript(transcript) {
+  textInCommands = false;
+  for (let command of commandsList) {
+      if (transcript.includes(command) ) {
+          startListening = false;
+          textInCommands = true;
+          if (lastCommand != command) {
+              console.log(`Command sent: ${command}`);
+              executeTasks(command);
+              lastCommand = command;
+              break;
+          }
+      }
+  }
+  }

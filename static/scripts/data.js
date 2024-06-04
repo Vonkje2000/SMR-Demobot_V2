@@ -22,7 +22,7 @@ const MESSAGES = {
         START:"Dancing mode activated! Let's dance and make unforgettable memories together",
         END: "Thanks for dancing with me"
     },
-    HI:"Hi my lovely friend",
+    HI:"Hey human",
     GREETINGS_ANSWER: "I am doing great, and I hope you are too.",
     HAPPY_TO_HEAR: "I am happy to hear that",
     PLAY_GAME: 'Let\'s play rock paper scissors game. On count 3 start',
@@ -44,14 +44,13 @@ const MUSICS = {
 }
 
 
-
 const commandsList = [
     'start system', 'star system',
     'stop system','turn off system','turn off the system',
     'detect people', 'people detect', 'detecting people', 'detection people',
     'pose detection','see how i move','move detection', 'detect move', 'detect pose',
     'stop detect', 'turn off detect',
-    'hi robo','hey robo', 'hello robo',
+    `hi ${ROBOT_NAME}`,`hey ${ROBOT_NAME}`,`hello ${ROBOT_NAME}`,
     'how are you','your day','do you do','how is it going','how\'s it going','how is going',
     'doing great', 'good','doing well',
     'feelings','read my feel','emotion',

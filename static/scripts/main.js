@@ -23,8 +23,7 @@ poseDetectionBtn.addEventListener('click', () => handleDetectionByVision('AI: Se
 emotionDetectionBtn.addEventListener('click', () => handleDetectionByVision('AI: Detect emotions', '/emotion_detection', emotionDetectionBtn,MESSAGES.EMOTIONS_DETECTION, MUSICS.EMOTIONS_DETECTION));
 danceBtn.addEventListener('click', ()=>{handleDance(danceBtn)});
 playGameBtn.addEventListener('click',handlePlayGame)
-
-tvModeBtn.addEventListener('click', () => { speak(MESSAGES.TV_MODE, ()=>{ sendMessage('robot', 'tvMode')})});
+tvModeBtn.addEventListener('click', () => { sendMessage('tvMode'); speak(MESSAGES.TV_MODE)});
 emergencyBtn.addEventListener('click', () => { speak(MESSAGES.EMERGENCY, ()=>{  mute(); disableButtons(false) })});
 
 
@@ -33,23 +32,23 @@ function handlePlayGame() {
     gameBox.style.display = "block"
     gameImg.style.display = 'block';
     gameImg.src = "/static/images/rock-paper-scissors.png"
-    playGameBtn.innerText = 'Rock Paper Scissors Game started';
-
+    playGameBtn.innerText = 'Game started';
+    staticImage.style.display = 'none'
     speak(MESSAGES.PLAY_GAME, ()=>{ 
     showOptions()
     let count = 0;
     const images = ["/static/images/rock.png", "/static/images/paper.png", "/static/images/scissors.png"];
     speak(MESSAGES.COUNT123)
+    sendMessage('gameMode');
+    startImageLoop();
      const countdown = setInterval(() => {
         if (count < 3) {
             counterElement.textContent = ++count;
-            if (count ==2)  sendMessage('game', 'rock_paper_scissors');
         }else{
             clearInterval(countdown); 
             counterElement.textContent = 'Go!';   
-            startImageLoop();
         }
-    }, 500);
+    }, 1000);
 
     
     function startImageLoop() {
@@ -116,7 +115,7 @@ function handleDance(btn) {
     gameBox.style.display = 'none'
     showOptions()
     if (!danceBtn.innerText.includes("running")) {
-    sendMessage('robot', 'dancingMode');
+    sendMessage('danceMode');
     speak(MESSAGES.DANCING_MODE.START, ()=>{
         disableVideoFeed(btn,'Dance mode is running')
         dancingVideo.style.display = 'block';
@@ -130,7 +129,6 @@ function handleDance(btn) {
 function end(){
     mute()
     disableButtons(false)
-    // sendMessage('robot', 'dancing_ended');
     speak(MESSAGES.DANCING_MODE.END)
     dancingVideo.style.display = 'none';
     staticImage.style.display = 'block';
@@ -146,14 +144,12 @@ function handleStartStop() {
     gameBox.style.display = 'none'
     dancingVideo.pause()
     if(startBtn.innerText.includes('Start')){
-        // sendMessage('voice', 'active_system')
         startBtn.innerText = 'Stop System'
         speak(MESSAGES.SYSTEM.START)
         showOptions()
         document.getElementById('startBtn').style.display = 'block';
     }else{
         startBtn.innerText = 'Start System'
-        // sendMessage('voice', 'deactivate_system')
         speak(MESSAGES.SYSTEM.STOP)
         staticImage.style.display = 'block'
         showOptions(false)
@@ -166,14 +162,19 @@ function handleStartStop() {
 socket.on('connect', () => console.log('Connected to the server'));
 socket.on('response', data => {
     if (data.robotchoise ) {     
+        clearInterval(loopInterval);
         speak(`Robot choose ${data.robotchoise}`)
         counterElement.innerText = data.robotchoise
         gameImg.src = `/static/images/${data.robotchoise}.png`;
-        clearInterval(loopInterval);
+        playGameBtn.innerText = 'Play again';
+        setTimeout(() => {
+            staticImage.style.display = 'unset'
+            gameBox.style.display = 'none'
+        }, 4000);
     }
 });
 
-function sendMessage(type, message) {
+function sendMessage(message) {
     disableButtons();
-    socket.emit('message', JSON.stringify({ type, message }));
+    socket.emit('message', JSON.stringify({message }));
 }

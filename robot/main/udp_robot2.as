@@ -9,6 +9,10 @@
   ;
   ; *******************************************************************
   ;
+
+  error_code = "4000"
+  confirm_code = "1000"
+
   timeout = 60
   ip[1] = 192
   ip[2] = 168
@@ -36,13 +40,25 @@
       PRINT "IT IS 0"  
     END
     
-    ; Send confirmation message
-    $cnt[0] = $ENCODE (/D, numbytes)
-    UDP_SENDTO ret, ip[1], port, $cnt[0], 1, 9
-    IF ret <> 0 THEN
-      PRINT "Error with the UDP send, code: ", ret
-      ; Optionally handle send error but do not halt
-    END
+ ; Send confirmation message
+ $cnt[0] = $ENCODE (/D, numbytes)
+ UDP_SENDTO ret, ip[1], port, $cnt[0], 1, timeout
+ IF ret <> 0 THEN
+   PRINT "Error with the UDP send, code: ", ret
+ ELSE
+   ; Recieve confirmation code or error code
+   UDP_RECVFROM ret, port, $cnt[0], numbytes, timeout, ip[1]
+   IF ret <> 0 THEN
+     PRINT "No data received within timeout period or error code: ", ret
+     ; Continue to the next iteration without halting
+   ELSE
+     IF $cnt[0] == "1000" THEN
+       PRINT "Communication successfull with server. Confirmation code: ", $cnt[0]
+     ELSE
+       PRINT "Communication error with server. Error code: ", $cnt[0]
+     END
+   END
+  END
     END
   END
 .END

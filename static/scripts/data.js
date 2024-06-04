@@ -17,13 +17,14 @@ const MESSAGES = {
         START:'The system has been activated',
         STOP:"The system has been disactivated"
     },
-    EMERGENCY:"Emergency mode started, Please stay away from the robot. Robot stopping immediately. ",
+    EMERGENCY:"Emergency mode started. Please stay away from the robot. The robot is stopping immediately.",
+    STOP_EMERGENCY: 'Emergency mode is canceled. Robot tasks have resumed',
     DANCING_MODE:{
         START:"Dancing mode activated! Let's dance and make unforgettable memories together",
         END: "Thanks for dancing with me"
     },
     HI:"Hey human",
-    GREETINGS_ANSWER: "I am doing great, and I hope you are too.",
+    GREETINGS_ANSWER: "I'm fine, thank you for asking!",
     HAPPY_TO_HEAR: "I am happy to hear that",
     PLAY_GAME: 'Let\'s play rock paper scissors game. On count 3 start',
     COUNT123: '1.  2.  3. Go!',
@@ -33,8 +34,11 @@ const MESSAGES = {
     STOP_SPEECH: 'Speech Recognition feature has been stopped',
     START_SPEECH: 'Speech Recognition feature has been started',
     TV_MODE: 'Requests have been sent to the both robots to move to tv mode',
-    THANKS_RESPONSE  : 'You’re welcome!'
+    THANKS_RESPONSE  : 'You’re welcome!',
+    CREATOR: 'I was created by students at The Hague University, led by software engineer Shiyar Jamo.',
+    ORIGIN: 'I\'m from The Hague University in the Netherlands.'
 }
+
 const MUSICS = {
     HUMANS_DETECTION: "Corporate.mp3",
     POSE_DETECTION:"3.The Positive Rock(Short Version).wav",
@@ -47,19 +51,21 @@ const MUSICS = {
 const commandsList = [
     'start system', 'star system',
     'stop system','turn off system','turn off the system',
-    'detect people', 'people detect', 'detecting people', 'detection people',
+    'detect people', 'people detect', 'detecting people', 'detection people', 'human detect',
     'pose detection','see how i move','move detection', 'detect move', 'detect pose',
     'stop detect', 'turn off detect',
     `hi ${ROBOT_NAME}`,`hey ${ROBOT_NAME}`,`hello ${ROBOT_NAME}`,
-    'how are you','your day','do you do','how is it going','how\'s it going','how is going',
-    'doing great', 'good','doing well',
+    'how are you','your day','do you do','how is it going','how is going',
+    'doing great', 'i am good','doing well','i am great','i am fine',
     'feelings','read my feel','emotion',
     'turn on emergency', 'start emergency', 'call emergency',
     'start dance','start dancing','dance for',
     'start game', 'gaming','play again', 'start again', 'play game', 'playing game',
-    'what is your name','what\'s your name',
+    'what is your name','who are you',
     'stop speech recognition', 'turn off speech', 'turn off the speech',
     'tv mode', 'mode tv',
-    'thanks', 'thank you'
+    'thanks', 'thank you',
+    'who made you','who created you','who built you', 'who is your creator','who designed you','who developed you',
+    'where are you from','where you from','where were you made','where were you created', 'where were you built','where is your origin','in which country were you developed',
 ];
 

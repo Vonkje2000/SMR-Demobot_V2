@@ -23,14 +23,13 @@ def get_camera():
         print(f"RealSense camera not found: {e}, using standard webcam")
         # Fallback to standard webcam
         webcamera = cv2.VideoCapture(0)
-        webcamera.set(cv2.CAP_PROP_FRAME_WIDTH, 640)
-        webcamera.set(cv2.CAP_PROP_FRAME_HEIGHT, 360)
+        webcamera.set(cv2.CAP_PROP_FRAME_WIDTH, 1280)
+        webcamera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         return webcamera, False
 
-
+camera, using_realsense = get_camera()
 def gen_frames(model=None, detector=None):
-    camera, using_realsense = get_camera()
-    
+
     while True:
         if using_realsense:
             frames = camera.wait_for_frames()
@@ -73,7 +72,7 @@ def getFramesByModel(model, frame):
         The frame with detected objects plotted on it, or None if no results are found.
     """
     # Define constants for model parameters
-    confidence_threshold = 0.65  # Confidence threshold for detection
+    confidence_threshold = 0.60  # Confidence threshold for detection
     image_size = 480  # Image size for processing
     # target_class = 0  # Target class for detection
     verbose_mode = False  # Verbose mode for the model

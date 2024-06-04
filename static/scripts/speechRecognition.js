@@ -1,12 +1,13 @@
+
 const speechRecognitionCheckbox = document.getElementById('SpeechRecognition');
-const isSystemStarted = startBtn.innerText.includes("Stop");
-const isPoseDetectionStarted = poseDetectionBtn.innerText.includes("Stop");
-const isHumanDetectionStarted = peopleDetectionBtn.innerText.includes("Stop");
-const isEmotionDetectionStarted = emotionDetectionBtn.innerText.includes("Stop");
-const isDancingModeOn = danceBtn.innerText.includes("running");
-const isGameStarted = danceBtn.innerText.includes("Game started");
 
 function executeTasks(command) {
+    const isSystemStarted = startBtn.innerText.includes("Stop");
+    const isPoseDetectionStarted = poseDetectionBtn.innerText.includes("Stop");
+    const isHumanDetectionStarted = peopleDetectionBtn.innerText.includes("Stop");
+    const isEmotionDetectionStarted = emotionDetectionBtn.innerText.includes("Stop");
+    const isDancingModeOn = danceBtn.innerText.includes("running");
+    const isGameStarted = danceBtn.innerText.includes("Game started");
         switch (command) {
             case 'start system': case 'star system':
                 if (!isSystemStarted) startBtn.click();
@@ -14,7 +15,7 @@ function executeTasks(command) {
             case 'stop system': case'turn off system': case'turn off the system':
                 if (isSystemStarted) startBtn.click();
                 break;
-            case 'detect people': case 'people detect': case 'detecting people': case 'detection people':
+            case 'detect people':  case 'human detect':  case 'people detect': case 'detecting people': case 'detection people':
                 if (!isHumanDetectionStarted) peopleDetectionBtn.click();
                 break;
             case 'pose detection': case 'see how i move': case 'move detection': case 'detect move': case 'detect pose':
@@ -30,9 +31,7 @@ function executeTasks(command) {
                 if (isDancingModeOn) danceBtn.click();
                 break;  
             case 'stop detect':  case 'turn off detect':
-                document.querySelectorAll('.control-btns, #startBtn').forEach(btn => {
-                    if (btn.innerText.includes("Stop") || btn.innerText.includes("started")|| btn.innerText.includes("running")) btn.click();
-                });
+                stopRunningActions()
                 break;
             case 'turn on emergency': case 'start emergency': case 'call emergency':
                 speak(MESSAGES.EMERGENCY); 
@@ -41,20 +40,28 @@ function executeTasks(command) {
                 if(!isGameStarted) playGameBtn.click();
                 break;    
             case `hi ${ROBOT_NAME}`: case `hey ${ROBOT_NAME}`: case `hello ${ROBOT_NAME}`:
+                sendMessage('heyMode')
                 speak(MESSAGES.HI);
             break;
-            case 'good': case 'great': case 'doing well':
+            case 'doing great': case 'i am good': case 'doing well':case 'i am great':case 'i am fine':
                 speak(MESSAGES.HAPPY_TO_HEAR);
                 break;    
-            case 'what is your name':  case 'what\'s your name':
+            case 'what is your name':  case 'who are you':
                 speak(MESSAGES.SAYING_ROBOT_NAME);
                 break;   
-            case 'how are you': case 'your day': case 'do you do': case 'how is it going': case 'how\'s it going': case 'how is going':
+            case 'how are you': case 'your day': case 'do you do': case 'how is it going': case 'how is going':
                 speak(MESSAGES.GREETINGS_ANSWER);
                 break;
             case 'thanks': case 'thank you':
                     speak(MESSAGES.THANKS_RESPONSE);
                 break;    
+            case 'who made you': case 'who created you':case 'who built you': case 'who created you':case 'who is your creator': case 'who designed you': case 'who developed you':
+                speak(MESSAGES.CREATOR);
+            break; 
+            case 'where are you from': case 'where you from': case 'where were you made': case'where were you created': case'where were you built': case'where is your origin': case'in which country were you developed':
+                speak(MESSAGES.ORIGIN);
+            break; 
+
             case 'stop speech recognition': case 'turn off speech': case 'turn off the speech':
                     speechRecognitionCheckbox.click()
                     break; 
@@ -78,40 +85,46 @@ function startContinuousRecognition() {
     recognition.lang = 'en-US';
     recognition.interimResults = true;
     recognition.continuous = true;
-
+    
     recognition.onresult = (event) => {
-        if(lastTaskDone){
+        if(!aiTaskRunning){
           const results = Array.from(event.results);
           let interimResult = results.filter(result => !result.isFinal).map(result => result[0].transcript.toLowerCase().trim().replace("  ", " ")).join(' ');
           const finalResults = results.filter(result => result.isFinal);
           let finalResult = finalResults.length > 0 ? finalResults[finalResults.length - 1][0].transcript.toLowerCase().trim().replace("  ", " ") : '';
-          interimResult = interimResult.trim().replaceAll('  ', ' ');
-        
-          console.log(`Interim transcript: ${interimResult}`);
-          console.log(`Final transcript: ${finalResult}`);
-          transcript.innerText = interimResult;
+          interimResult = interimResult.trim()
+                                            .replaceAll("  ", " ")
+                                            .replaceAll("you're", "you are")
+                                            .replaceAll("I'm", "I am")
+                                            .replaceAll("what's", "what is")
+                                            .replaceAll("how's", "how is");
 
+        if(!speakRunning){
+            transcriptHomePage.classList.remove('robotAnswer');
+            transcriptHomePage.innerText = interimResult;
+            sendMessage({transcript:interimResult}, false);
+        }
+
+
+        //   console.log(`Interim transcript: ${interimResult}`);
+        //   console.log(`Final transcript: ${finalResult}`);
+          
         if (interimResult) processTranscript(interimResult)
-        
-        // Replace all instances of ROBOT_NAME in finalResult
         finalResult = finalResult.replaceAll(ROBOT_NAME, '');
 
-        if (lastTaskDone && startListening && finalResult.length > 15 && !textInCommands && finalResult != lastCommand) {
+        if (!aiTaskRunning && !speakRunning && startListening && finalResult.length > 15 && !textInCommands && finalResult != lastCommand) {
           lastCommand = finalResult;
           useAiToGetAnswer(finalResult);
         }
       
-        if (interimResult.includes(ROBOT_NAME) && !textInCommands && !startListening) {
-          speak(MESSAGES.ROBOT_LISTENING, () => {
-            startListening = true;
-          });
+        if (interimResult.includes(ROBOT_NAME) && !textInCommands && !startListening && !speakRunning && !aiTaskRunning) {
+          speak(MESSAGES.ROBOT_LISTENING, () => { startListening = true; });
         }
-            
+
       };
-    
-    }
+}
      
-    recognition.onerror = (event) => { console.error(`Recognition error: ${event.error}`); };
+    recognition.onerror = (event) => { console.log(`Recognition error: ${event.error}`); };
     recognition.onend = () => {
         console.log('Speech recognition service disconnected');
         if (speechRecognitionCheckbox.checked) {
@@ -151,7 +164,7 @@ function processTranscript(transcript) {
       if (transcript.includes(command) ) {
           startListening = false;
           textInCommands = true;
-          if (lastCommand != command) {
+          if (lastCommand != command || command.includes('stop detect')) {
               console.log(`Command sent: ${command}`);
               executeTasks(command);
               lastCommand = command;

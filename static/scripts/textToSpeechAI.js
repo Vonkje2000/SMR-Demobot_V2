@@ -1,12 +1,12 @@
 
 const synth = window.speechSynthesis;
 const voices = synth.getVoices();
-
+let speakRunning = false
 function speak(text, callback) {
-    
+    speakRunning = true
     // Cancel any ongoing speech to ensure a clean state
     if (window.speechSynthesis.speaking) {
-        console.error("Speech synthesis is already in progress.");
+        console.log("Speech synthesis is already in progress.");
         window.speechSynthesis.cancel();
     }
 
@@ -27,6 +27,14 @@ function speak(text, callback) {
 
     // Event when speech starts
     utterance.onstart = function() {
+        sendMessage({aiAnswer: text})
+        if(!aiTaskRunning) {
+            if(transcriptHomePage){
+                transcriptHomePage.classList.add('robotAnswer'); showTextOneByOne(text,transcriptHomePage) 
+            }
+        }
+        // if(!aiTaskRunning) transcriptHomePage.innerText = text
+
         console.log("Speech has started.");
         setSpeechTimeout(); // Set a timeout to handle hanging
     };
@@ -57,6 +65,7 @@ function speak(text, callback) {
             synth.cancel(); // Force stop any speech that is hanging
             finalizeSpeech();
         }, 25000); // Set timeout for 20 seconds
+
     }
 
     function clearSpeechTimeout() {
@@ -68,26 +77,16 @@ function speak(text, callback) {
 
     function finalizeSpeech() {
         disableButtons(false); // Re-enable buttons when speech is complete or stopped
+        setTimeout(() => { speakRunning = false }, 1500);
         if (callback) {
             callback();
         }
     }
 }
 
-function disableButtons(disable) {
-    // Example: Disable/enable all buttons on the page
-    const buttons = document.querySelectorAll("button");
-    buttons.forEach(button => {
-        button.disabled = disable;
-    });
-}
-
-
 // window.speechSynthesis.onvoiceschanged = () => {
 //     const voices = window.speechSynthesis.getVoices();
 //     // console.log(voices);
 // };
 
-function disableButtons(disable = true) {
-    document.querySelectorAll('.control-btns, #startBtn').forEach(button => button.disabled = disable);
-}
+

@@ -1,0 +1,33 @@
+.PROGRAM background_cotroller2.pc () ; 
+  ; *******************************************************************
+  ;
+  ; Program:      main_robot1.pc
+  ; Comment:      In this code we run background program to control the 
+  ;               execution of the main program for the DEMOBOT project
+  ; Author:       Ixent Cornella | Student HHS; gthb/icorn1
+  ; Date:         6/4/2024
+  ;
+  ; *******************************************************************
+  ;
+      .retrecv = -1
+      ; WAIT FOR POWER TO START MAIN PROGRAM, OTHERWISE WE GET ERRORS
+      WAIT SWITCH (POWER )
+      MC EXECUTE main_robot2
+      ; Constant execution of the code
+      receive:
+        .$receive = ""
+        ; This program recieves control commands from server via UDP  
+        CALL udp_emergency(.retrecv, .$receive)
+        IF .retrecv < 0 GOTO receive
+        ; Recieve buffer is updated in udp_test
+        IF .$receive == "hold" THEN
+          MC HOLD 
+          PRINT " -> PROGRAM HELD"
+          GOTO receive
+        END
+        IF .$receive == "continue" THEN
+          MC CONTINUE 
+          PRINT " -> PROGRAM RESUMED"
+          GOTO receive
+        END
+.END

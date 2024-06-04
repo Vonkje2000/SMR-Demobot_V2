@@ -1,17 +1,14 @@
-from flask import Flask, render_template, request, jsonify, Response
-from flask_socketio import SocketIO, emit
+from flask import Flask, render_template, Response
+from flask_socketio import SocketIO
 import threading
 import socket
-import select
 import vision.main as vision
-import voice_manager
 import json
 from fer import FER
 import os
 import logging
-import random
 import time
-
+import game
 app = Flask(__name__)
 socketio = SocketIO(app)
 
@@ -20,10 +17,8 @@ logging.getLogger('tensorflow').setLevel(logging.FATAL)  # Set TensorFlow loggin
 
 ROBOT1_IP = '192.168.0.1'  # Replace with your robot's IP address
 ROBOT2_IP = '192.168.0.2'  # Replace with your robot's IP address
-
-ROBOT_PORT = 10010  # Replace with the port your robot is listening on
-
-def send_message(message):
+ROBOT_PORT_EMERGENCY = 10020
+def send_message(message, ROBOT_PORT = 10010):
     # Create a UDP socket
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         try:
@@ -33,33 +28,17 @@ def send_message(message):
                 print(f"Message '{message}' sent to robot at {ROBOT1_IP}")
             except: 
                 print(f"Error sending message to robot: 1") 
-            
             try:  
                 server_socket.sendto(message.encode(), (ROBOT2_IP, ROBOT_PORT))
                 print(f"Message '{message}' sent to robot at {ROBOT2_IP}")
             except: 
                 print(f"Error sending message to robot: 2") 
 
-            # # Wait for confirmation messages from both robots
-            # ready = select.select([server_socket], [], [], 5)
-            # if ready[0]:
-            #     while True:
-            #         data, addr = server_socket.recvfrom(1024)
-            #         if addr[0] == ROBOT1_IP:
-            #             print(f"Received confirmation from robot at {ROBOT1_IP}: {data.decode()}")
-            #         elif addr[0] == ROBOT2_IP:
-            #             print(f"Received confirmation from robot at {ROBOT2_IP}: {data.decode()}")
-            #         else:
-            #             print(f"Received message from unknown address {addr[0]}: {data.decode()}")
         except Exception as e:
             print(f"Error sending message to robot: {e}")
 
-def play_rock_paper_scissors():
-    options = ["Rock", "Paper", "Scissors"]
-    computer_choice = random.choice(options)
-    return computer_choice
 
-def getAudioPath(fileName):
+def get_audio_path(fileName):
     return 'static/audio/' + fileName + '.wav'
 
 def responseSocket(message):
@@ -69,20 +48,38 @@ def responseSocket(message):
 def handle_message(data):
     data = json.loads(data)
     print(['received message: ', data])
+    if data['message'] == 'heyMode':
+            send_message('0')
     if data['message'] == 'danceMode':
             send_message('1')
     elif data['message'] == 'gameMode':
-            data['robotchoise'] = play_rock_paper_scissors()
+            robotChoice = game.get_rock_paper_scissors_choice()
+            time.sleep(0.5)
             send_message('2')
+            time.sleep(3.5)
+            game.send_command_to_arduino(robotChoice)
+            data['robotChoice'] = robotChoice
     elif data['message'] == 'tvMode':
-            send_message('3')   
-    elif data['message'] == 'visionMode':
-            send_message('4')               
+            send_message('3') 
+    elif data['message'] == 'objects_detection':
+            send_message('4')     
+    elif data['message'] == 'emotion_detection':
+            send_message('5')                 
+    elif data['message'] == 'pose_detection':
+            send_message('6')         
+    elif data['message'] == 'startEmergency':
+            send_message('hold',ROBOT_PORT_EMERGENCY) 
+    elif data['message'] == 'stopEmergency':
+            send_message('continue',ROBOT_PORT_EMERGENCY)                   
     responseSocket(data)
 
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
+
+@app.route('/tv')
+def tv():
+    return render_template('tv_screen.html')
 
 models = {}
 
@@ -92,9 +89,6 @@ def load_models_async():
     models['pose_detection'] = vision.YOLO('vision/model-pose.pt')
     models['emotion_detection'] = FER(mtcnn=True)
     print("All models loaded")
-
-# Start model loading in a separate thread after the server starts
-threading.Thread(target=load_models_async, daemon=True).start()
 
 def generate_feed(model_type):
     model = models.get(model_type, None)
@@ -111,4 +105,8 @@ def detection_feed(model_type):
         return "Invalid model type", 404
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
+        # Start model loading in a separate thread after the server starts
+        threading.Thread(target=load_models_async, daemon=True).start()
+
+    app.run(debug=True)

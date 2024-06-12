@@ -10,7 +10,7 @@ function speak(text, callback) {
         window.speechSynthesis.cancel();
     }
 
-    disableButtons(true); // Disable buttons at the start of the speech
+    disableButtons(true, 'speak true'); // Disable buttons at the start of the speech
 
     const synth = window.speechSynthesis;
     const utterance = new SpeechSynthesisUtterance(text);
@@ -22,8 +22,8 @@ function speak(text, callback) {
          'Google UK English Male'].includes(voice.name));
 
     // Configure the voice properties
-    utterance.pitch = 1.25; // Higher pitch
-    utterance.rate = 1.1;  // Slightly faster rate
+    utterance.pitch = 1.15; // Higher pitch
+    utterance.rate = 1;  // Slightly faster rate
 
     // Event when speech starts
     utterance.onstart = function() {
@@ -76,7 +76,7 @@ function speak(text, callback) {
     }
 
     function finalizeSpeech() {
-        disableButtons(false); // Re-enable buttons when speech is complete or stopped
+        disableButtons(false, 'finalizeSpeech'); // Re-enable buttons when speech is complete or stopped
         setTimeout(() => { speakRunning = false }, 1500);
         if (callback) {
             callback();

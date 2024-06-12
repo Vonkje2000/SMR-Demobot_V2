@@ -24,7 +24,7 @@ const MESSAGES = {
         END: "Thanks for dancing with me"
     },
     HI:"Hey human",
-    GREETINGS_ANSWER: "I'm fine, thank you for asking!",
+    GREETINGS_ANSWER: "I'm doing great, thanks for asking!",
     HAPPY_TO_HEAR: "I am happy to hear that",
     PLAY_GAME: 'Let\'s play rock paper scissors game. On count 3 start',
     COUNT123: '1.  2.  3. Go!',
@@ -36,7 +36,12 @@ const MESSAGES = {
     TV_MODE: 'Requests have been sent to the both robots to move to tv mode',
     THANKS_RESPONSE  : 'You’re welcome!',
     CREATOR: 'I was created by students at The Hague University, led by software engineer Shiyar Jamo.',
-    ORIGIN: 'I\'m from The Hague University in the Netherlands.'
+    ORIGIN: 'I\'m from the Netherlands.',
+    LANGUAGES_SPOKEN: 'I speak English',
+    PONG_GAME_END: 'We hope you enjoyed watching us play Pong',
+    PONG_GAME_START: 'The pong game has been started',
+    ANGRY_ROBOT: 'I am smarter than you, you idiot!',
+    INSULT_ANSWER: 'You are disrespectful, do not say that again',
 }
 
 const MUSICS = {
@@ -56,16 +61,18 @@ const commandsList = [
     'stop detect', 'turn off detect',
     `hi ${ROBOT_NAME}`,`hey ${ROBOT_NAME}`,`hello ${ROBOT_NAME}`,
     'how are you','your day','do you do','how is it going','how is going',
-    'doing great', 'i am good','doing well','i am great','i am fine',
+    'i am doing great', 'i am good','doing well','i am great','i am fine',
     'feelings','read my feel','emotion',
-    'turn on emergency', 'start emergency', 'call emergency',
+    'turn on emergency', 'start emergency', 'call emergency', 'emergency mode',
     'start dance','start dancing','dance for',
-    'start game', 'gaming','play again', 'start again', 'play game', 'playing game',
+    'start gam', 'play again', 'start again', 'play gam', 'playing game',
+    'pong','punk',
     'what is your name','who are you',
     'stop speech recognition', 'turn off speech', 'turn off the speech',
     'tv mode', 'mode tv',
-    'thanks', 'thank you',
+    `thanks ${ROBOT_NAME}`, `thank you ${ROBOT_NAME}`,
+    'you speak', 'you are stupid', 'f*** you',
     'who made you','who created you','who built you', 'who is your creator','who designed you','who developed you',
-    'where are you from','where you from','where were you made','where were you created', 'where were you built','where is your origin','in which country were you developed',
+    'where are you from','where you from','where were you made','where were you created', 'where were you built','is your origin','in which country were you developed',
 ];
 

@@ -27,7 +27,7 @@
             <video class="col-8" id="video" src="/static/videos/hhs.mp4" autoplay muted></video>
             <img class="col-8" id="videoFeed" style="display:none;" />
 
-            <section class="col-4">
+            <section class="col-4" id="transcriptBox">
                 <div class="alert fw-bold" style="font-size: large;" id="transcriptTVPage"></div>
                 <hr style="border-bottom: 8px solid #9ea600;">
             </section>
@@ -48,11 +48,11 @@
             </article>
         </section>
     </main>
+    <script src="/static/scripts/helpers.js"></script> 
     <script src="/static/scripts/customSocketIO.js"></script> 
     <script src="/static/scripts/data.js"></script>
-    <script src="/static/scripts/textToSpeechAI.js"></script>
-
     <script src="/static/scripts/ai.js"></script>
+    <script src="/static/scripts/textToSpeechAI.js"></script>
     <script src="/static/scripts/tv-main.js"></script>
 </body>
 </html>

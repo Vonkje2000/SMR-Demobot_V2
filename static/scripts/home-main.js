@@ -1,12 +1,16 @@
 const peopleDetectionBtn = document.getElementById('peopleDetectionBtn');
 const poseDetectionBtn = document.getElementById('poseDetectionBtn');
 const emotionDetectionBtn = document.getElementById('emotionDetectionBtn');
-const playGameBtn = document.getElementById('playGameBtn');
+const playRockPaperGameBtn = document.getElementById('playRockPaperGameBtn');
 const emergencyBtn = document.getElementById('emergencyBtn');
 const danceBtn = document.getElementById('danceBtn');
 const staticImage = document.getElementById('staticImage');
 const startBtn = document.getElementById('startBtn');
 const tvModeBtn = document.getElementById('tvModeBTN');
+const playPongGameBtn = document.getElementById('playPongGameBtn');
+
+
+
 let emergencyMode = false
 let emergencyImg = document.querySelector('#emergencyBtn img')
 
@@ -21,10 +25,12 @@ detectionButtons.forEach(({ btn, text, src, message, music }) => {
 });
 
 danceBtn.addEventListener('click', () => handleDance(danceBtn));
-playGameBtn.addEventListener('click', handlePlayGame);
+playRockPaperGameBtn.addEventListener('click',()=>{ handlePlayGame(playRockPaperGameBtn,'playRockPaperGame')});
+playPongGameBtn.addEventListener('click',()=>{ handlePlayGame(playPongGameBtn,'playPongGame')});
+
+
 startBtn.addEventListener('click', handleStartStop)
 tvModeBtn.addEventListener('click', () => { sendMessage('tvMode'); speak(MESSAGES.TV_MODE); });
-
 emergencyBtn.addEventListener('click', handleEmergency);
 
 function handleEmergency(){
@@ -38,7 +44,7 @@ function handleEmergency(){
         sendMessage('startEmergency')
     }else{
         emergencyMode = false
-        if(!speechRecognitionCheckbox.checked) speechRecognitionCheckbox.click()
+        if(!speechRecognitionCheckbox.checked) speechRecognitionCheckbox.disabled = false; 
         speak(MESSAGES.STOP_EMERGENCY); 
         emergencyImg.src = '/static/images/sos.png';
         emergencyImg.title = "Start Emergency"
@@ -55,7 +61,7 @@ function handleStartStop() {
 }
 
 function handleDetectionByVision(btn, detectText, src, message, musicFile) {
-    handleStartStop()
+    showOptions()
     if (!btn.innerText.includes('Stop') ) {
         sendMessage({ startVision: true, src, musicFile });
         sendMessage(src.replace('/', ''));
@@ -69,7 +75,6 @@ function handleDetectionByVision(btn, detectText, src, message, musicFile) {
 }
 
 function stopAction(btn, detectText, stopMessage) {
-    console.log('From stopAction',btn )
     sendMessage('stopVision');
     speak(stopMessage);
     btn.innerText = detectText;
@@ -77,37 +82,47 @@ function stopAction(btn, detectText, stopMessage) {
     btn.classList.remove("started");
 }
 
-function showOptions(on = true){
-    document.querySelectorAll('.control-btns').forEach(btn => btn.style.display = on?'block':'none');
-}
 
 function handleDance(btn) {
-    handleStartStop()
+    showOptions()
     if (!danceBtn.innerText.includes("running")) {
         speak(MESSAGES.DANCING_MODE.START, ()=>{
+            disableButtons()
             sendMessage('danceMode');
             btn.innerText = 'Dance mode is running'
             btn.style.background = "#f8f9fa"
             btn.classList.remove("started")
         })
     }
-
 }
 
-function handlePlayGame() {
-    sendMessage('playGame');
-    playGameBtn.innerText = 'Game started';
+function handlePlayGame(btn, message) {
+    showOptions()
+    sendMessage(message);
+    btn.innerText = 'Game started';
+    disableButtons()
 }
+
 function endDancing(){
     speak(MESSAGES.DANCING_MODE.END, ()=>{
         danceBtn.innerText ='Dance for me'
     })
 }
 
+function endPongGame(){
+    disableButtons(false)
+    speak(MESSAGES.PONG_GAME_END, ()=>{
+        playPongGameBtn.innerText = 'Robot vs Robot game';
+    })
+}
+
 
 socket.on('response', data => {
     console.log(data.message)
-    if (data.robotChoice) { playGameBtn.innerText = 'Play again'; disableButtons(false);}
-    if(data.message =='danceModeDone') endDancing()
+    if (data.robotChoice) { 
+        playRockPaperGameBtn.innerText = 'Play again';  
+        setTimeout(() => {disableButtons(false,'response robotChoice'); }, 3000);}
+    else if(data.message ==='danceModeDone') {  endDancing()}
+    else if(data.message ==='pongGameModeDone') {  endPongGame() }
 });
 

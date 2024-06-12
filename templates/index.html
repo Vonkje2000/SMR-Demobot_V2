@@ -21,14 +21,15 @@
         <audio src="" id="music"></audio>
         <section class="py-5 row">
             <img class="col-6" src="/static/images/wallpaper.jpg" id="staticImage">
-            <article id="buttonsBox" class="text-center mx-3 col" >
+            <article id="buttonsBox" class="text-center mx-3 col">
                 <div class="alert fw-bold" id="transcriptHomePage"></div>
                 <div class="text-center" id="emergencyBtn">
                     <img class="btn" title="Emergency button to stop the robot in dangerous situations." src="/static/images/sos.png" width="100">
                 </div>
-                <button class="btn mb-2 w-100 fw-bold text-white "id="startBtn">Start System</button>
+                <button class="btn mb-2 w-100 fw-bold text-white" id="startBtn">Start System</button>
                 <button id="danceBtn" class="control-btns btn btn-light mb-2 w-100">Dance for me</button>
-                <button id="playGameBtn" class="control-btns btn btn-light mb-2 w-100">Play Game</button>
+                <button id="playRockPaperGameBtn" class="control-btns btn btn-light mb-2 w-100">Play Game vs Robot</button>
+                <button id="playPongGameBtn" class="control-btns btn btn-light mb-2 w-100">Robot vs Robot (Pong Game)</button>
                 <button id="peopleDetectionBtn" class="control-btns btn btn-light mb-2 w-100">AI: Detect Peoples</button>
                 <button id="poseDetectionBtn" class="control-btns btn btn-light mb-2 w-100">AI: Seeing how you move</button>
                 <button id="emotionDetectionBtn" class="control-btns btn btn-light mb-2 w-100">AI: Read feelings</button>
@@ -44,6 +45,7 @@
         </div>
     </footer>
     
+    <script src="/static/scripts/helpers.js"></script> 
     <script src="/static/scripts/customSocketIO.js"></script> 
     <script src="/static/scripts/data.js"></script>
     <script src="/static/scripts/ai.js"></script>

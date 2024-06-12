@@ -22,18 +22,12 @@ def send_message(message, ROBOT_PORT = 10010):
     # Create a UDP socket
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         try:
-            # Send message to the first robot
             try:  
                 server_socket.sendto(message.encode(), (ROBOT1_IP, ROBOT_PORT))
+                server_socket.sendto(message.encode(), (ROBOT2_IP, ROBOT_PORT))
                 print(f"Message '{message}' sent to robot at {ROBOT1_IP}")
             except: 
-                print(f"Error sending message to robot: 1") 
-            try:  
-                server_socket.sendto(message.encode(), (ROBOT2_IP, ROBOT_PORT))
-                print(f"Message '{message}' sent to robot at {ROBOT2_IP}")
-            except: 
-                print(f"Error sending message to robot: 2") 
-
+                print(f"Error sending message to robots") 
         except Exception as e:
             print(f"Error sending message to robot: {e}")
 
@@ -47,26 +41,37 @@ def responseSocket(message):
 @socketio.on('message')
 def handle_message(data):
     data = json.loads(data)
-    print(['received message: ', data])
+
+    def handle_game_mode():
+        game.send_command_to_arduino('Rock')
+        robotChoice = game.get_rock_paper_scissors_choice()
+        time.sleep(0.5)
+        send_message('2')
+        time.sleep(2.7)
+        game.send_command_to_arduino(robotChoice)
+        data['robotChoice'] = robotChoice
+         
+    # print(['received message: ', data])
     if data['message'] == 'heyMode':
+            game.send_command_to_arduino('Paper')
             send_message('0')
     if data['message'] == 'danceMode':
+            game.send_command_to_arduino('Paper')
             send_message('1')
     elif data['message'] == 'gameMode':
-            robotChoice = game.get_rock_paper_scissors_choice()
-            time.sleep(0.5)
-            send_message('2')
-            time.sleep(3.5)
-            game.send_command_to_arduino(robotChoice)
-            data['robotChoice'] = robotChoice
+            handle_game_mode()        
     elif data['message'] == 'tvMode':
+            game.send_command_to_arduino('Paper')
             send_message('3') 
     elif data['message'] == 'objects_detection':
             send_message('4')     
     elif data['message'] == 'emotion_detection':
             send_message('5')                 
     elif data['message'] == 'pose_detection':
-            send_message('6')         
+            send_message('6')
+    elif data['message'] == 'playPongGame':
+            game.send_command_to_arduino('Paper')
+            send_message('7')                     
     elif data['message'] == 'startEmergency':
             send_message('hold',ROBOT_PORT_EMERGENCY) 
     elif data['message'] == 'stopEmergency':
@@ -108,5 +113,5 @@ if __name__ == '__main__':
     if os.environ.get('WERKZEUG_RUN_MAIN') == 'true':
         # Start model loading in a separate thread after the server starts
         threading.Thread(target=load_models_async, daemon=True).start()
-
-    app.run(debug=True)
+    app.run(debug=True) 
+ 

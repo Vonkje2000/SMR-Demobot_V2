@@ -11,7 +11,7 @@ function useAiToGetAnswer(text) {
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer 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`},
         body: JSON.stringify({
             model: models[2], max_tokens: 150,
-            messages: [{ role: 'user', content: `${text}, in less then 150 characters and text as human talking.` }],
+            messages: [{ role: 'user', content: `${text}, in less then 150 characters and text must be understand for beginners in English.` }],
         })
     })
     .then(response => response.json())
@@ -34,20 +34,4 @@ function handleAIAnswer(aiAnswer){
         }, 2000);
     })
     showTextOneByOne(aiAnswer,transcriptHomePage)
-}
-
-function showTextOneByOne(text, element, speed = 150) {
-    console.log('text showTextOneByOne',element )
-    element.classList.add('robotAnswer')
-    element.innerText = '';  // Clear the element initially
-    const words = text.split(' ');
-    let index = 0;
-
-    const interval = setInterval(() => {
-        if (index >= words.length){ 
-            clearInterval(interval); 
-        }
-        else element.innerText += ' ' +words[index++] + ' ';
-    }, speed);
-
 }

@@ -108,7 +108,7 @@ def detect_emotions(detector, frame):
     text_thickness = 4  # Thickness of the text
     text_offset = 20  # Offset for the text position above the face
     circle_y_offset = 10  # Vertical offset for the circle position above the face center
-    circle_radius_multiplier = 1.1  # Multiplier to increase the circle radius
+    circle_radius_multiplier = 1.3  # Multiplier to increase the circle radius
 
 
     # Color mapping for emotions

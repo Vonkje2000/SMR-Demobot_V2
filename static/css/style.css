@@ -1,49 +1,56 @@
-main img, main video{
-    border-radius: 25px;
+main img, main video {
+  border-radius: 25px;
 }
 
-#emergencyBtn{
+#emergencyBtn {
   position: absolute;
-  transform: translate(-106%,296px);
+  transform: translate(-106%, 296px);
   width: 100%;
 }
 
-.control-btns {  
-  display: none; 
+.control-btns {
+  display: none;
 }
 
-#gameBox{
-  background: linear-gradient(70deg, #fcfcfc 90%,#4c5e74 10%);
+#gameBox {
+  background: linear-gradient(70deg, #fcfcfc 90%, #4c5e74 10%);
   border-radius: 25px;
   text-align: center !important;
   display: none;
   height: 70vh;
 }
 
-#gameBox img{
+#gameBox img {
   margin: auto;
   display: none;
 }
-#counter { 
+
+#counter {
   font-size: 150px !important;
 }
 
-.robotAnswer{
+.robotAnswer {
   color: #9ea600;
 }
 
-#staticImage{
+#staticImage {
   object-fit: cover;
 }
-#buttonsBox{
+
+#buttonsBox {
   transform: translateY(7%);
 }
-#startBtn{
+
+#startBtn {
   background-color: #9ea700;
 }
-#transcriptHomePage{
+
+#transcriptHomePage {
   font-size: larger;
 }
-#speechRecognitionBox{
-  position: absolute; top: 90vh; left: 67%;
+
+#speechRecognitionBox {
+  position: absolute;
+  top: 90vh;
+  left: 67%;
 }

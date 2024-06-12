@@ -1,33 +1,42 @@
-.PROGRAM background_cotroller2.pc () ; 
-  ; *******************************************************************
-  ;
-  ; Program:      main_robot1.pc
-  ; Comment:      In this code we run background program to control the 
-  ;               execution of the main program for the DEMOBOT project
-  ; Author:       Ixent Cornella | Student HHS; gthb/icorn1
-  ; Date:         6/4/2024
-  ;
-  ; *******************************************************************
-  ;
-      .retrecv = -1
-      ; WAIT FOR POWER TO START MAIN PROGRAM, OTHERWISE WE GET ERRORS
-      WAIT SWITCH (POWER )
-      MC EXECUTE main_robot2
-      ; Constant execution of the code
-      receive:
-        .$receive = ""
-        ; This program recieves control commands from server via UDP  
-        CALL udp_emergency(.retrecv, .$receive)
-        IF .retrecv < 0 GOTO receive
-        ; Recieve buffer is updated in udp_test
-        IF .$receive == "hold" THEN
-          MC HOLD 
-          PRINT " -> PROGRAM HELD"
-          GOTO receive
-        END
-        IF .$receive == "continue" THEN
-          MC CONTINUE 
-          PRINT " -> PROGRAM RESUMED"
-          GOTO receive
-        END
+.PROGRAM bg_control2.pc () ; 
+; *******************************************************************
+; Program:      bg_control1.pc
+; Comment:      Background program to control the main program execution.
+; Author:       Ixent Cornell | Shiyar Jamo HHS Delft
+; Date:         6/4/2024
+; *******************************************************************
+
+  .retrecv = -1
+  WAIT SWITCH (POWER)
+  MC EXECUTE main_robot2
+
+  receive:
+    .$receive = ""
+    ; Receive control commands via UDP
+    CALL udp_emergency(.retrecv, .$receive)
+
+    ; Check for errors in UDP reception
+    IF .retrecv < 0 THEN
+      GOTO receive
+    END
+
+    ; Handle received commands
+    IF .$receive == "hold" THEN
+      MC HOLD
+      PRINT " -> PROGRAM HELD"
+      ; Add a short delay to ensure state update
+      TWAIT 0.5
+      GOTO receive
+    END
+
+    IF .$receive == "continue" THEN
+      MC CONTINUE
+      PRINT " -> PROGRAM RESUMED"
+      ; Add a short delay to ensure state update
+      TWAIT 0.5
+      GOTO receive
+    END
+
+    ; If neither hold nor continue, continue to receive
+    GOTO receive
 .END

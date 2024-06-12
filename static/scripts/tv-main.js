@@ -5,6 +5,8 @@ const gameImg = document.getElementById("gameImg");
 const gameBox = document.getElementById("gameBox");
 const videoFeed = document.getElementById('videoFeed');
 const staticImage = document.getElementById('staticImage');
+const transcriptBox = document.getElementById('transcriptBox');
+
 const spinners = document.getElementById('spinners');
 const music = document.getElementById('music');
 const video = document.getElementById('video');
@@ -13,7 +15,7 @@ const images = ["/static/images/rock.png", "/static/images/paper.png", "/static/
 const transcriptTVPage = document.getElementById("transcriptTVPage");
 
 let loopInterval;
-function handlePlayGame() {
+function handlePlayRockPaperGame() {
     gameBox.style.display = "block"
     gameImg.style.display = 'block';
     gameImg.src = "/static/images/rock-paper-scissors.png"
@@ -30,9 +32,9 @@ function handlePlayGame() {
             clearInterval(countdown); 
         }
     },1000);
-
     })
 }
+
 
 function startImageLoop() {
     let loopCount = 0;
@@ -43,6 +45,7 @@ function startImageLoop() {
 }
 
 function restChanges(){
+    
     gameBox.style.display = 'none'
     spinners.style.display = 'none'
     music.pause();
@@ -50,6 +53,9 @@ function restChanges(){
     videoFeed.style.display = 'none'
     video.src = defaultVideo;
     video.style.display ="unset"
+    transcriptBox.style.display = 'unset'
+    video.style.width = '66%'
+    video.style.margin = 'unset'
 }
 
 function enableVideoFeed(src){
@@ -62,7 +68,6 @@ function enableVideoFeed(src){
 }
 
 function handleDetectionByVision(src,musicFile) {
-    console.log(src, musicFile)
     enableVideoFeed(src);
     music.src = `/static/music/${musicFile}`
     setTimeout(() => { music.play()}, 2000)
@@ -78,16 +83,26 @@ function processRobotchoise(robotchoise){
     gameImg.src = `/static/images/${robotchoise}.png`;
     setTimeout(() => {
         restChanges()
-    }, 5000);
+    }, 3000);
 }
 
-function handleDance() {
+function handleVideo(file, message) {
     gameBox.style.display = 'none'
     video.style.display = 'unset';
-    video.src = '/static/videos/dancing_robot.mp4';
+    video.src =`/static/videos/${file}`;
+    if(message=='pongGameModeDone'){
+        transcriptBox.style.display = 'none'
+        // video.style.width = '80%'
+        video.style.margin = 'auto'
+    }
     video.muted = false
     video.play()
-    video.onended = () => { restChanges(); sendMessage('danceModeDone')};
+    video.onended = () => { 
+        if(video.src.includes('pong_game.mp4') ||  video.src.includes('dancing_robot.mp4') ){
+            restChanges(); 
+            sendMessage(message);
+        }
+    };
 }
 
 
@@ -99,8 +114,9 @@ socket.on('response', data => {
     if (data.robotChoice) processRobotchoise(data.robotChoice)
     if(data.message.startVision) handleDetectionByVision(data.message.src,data.message.musicFile)
     if(data.message === 'stopVision' || data.message ==='startEmergency') restChanges()
-    if(data.message === 'playGame') handlePlayGame()
-    if(data.message ==='danceMode') handleDance()
+    if(data.message === 'playRockPaperGame') handlePlayRockPaperGame()
+    if(data.message === 'playPongGame') setTimeout(() => {   handleVideo('pong_game.mp4', 'pongGameModeDone')}, 4000);
+    if(data.message ==='danceMode') handleVideo('dancing_robot.mp4', 'danceModeDone')
 
     try {
         if (typeof data.message === 'object' && data.message !== null) {

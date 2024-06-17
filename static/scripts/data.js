@@ -63,7 +63,7 @@ const commandsList = [
     'how are you','your day','do you do','how is it going','how is going',
     'i am doing great', 'i am good','doing well','i am great','i am fine',
     'feelings','read my feel','emotion',
-    'turn on emergency', 'start emergency', 'call emergency', 'emergency mode',
+    'emergency', 'help help','please help',
     'start dance','start dancing','dance for',
     'start gam', 'play again', 'start again', 'play gam', 'playing game',
     'pong','punk',

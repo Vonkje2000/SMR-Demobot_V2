@@ -49,10 +49,9 @@ function executeTasks(command) {
         case 'turn off detect':
             stopRunningActions();
             break;
-        case 'turn on emergency':
-        case 'start emergency':
-        case 'call emergency':
-        case 'emergency mode':    
+        case 'emergency':
+        case 'help help':    
+        case 'please help':  
             emergencyBtn.click();
             break;
         case 'start gam':

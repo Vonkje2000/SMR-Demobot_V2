@@ -14,7 +14,7 @@ def get_camera():
         # config.enable_stream(rs.stream.depth, *CAMERA_RESOLUTION, rs.format.z16
         # , 30)
         config.enable_stream(rs.stream.color,*CAMERA_RESOLUTION, rs.format.bgr8, 30)
-        
+        # config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
         # Start streaming from RealSense
         pipeline.start(config)
         print("Using Intel RealSense camera")
@@ -27,9 +27,8 @@ def get_camera():
         webcamera.set(cv2.CAP_PROP_FRAME_HEIGHT, 720)
         return webcamera, False
 
-camera, using_realsense = get_camera()
 def gen_frames(model=None, detector=None):
-
+    camera, using_realsense = get_camera()
     while True:
         if using_realsense:
             frames = camera.wait_for_frames()

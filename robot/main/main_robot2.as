@@ -3,8 +3,7 @@
     ;
     ; Program:      main_robot2
     ; Comment:      
-    ; Author:       Shiyar Jamo | Coder Shiyar HHS Delft, Ixent Cornella
-    ;
+    ; Author:       Shiyar Jamo | Coder Shiyar HHS Delft | Ixent Cornell
     ; Date:         5/27/2024
     ; *******************************************************************
     ;

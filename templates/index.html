@@ -12,12 +12,80 @@
 <body>
     <nav class="navbar bg-light">
         <div class="container-fluid">
-            <span class="navbar-brand mb-0 h1">SMR DELFT</span>
-            <img height="70" src="/static/images/logo.png" alt="SMR DELFT">
+            <span class="navbar-brand mb-0 h1">Smart manufacturing & Robotics</span>
+            <section>
+                <img class="btn"  src="/static/images/help.png" width="100" data-bs-toggle="modal" data-bs-target="#helpModal">
+                <img height="70" class="btn" title="click here to view help" src="/static/images/logo.png" alt="SMR DELFT">
+            </section>
         </div>
     </nav>
 
     <main class="container text-center">
+        <!-- Modal -->
+            <section class="modal fade" id="helpModal" tabindex="-1" aria-labelledby="helpModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="helpModalLabel">Help Modal</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body ">
+                        <table class="table " style="text-align: left;">
+                            <tr>
+                                <th colspan="2">Usefull Commands (Speech Recognition must be on)</th>
+                            </tr>
+                            <tr>
+                                <th>Command</th>
+                                <th>Description</th>
+                            </tr>
+                            <tr>
+                                <th>start system</th>
+                                <td>Starts the system.</td>
+                            </tr>
+                            <tr>
+                                <th>stop system</th>
+                                <td>Stops the system.</td>
+                            </tr>
+                            <tr>
+                                <th>detect people</th>
+                                <td>Begins live people detection.</td>
+                            </tr>
+                            <tr>
+                                <th>detect emotion</th>
+                                <td>Begins live emotion detection.</td>
+                            </tr>
+                            <tr>
+                                <th>detect move</th>
+                                <td>Begins live movement detection.</td>
+                            </tr>
+                            <tr>
+                                <th>start dancing</th>
+                                <td>Makes the robot start dancing.</td>
+                            </tr>
+                            <tr>
+                                <th>help help</th>
+                                <td>Stops the robot's movements and disables options on the screen in case of danger.</td>
+                            </tr>
+                            <tr>
+                                <th>start game or play again</th>
+                                <td>Starts a rock-paper-scissors game against the robot.</td>
+                            </tr>
+                            <tr>
+                                <th>tv mode</th>
+                                <td>Switches the robot to TV mode.</td>
+                            </tr>
+                            <tr>
+                                <th>pong</th>
+                                <td>Makes the robot play the Pong game.</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2">Turn off Speech Recognition if you want to disable these commands</th>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+                </div>
+            </section>
         <audio src="" id="music"></audio>
         <section class="py-5 row">
             <img class="col-6" src="/static/images/wallpaper.jpg" id="staticImage">
@@ -26,6 +94,7 @@
                 <div class="text-center" id="emergencyBtn">
                     <img class="btn" title="Emergency button to stop the robot in dangerous situations." src="/static/images/sos.png" width="100">
                 </div>
+
                 <button class="btn mb-2 w-100 fw-bold text-white" id="startBtn">Start System</button>
                 <button id="danceBtn" class="control-btns btn btn-light mb-2 w-100">Dance for me</button>
                 <button id="playRockPaperGameBtn" class="control-btns btn btn-light mb-2 w-100">Play Game vs Robot</button>
@@ -52,5 +121,6 @@
     <script src="/static/scripts/textToSpeechAI.js"></script>
     <script src="/static/scripts/home-main.js"></script>
     <script src="/static/scripts/speechRecognition.js"></script>
+    <script src="/static/scripts/bootstrap.bundle.min.js"></script>
 </body>
 </html>

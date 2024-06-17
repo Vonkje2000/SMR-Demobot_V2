@@ -7,6 +7,10 @@ main img, main video {
   transform: translate(-106%, 296px);
   width: 100%;
 }
+#helpBtn{
+  transform: translate(-150%, 304px);
+  width: 100%;
+}
 
 .control-btns {
   display: none;

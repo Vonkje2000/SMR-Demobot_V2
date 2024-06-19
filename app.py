@@ -16,7 +16,7 @@ os.environ['TF_CPP_MIN_LOG_LEVEL'] = '0'  # This hides informational and warning
 logging.getLogger('tensorflow').setLevel(logging.FATAL)  # Set TensorFlow logging to only log fatal errors
 
 ROBOT1_IP = '192.168.0.1'  # Replace with your robot's IP address
-ROBOT2_IP = '192.168.0.2'  # Replace with your robot's IP address
+ROBOT2_IP = '192.168.0.3'  # Replace with your robot's IP address
 ROBOT_PORT_EMERGENCY = 10020
 def send_message(message, ROBOT_PORT = 10010):
     # Create a UDP socket
@@ -32,8 +32,8 @@ def send_message(message, ROBOT_PORT = 10010):
             print(f"Error sending message to robot: {e}")
 
 
-def get_audio_path(fileName):
-    return 'static/audio/' + fileName + '.wav'
+def get_audio_path(fileName): 
+    return 'static/audio/' + fileName  + '.wav'
 
 def responseSocket(message):
     socketio.emit('response', message)

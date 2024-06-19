@@ -7,8 +7,8 @@ import time
 
 arduino = None
 try:
-    arduino = serial.Serial('COM8', 9600)  # Change 'COMx' to the appropriate port on your system
-    time.sleep(3)
+    arduino = serial.Serial('COM11', 9600)  # Change 'COMx' to the appropriate port on your system
+    time.sleep(4)
 except:
     # arduino.close()    
     print('issues with connecting to the arduino, check port number')

@@ -5,33 +5,33 @@
             {
                 "scope": "as.keyword.control.program",
                 "settings": {
-                    "foreground": "#e61300",
+                    "foreground": "#F54D3D",
                     "fontStyle": "bold"
                 }
             },
             {
                 "scope": "keyword.flow",
                 "settings": {
-                    "foreground": "#3776db"
+                    "foreground": "#82B1FF"
                 }
             },
             {
                 "scope": "keyword.control.motion",
                 "settings": {
-                    "foreground": "#e39400",
+                    "foreground": "#FFCB6B",
                     "fontStyle": "bold"
                 }
             },
             {
                 "scope": "keyword.control.speed",
                 "settings": {
-                    "foreground": "#a44bde"
+                    "foreground": "#C792EA"
                 }
             },
             {
                 "scope": "keyword.control.clamp",
                 "settings": {
-                    "foreground": "#dae635"
+                    "foreground": "#F6FF78"
                 }
             },
             {
@@ -39,7 +39,7 @@
                     "keyword.control.configuration"
                 ],
                 "settings": {
-                    "foreground": "#e64c3e"
+                    "foreground": "#F9948B"
                 }
             },
             {
@@ -47,7 +47,7 @@
                     "keyword.control.control"
                 ],
                 "settings": {
-                    "foreground": "#e64c3e"
+                    "foreground": "#F9948B"
                 }
             },
             {
@@ -55,82 +55,82 @@
                     "keyword.control.signal"
                 ],
                 "settings": {
-                    "foreground": "#00bfb9"
+                    "foreground": "#F6FF78"
                 }
             },
             {
                 "scope": "keyword.control.message",
                 "settings": {
-                    "foreground": "#e000c6"
+                    "foreground": "#99EEDE"
                 }
             },
             {
                 "scope": "keyword.control.pose",
                 "settings": {
-                    "foreground": "#e39400"
+                    "foreground": "#FFCB6B"
                 }
             },
             {
                 "scope": "keyword.control.real",
                 "settings": {
-                    "foreground": "#37e6c3"
+                    "foreground": "#99EEDE"
                 }
             },
             {
                 "scope": "keyword.control.strings",
                 "settings": {
-                    "foreground": "#00e0b5"
+                    "foreground": "#99EEDE"
                 }
             },
             {
                 "scope": "keyword.control.pc",
                 "settings": {
                     "fontStyle": "italic",
-                    "foreground": "#e63f30"
+                    "foreground": "#F9948B"
                 }
             },
             {
                 "scope": "keyword.operator.arithmetic",
                 "settings": {
                     "fontStyle": "italic",
-                    "foreground": "#e64356"
+                    "foreground": "#fdaeb7"
                 }
             },
             {
                 "scope": "keyword.operator.mathematical",
                 "settings": {
-                    "foreground": "#43e8c9"
+                    "foreground": "#99EEDE"
                 }
             },
             {
                 "scope": "keyword.operator.relational",
                 "settings": {
                     "fontStyle": "italic",
-                    "foreground": "#e63e52"
+                    "foreground": "#fdaeb7"
                 }
             },
             {
                 "scope": "keyword.operator.logical",
                 "settings": {
-                    "foreground": "#3c7de6"
+                    "foreground": "#82B1FF"
                 }
             },
             {
                 "scope": "keyword.operator.bynary",
                 "settings": {
-                    "foreground": "#e68020"
+                    "foreground": "#FFA149"
                 }
             },
             {
                 "scope": "keyword.comment.inline",
                 "settings": {
-                    "foreground": "#50bf52"
+                    "foreground": "#6A9955"
                 }
             },
             {
                 "scope": "keyword.comment.inlineString",
                 "settings": {
-                    "foreground": "#50bf52"
+                    "foreground": "#FDFFC5"
                 }
             }
         ]

@@ -1,3 +1,4 @@
+# THIS PROGRAM IS INTENDED FOR TESTING
 import socket
 import time
 import select 

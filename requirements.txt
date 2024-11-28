@@ -5,3 +5,8 @@ logging
 opencv-python
 deepface
 tf_keras
+ultralytics
+pyrealsense2
+moviepy
+imageio-ffmpeg
+serial

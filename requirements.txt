@@ -1,0 +1,12 @@
+flask
+flask_socketio
+threading
+socket
+json
+fer
+os
+logging
+time
+opencv-python
+deepface
+tf_keras

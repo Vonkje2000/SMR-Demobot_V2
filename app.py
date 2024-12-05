@@ -22,11 +22,11 @@ def send_message(message, ROBOT_PORT = 10010):
     # Create a UDP socket
     with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as server_socket:
         try:
-            try:  
+            try:
                 server_socket.sendto(message.encode(), (ROBOT1_IP, ROBOT_PORT))
                 server_socket.sendto(message.encode(), (ROBOT2_IP, ROBOT_PORT))
                 print(f"Message '{message}' sent to robot at {ROBOT1_IP}")
-            except: 
+            except:
                 print(f"Error sending message to robots") 
         except Exception as e:
             print(f"Error sending message to robot: {e}")

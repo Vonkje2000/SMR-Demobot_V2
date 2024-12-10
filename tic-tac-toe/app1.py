@@ -100,6 +100,7 @@ def restart():
         move = x_player.get_move(current_game)
         current_game.make_move(move, current_letter)
         current_letter = 'O'  # Switch to human's turn
+        print ("The game has been restarted") 
 
     return jsonify({
         'board': current_game.board, 

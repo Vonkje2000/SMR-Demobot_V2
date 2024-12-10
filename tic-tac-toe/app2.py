@@ -8,6 +8,8 @@ current_game = None
 x_player = None
 o_player = None
 current_letter = 'X'
+x_player_moves = []
+o_player_moves = []
 
 
 @app2.route('/')
@@ -43,6 +45,14 @@ def make_move():
 
     # Make the move and check for winner
     current_game.make_move(square, current_letter)
+    
+    if current_letter == 'X':
+        x_player_moves.append(square)
+        print(f"Player 'X' makes a move to square {square}. Moves so far: {x_player_moves}")
+    else:
+        o_player_moves.append(square)
+        print(f"Player 'O' makes a move to square {square}. Moves so far: {o_player_moves}")
+
     winner = current_game.current_winner
     board = current_game.board
 
@@ -61,13 +71,17 @@ def make_move():
 
 @app2.route('/get_move', methods=['POST'])
 def get_computer_move():
-    global current_game, x_player, o_player, current_letter
+    global current_game, x_player, o_player, current_letter, x_player_moves, o_player_moves
 
     # Get the move based on the current player
     if current_letter == 'X':
         move = x_player.get_move(current_game)
+        x_player_moves.append(move)
+        print(f"Player 'X' (computer) makes a move to square {move}. Moves so far: {x_player_moves}")
     else:
         move = o_player.get_move(current_game)
+        o_player_moves.append(move)
+        print(f"Player 'O' (computer) makes a move to square {move}. Moves so far: {o_player_moves}")
 
     # Make the move and check for winner
     current_game.make_move(move, current_letter)
@@ -95,13 +109,18 @@ def restart():
     x_player, o_player = get_smart_players()
     current_letter = 'X'
 
+    x_player_moves.clear()
+    o_player_moves.clear()
+
+    print ("The game has been restarted")
+
     # If the computer is the first player, make its move immediately
     if isinstance(x_player, SmartComputerPlayer):
         move = x_player.get_move(current_game)
         current_game.make_move(move, current_letter)
+        x_player_moves.append(move)
         current_letter = 'O'  # Switch to human's turn
-        print ("The game has been restarted")
-        
+
     return jsonify({
         'board': current_game.board, 
         'current_letter': current_letter,

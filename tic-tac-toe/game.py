@@ -69,7 +69,7 @@ class SmartComputerPlayer(Player):
         else:
             best = {'position': None, 'score': math.inf}  # each score should minimize
         for possible_move in state.available_moves():
-            state.make_move(possible_move, player)
+            state.make_move(possible_move, player, simulate=True)
             sim_score = self.minimax(state, other_player)  # simulate a game after making that move
 
             # undo move
@@ -118,10 +118,11 @@ class TicTacToe():
         for row in number_board:
             print('| ' + ' | '.join(row) + ' |')
 
-    def make_move(self, square, letter):
+    def make_move(self, square, letter, simulate=False):
         if self.board[square] == ' ':
             self.board[square] = letter
-            print(f"Player '{letter}' makes a move to square {square}")  # Log the move to the console
+            if not simulate: #only log real moves
+                print(f"Player '{letter}' makes a move to square {square}")  # Log the move to the console
             if self.winner(square, letter):
                 self.current_winner = letter
             return True

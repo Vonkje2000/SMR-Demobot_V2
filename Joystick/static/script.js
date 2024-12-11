@@ -50,7 +50,7 @@ function drag(e) {
 
   // Joystick output (normalized)
   const normalizedX = (x - centerX) / maxDistance;
-  const normalizedY = (y - centerY) / maxDistance;
+  const normalizedY = -(y - centerY) / maxDistance;
   console.log('Joystick position:', { x: normalizedX, y: normalizedY });
 
   // Update coordinates display
@@ -62,7 +62,7 @@ function drag(e) {
     headers: {
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ x: normalizedX, y: normalizedY })
+    body: JSON.stringify({ x: parseFloat(normalizedX.toFixed(2)), y: parseFloat(normalizedY.toFixed(2)) })
   })
   .then(response => response.json())
   .then(data => console.log(data))

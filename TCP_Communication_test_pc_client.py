@@ -29,9 +29,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 	data = s.recv(1024)
 	print(f" {data!r}")
 	s.sendall(b"LMOVE TRANS (20, 370, 150, 90, 90, 90)")
-	#kawasaki_1.init
-	#kawasaki_1.speed(50)
-	#kawasaki_1.jmove(1,2,3,4,5,6)
 s.close()
 
 #print(f"Received {data!r}")

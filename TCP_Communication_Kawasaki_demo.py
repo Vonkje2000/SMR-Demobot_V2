@@ -1,5 +1,5 @@
-from Kawasaki_class import Kawasaki_1
-from Kawasaki_class import Kawasaki_2
+from Promobot_class import Kawasaki_1
+from Promobot_class import Kawasaki_2
 
 k1 = Kawasaki_1()
 k2 = Kawasaki_2()

@@ -18,7 +18,7 @@ class Kawasaki_arm(object):
 	def HOME2(self):
 		print("HOME 2")
 
-	def SPEED(self, SPEED:float|int) -> test:
+	def SPEED(self, SPEED:float|int):
 		if not isinstance(SPEED, float|int):
 			raise TypeError("SPEED must be a float or an int")
 		SPEED = round(SPEED)

@@ -15,10 +15,13 @@ document.addEventListener('touchmove', drag);
 document.addEventListener('mouseup', stopDrag);
 document.addEventListener('touchend', stopDrag);
 
+var lastMove = 0;
+
 function startDrag(e) {
   e.preventDefault();
   dragging = true;
   containerRect = joystickContainer.getBoundingClientRect(); // Update containerRect on drag start
+  lastMove = 0
 }
 
 function drag(e) {
@@ -57,16 +60,20 @@ function drag(e) {
   coordinatesDisplay.textContent = `x: ${normalizedX.toFixed(2)}, y: ${normalizedY.toFixed(2)}`;
 
   // Send data to server
-  fetch('/joystick', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ x: parseFloat(normalizedX.toFixed(2)), y: parseFloat(normalizedY.toFixed(2)) })
-  })
-  .then(response => response.json())
-  .then(data => console.log(data))
-  .catch(error => console.error('Error:', error));
+  if(Date.now() - lastMove > 200) {
+    fetch('/joystick', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ x: parseFloat(normalizedX.toFixed(2)), y: parseFloat(normalizedY.toFixed(2)) })
+    })
+  
+    .then(response => response.json())
+    .then(data => console.log(data))
+    .catch(error => console.error('Error:', error));
+  lastMove = Date.now();
+  }
 }
 
 function stopDrag() {
@@ -76,4 +83,11 @@ function stopDrag() {
   joystickStick.style.height = '0';
   joystickStick.style.transform = 'translateX(-50%)';
   coordinatesDisplay.textContent = 'x: 0.00, y: 0.00';
+  fetch('/joystick', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ x: parseFloat(0), y: parseFloat(0) })
+  })
 }

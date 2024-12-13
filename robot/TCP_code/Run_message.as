@@ -109,6 +109,25 @@
 	  END
 	  RETURN
 	END
+
+	IF INSTR(0, .$message, "TOOL") > 0 THEN
+		IF INSTR(0, .$message, "TRANS") > 0 THEN
+		  .$value_string = $MID(.$message, LEN("TOOL TRANS (") + 1, LEN(.$message) - LEN("TOOL TRANS ()"))
+		  .value[0] = VAL(.$value_string,0)
+		  
+		  .i = 1
+		  WHILE .i < 6 DO
+			.value[9] = INSTR(0,.$value_string, " ")
+			.$value_string = $MID(.$value_string, .value[9] + 1, LEN(.$value_string) - .value[9])
+			.$temp = $DECODE(.$value_string, ",", 1)
+			.value[.i] = VAL(.$value_string,0)
+			.i = .i + 1
+		  END
+		  
+		  TOOL TRANS(.value[0],.value[1],.value[2],.value[3],.value[4],.value[5])
+		  RETURN
+		END
+	  END
 	
 	PRINT "UNKNOWN COMMAND"
 	

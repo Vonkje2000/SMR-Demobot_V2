@@ -165,9 +165,9 @@ class Kawasaki_arm(object):
 			self.__close_Connection()
 
 class Kawasaki_1(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self):
-		super().__init__("192.168.0.1", 42069)
+	def __init__(self, ip = "192.168.0.1", port = 42069):
+		super().__init__(ip, port)
 
 class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self):
-		super().__init__("192.168.0.3", 42069)
+	def __init__(self, ip = "192.168.0.3", port = 42069):
+		super().__init__(ip, port)

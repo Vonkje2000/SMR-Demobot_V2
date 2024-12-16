@@ -9,4 +9,4 @@ ultralytics
 pyrealsense2
 moviepy
 imageio-ffmpeg
-serial
+pyserial

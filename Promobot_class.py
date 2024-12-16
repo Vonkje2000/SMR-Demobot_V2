@@ -31,6 +31,14 @@ class Kawasaki_arm(object):
 	def HOME2(self):
 		self.__send_to_arm("HOME 2")
 
+	def CP(self, value:bool):
+		if not isinstance(value, bool):
+			raise TypeError("value must be a bool")
+		if value:
+			self.__send_to_arm("CP ON")
+		else:
+			self.__send_to_arm("CP OFF")
+
 	def SPEED(self, SPEED:float|int):
 		if not isinstance(SPEED, float|int):
 			raise TypeError("SPEED must be a float or an int")
@@ -145,6 +153,7 @@ class Kawasaki_arm(object):
 			raise TypeError("T must be a float or an int")
 		T = round(T, 2)
 		self.__send_to_arm("TOOL TRANS ({0}, {1}, {2}, {3}, {4}, {5})".format(X, Y, Z, O, A, T))
+		self.CP(True)
 
 	def __open_Connection(self):
 		try:

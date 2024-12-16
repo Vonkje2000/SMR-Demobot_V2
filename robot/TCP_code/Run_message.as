@@ -23,13 +23,23 @@
 	.value[9] = 0
 	
 	IF INSTR(0, .$message, "HOME 2") > 0 THEN
-	  HOME 2
-	  RETURN
+		HOME 2
+		RETURN
 	END
 	
 	IF INSTR(0, .$message, "HOME") > 0 THEN
-	  HOME
-	  RETURN
+		HOME
+		RETURN
+	END
+
+	IF INSTR(0, .$message, "CP ON") > 0 THEN
+		CP ON
+		RETURN
+	END
+	  
+	IF INSTR(0, .$message, "CP OFF") > 0 THEN
+		CP OFF
+		RETURN
 	END
 	
 	IF INSTR(0, .$message, "SPEED") > 0 THEN

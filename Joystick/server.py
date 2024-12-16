@@ -16,40 +16,38 @@ def index():
 
 @app.route('/joystick', methods=['POST'])
 def joystick():
+    import math
+
     data = request.json
     x = data.get('x')
     y = data.get('y')
-    
-    degreesX = x * 10
-    degreesY = y * 10   
 
-    if degreesX == 0 and degreesY == 0:                                         #Horizontal print ("JMOVE:{0},{1},{2},{3},{4},{5}".format(-200, 600, -60, 90, 90, 90))
-        k1.JMOVE_TRANS(-200, 600, -60, 90, 90, 90)
+    degreesX = x * 10
+    degreesY = y * 10
+
+    if degreesX == 0 and degreesY == 0:
+        # Horizontal
+        k1.LMOVE_TRANS(-200, 600, -60, 90, 90, 90)
         print("Horizontal")
-    elif degreesX == 0 and degreesY > 0:                                        #North
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90, 90 + degreesY)
-      print("North")
-    elif degreesX > 0 and degreesY > 0:                                         #North-East
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90 - degreesX, 90 + degreesY)
-      print("North-East")
-    elif degreesX > 0 and degreesY == 0:                                        #East
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90 - degreesX, 90)
-      print("East")
-    elif degreesX > 0 and degreesY < 0:                                         #South-East
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90 - degreesX, 90 + degreesY)
-      print("South-East")
-    elif degreesX == 0 and degreesY < 0:                                        #South
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90, 90 + degreesY)
-      print("South")
-    elif degreesX < 0 and degreesY < 0:                                         #South-West
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90 - degreesX, 90 + degreesY)
-      print("South-West")
-    elif degreesX < 0 and degreesY == 0:                                        #West
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90 - degreesX, 90)
-      print("West")
-    elif degreesX < 0 and degreesY > 0:                                        #North-West                    
-      k1.JMOVE_TRANS(-200, 600, -60, 90, 90 - degreesX, 90 + degreesY)
-      print("North-West")
+    else:
+        # General formula for movement
+        base_rotation = 90 - degreesX
+        shoulder_rotation = 90 + degreesY
+
+        k1.LMOVE_TRANS(-200, 600, -60, 90, base_rotation, shoulder_rotation)
+
+        # Determine direction using atan2
+        angle_rad = math.atan2(degreesY, degreesX)  # Returns angle in radians
+        angle_deg = math.degrees(angle_rad)        # Convert to degrees
+        angle_deg = (angle_deg + 360) % 360        # Normalize to [0, 360)
+
+        # Map angle to one of 8 cardinal directions
+        directions = [
+            "East", "North-East", "North", "North-West",
+            "West", "South-West", "South", "South-East"
+        ]
+        index = int((angle_deg + 22.5) // 45) % 8  # 22.5 ensures correct rounding to nearest direction
+        print(directions[index])
     print(f"Received joystick data: x={x}, y={y}")
     return jsonify({"status": "success"})
 

@@ -7,9 +7,9 @@ app = Flask(__name__)
 
 k1 = Kawasaki_1()
 k1.SPEED(50)
-k1.TOOL(0, 0, 180, 0, 0, 0)               # Z is the same direction as the tool, so it changed from straight up position
-k1.JMOVE_TRANS(-143, 750, -170, 90.238, 91.971, 94.861)
-#-200,550,-40,90.238,91.971,94.861
+k1.TOOL(0, 0, 180, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
+k1.JMOVE_TRANS(-143, 750, -170, 90.238, 91.971, 94.861)                     #X, Y, Z, Base, Shoulder, Elbow
+
 @app.route('/')
 def index():
     return render_template('joystick.html')

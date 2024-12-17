@@ -1,6 +1,7 @@
 import os
 import base64
 import tempfile
+from flask import Flask, request, jsonify, render_template
 
 import streamlit as st
 from streamlit_chat import message
@@ -11,6 +12,12 @@ import openai
 # ================================ #
 #          Configuration           #
 # ================================ #
+
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('AI_voice_chat.html')
 
 def load_prompt_and_logo():
     """Load detailed prompt and encode logo as Base64."""
@@ -301,6 +308,7 @@ def main():
             play_audio(bot_audio)
 
 if __name__ == "__main__":
+    app.run(debug=False)
     main()
 
 # streamlit run c:/Users/stath/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/Main_AI.py

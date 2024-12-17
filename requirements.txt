@@ -10,3 +10,7 @@ pyrealsense2
 moviepy
 imageio-ffmpeg
 pyserial
+streamlit 
+azure-cognitiveservices-speech 
+openai
+streamlit_chat

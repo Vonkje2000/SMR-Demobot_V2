@@ -16,3 +16,8 @@ to:
 	from moviepy import *
 
 moviepy.editor is deprecated and fer did not change there import so we need to do it our selfs.
+
+# module 'serial' has no attribute 'Serial'
+open a teminal and run the commands:
+pip uninstall serial
+pip install --upgrade --force-reinstall pyserial

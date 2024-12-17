@@ -1,4 +1,8 @@
 import socket
+import serial
+from time import sleep
+import os
+import sys
 
 class Singleton(type):
 	_instances = {}
@@ -26,6 +30,14 @@ class Kawasaki_arm(object):
 
 	def HOME2(self):
 		self.__send_to_arm("HOME 2")
+
+	def CP(self, value:bool):
+		if not isinstance(value, bool):
+			raise TypeError("value must be a bool")
+		if value:
+			self.__send_to_arm("CP ON")
+		else:
+			self.__send_to_arm("CP OFF")
 
 	def SPEED(self, SPEED:float|int):
 		if not isinstance(SPEED, float|int):
@@ -141,6 +153,7 @@ class Kawasaki_arm(object):
 			raise TypeError("T must be a float or an int")
 		T = round(T, 2)
 		self.__send_to_arm("TOOL TRANS ({0}, {1}, {2}, {3}, {4}, {5})".format(X, Y, Z, O, A, T))
+		self.CP(True)
 
 	def __open_Connection(self):
 		try:
@@ -171,3 +184,76 @@ class Kawasaki_1(Kawasaki_arm, metaclass=Singleton):
 class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
 	def __init__(self, ip = "192.168.0.3", port = 42069):
 		super().__init__(ip, port)
+
+class Robot_Hand(metaclass=Singleton):
+	def __init__(self, port = "COM8") -> None:
+		self.Serial = serial.Serial()
+		self.Serial.port = port
+		self.Serial.baudrate = 9600
+		self.Serial.bytesize = 8
+		self.Serial.parity = "N"
+		self.Serial.stopbits = 1
+		self.Serial.timeout = None
+		try:
+			self.Serial.open()
+		except:
+			if sys.platform == "win32":
+				print ("You are using windows and your port is wrong so I opened device manager for you :)")
+				os.system('devmgmt.msc')
+			raise ConnectionError("Could not open the connection on Serial {0}".format(self.Serial.port))
+		sleep(0.1)
+		self.__send("00000")
+
+	def fingers(self, thumb:int, index:int, middle:int, ring:int, pinkie:int):
+		if not isinstance(thumb, int):
+			raise TypeError("thumb must be an int")
+		if thumb < 0 or thumb > 9:
+			raise ValueError("thumb value must be 0-9")
+		if not isinstance(index, int):
+			raise TypeError("index must be an int")
+		if index < 0 or index > 9:
+			raise ValueError("index value must be 0-9")
+		if not isinstance(middle, int):
+			raise TypeError("middle must be an int")
+		if middle < 0 or middle > 9:
+			raise ValueError("middle value must be 0-9")
+		if not isinstance(ring, int):
+			raise TypeError("ring must be an int")
+		if ring < 0 or ring > 9:
+			raise ValueError("ring value must be 0-9")
+		if not isinstance(pinkie, int):
+			raise TypeError("pinkie must be an int")
+		if pinkie < 0 or pinkie > 9:
+			raise ValueError("pinkie value must be 0-9")
+		self.__send("{0}{1}{2}{3}{4}".format(thumb, index, middle, ring, pinkie))
+
+	def rock(self):
+		self.__send("00000")
+
+	def paper(self):
+		self.__send("99999")
+
+	def scissors(self):
+		self.__send("09900")
+
+	def thumb(self):
+		self.__send("90000")
+
+	def rock_and_roll(self):
+		self.__send("99009")
+
+	def __send(self, data:str):
+		data = data + "\n"
+		try:
+			self.Serial.write(data.encode('utf-8'))
+		except:
+			raise ConnectionError ("Serial device disconnected")
+		sleep(0.1)
+		received = self.Serial.read_all().decode()
+		if (received != ""):
+			print(received)
+
+	def __del__(self):
+		if(self.Serial.is_open):
+			self.Serial.close()
+			#print("close serial {0}".format(self.Serial.port))

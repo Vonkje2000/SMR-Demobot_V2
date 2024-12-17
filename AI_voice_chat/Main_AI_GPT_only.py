@@ -8,41 +8,47 @@ import azure.cognitiveservices.speech as speechsdk
 import openai
 from openai import OpenAI
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
+# Import audio recording libraries
 import soundfile as sf  
 import sounddevice as sd  
+
+# Initialize OpenAI client
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # ================================ #
 #          Configuration           #
 # ================================ #
 
 def load_prompt_and_logo():
-    """Load detailed prompt and encode logo as Base64."""
-    prompt_path = "C:/Users/stath/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/Prompttext.text"
-    logo_path = "C:/Users/stath/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/CBLogo.png"
+
+    """
+    Load a detailed GPT prompt and encode the logo image as Base64.
+    """ 
+    prompt_path = "AI_voice_chat/Prompttext.text"
+    logo_path = "AI_voice_chat/CBLogo.png"
+
     with open(prompt_path, "r", encoding="utf-8") as file:
         detailed_prompt = file.read()
     with open(logo_path, "rb") as image_file:
         encoded_logo = base64.b64encode(image_file.read()).decode("utf-8")
     return detailed_prompt, encoded_logo
 
-
+# Load system prompt and logo
 detailed_prompt, encoded_logo = load_prompt_and_logo()
 
-# Language-based text swapping
+# Texts for UI components based on language selection
 TEXTS = {
     "English": {
         "header": "Promo Bot",
         "subheader": "Representing the Smart Manufacturing & Robotics minor in Delft.",
-        "description": "Press the button below to ask a question, and I will respond.",
+        "description": "Select your preferred language for the text on screen, and Press the button below to start a talk.",
         "listening": "I'm now listening",
         "language_button": "Nederlands",
     },
     "Nederlands": {
         "header": "Promo Bot",
-        "subheader": "Representerend de minor Slimme Productie & Robotica in Delft.",
-        "description": "Druk op de knop hieronder om een vraag te stellen, en ik zal antwoorden.",
+        "subheader": "Representerend de minor Smart Manufacturing & Robotics in Delft.",
+        "description": "Kies je voorkeurstaal voor de tekst op het scherm en druk op de knop hieronder om een gesprek te starten.",
         "listening": "Ik luister nu",
         "language_button": "English",
     },
@@ -53,7 +59,9 @@ TEXTS = {
 # ================================ #
 
 def initialize_speech_config():
-    """Initialize Azure speech configuration."""
+    """
+    Initialize Azure Speech SDK configuration for Text-to-Speech (TTS).
+    """
     azure_api_key = os.getenv("AZURE_TTS_KEY")
     azure_region = os.getenv("AZURE_TTS_REGION")
     if not azure_api_key or not azure_region:
@@ -63,32 +71,39 @@ def initialize_speech_config():
 
 def transcribe_audio(client, temp_audio_path):
     """
-    Transcribes audio using OpenAI's Whisper-1 model with support for multilingual transcription.
-    Returns:
-        - transcribed text (str)
-        - detected language (str, e.g., 'en-GB' or 'nl-BE')
+    Transcribes audio using OpenAI's Whisper-1 model with multilingual detection.
+    Handles full language names (e.g., 'dutch') and maps them to Azure-compatible codes.
     """
     try:
-        # Perform Whisper transcription
         with open(temp_audio_path, "rb") as audio_file:
             whisper_response = client.audio.transcriptions.create(
                 model="whisper-1",
                 file=audio_file,
-            )   
-
+                response_format="verbose_json"
+            )
+            
+        # Extract transcription and language
         transcription = whisper_response.text.strip()
+        detected_language = whisper_response.language.lower()  # Normalize to lowercase
 
-        # Map to Azure-compatible language codes (Defaulting to English if no other context provided)
-        detected_language = "en-GB"  # Default language for responses
-        if "nl" in transcription.lower():  # Simplistic language check
-            detected_language = "nl-BE"
+        #st.write(f"**Whisper Detected Language:** {detected_language}")  # Debug output
+
+        # Map Whisper's output to Azure-compatible language codes
+        azure_language_mapping = {
+            "en": "en-GB",       # English (ISO code)
+            "nl": "nl-NL",       # Dutch (ISO code)
+            "dutch": "nl-NL",    # Whisper sometimes returns 'dutch' as the language name
+            "english": "en-GB"   # Whisper sometimes returns 'english'
+        }
+
+        # Map detected language to Azure-compatible code, default to 'en-GB'
+        azure_language_code = azure_language_mapping.get(detected_language, "en-GB")
 
     except Exception as e:
         st.error(f"Error during transcription: {e}")
-        return None, None
+        return None, "en-GB"  # Default fallback to English
 
-    return transcription, detected_language
-
+    return transcription, azure_language_code
 
 
 def generate_response(input_text, conversation_history, language_code):
@@ -96,43 +111,62 @@ def generate_response(input_text, conversation_history, language_code):
     Generates GPT response using OpenAI based on the detected language.
     """
     messages = [{"role": "system", "content": detailed_prompt}] + conversation_history + [
-        {"role": "user", "content": input_text}]
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    if not openai.api_key:
-        st.error("OpenAI API key is missing.")
-        return None
+        {"role": "user", "content": input_text}
+    ]
 
-    # Set prompt and response language for GPT
+    # Language-specific instructions
     if language_code == "en-GB":
         prompt_language = "Respond in English."
-    elif language_code == "nl-BE":
-        prompt_language = "Respond in Nederlands."
+    elif language_code == "nl-NL":
+        prompt_language = "Respond in Dutch (Nederlands)."
     else:
         prompt_language = "Respond in the appropriate language."
 
-    # Add language-specific instruction
     messages.insert(0, {"role": "system", "content": prompt_language})
 
-    client = openai.Client()
-    response = client.chat.completions.create(
-        model="gpt-4o-2024-11-20", messages=messages, max_tokens=200, temperature=0
-    )
-    return response.choices[0].message.content
+    # Call OpenAI GPT API  
+    try:
+        response = client.chat.completions.create(
+            model="gpt-4o-2024-11-20", messages=messages, max_tokens=200, temperature=0
+        )
+        return response.choices[0].message.content
+    except Exception as e:
+        st.error(f"Error generating response: {e}")
+        return None
 
 
 def synthesize_speech(speech_config, text, language_code):
     """
-    Generates speech audio data using the appropriate voice for the detected language.
+    Convert text to speech using Azure TTS and return audio data.
     """
-    voice_name = "en-GB-RyanNeural" if language_code == "en-GB" else "nl-BE-ArnaudNeural"
+    # Map detected language to appropriate Azure TTS voice
+    voice_mapping = {
+        "en-GB": "en-GB-RyanNeural",  # English voice
+        "nl-NL": "nl-NL-MaartenNeural"  # Dutch voice
+    }
+
+    # Default to English voice if language code is unrecognized
+    voice_name = voice_mapping.get(language_code, "en-GB-RyanNeural")
     speech_config.speech_synthesis_voice_name = voice_name
-    synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
-    result = synthesizer.speak_text_async(text).get()
-    return result.audio_data
+
+    try:
+        #st.write(f"**Selected Voice:** {voice_name}")  # Debug print
+        synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
+        result = synthesizer.speak_text_async(text).get()
+        if result.reason == speechsdk.ResultReason.SynthesizingAudioCompleted:
+            return result.audio_data
+        else:
+            st.error("Speech synthesis failed.")
+            return None
+    except Exception as e:
+        st.error(f"Error during speech synthesis: {e}")
+        return None
 
 
 def play_audio(audio_data):
-    """Plays audio via JavaScript without showing file."""
+    """
+    Play audio using a temporary file served via Streamlit.
+    """
     with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
         temp_audio.write(audio_data)
         audio_url = f"http://localhost:8501/{temp_audio.name}"  # Assumes Streamlit serves files locally
@@ -212,13 +246,13 @@ def select_nederlands():
     
 # Initialize checkbox states
 if "english" not in st.session_state:
-    st.session_state.english = True  # Default to English
+    st.session_state.english = False # Default to unchecked for English
 if "nederlands" not in st.session_state:
-    st.session_state.nederlands = False
+    st.session_state.nederlands = True  # Default to checked for Nederlands
 
 def record_audio(temp_audio_path, duration=10, samplerate=44100):
     """
-    Records audio from the default microphone and saves it in a supported format.
+    Record audio from the default microphone and save to a file.
     """
     try:
         st.text("🎤 Recording... Speak now.")
@@ -233,18 +267,19 @@ def record_audio(temp_audio_path, duration=10, samplerate=44100):
         st.error(f"Error during audio recording: {e}")
         return None
 
-
-
 # ================================ #
 #          Main Application        #
 # ================================ #
 
 def main():
-    # Initialize Session State
+    """
+    Main function to run the Streamlit app.
+    """
+    # Initialize session state for language
     if "language" not in st.session_state:
-        st.session_state.language = "English"  # Default language
+        st.session_state.language = "Nederlands"  # Default language
 
-    conversation_history = []
+    conversation_history = [] # Track the conversation
 
     # Get texts based on the selected language
     texts = get_texts(st.session_state.language)
@@ -269,9 +304,9 @@ def main():
             on_change=select_nederlands,
         )
 
-    # Highlight the selected language
-    st.write(f"**Current Language:** {st.session_state.language}")
-    
+    # Highlight the selected language for UI purposes
+    st.write(f"**Selected Language:** {st.session_state.language}")
+
     # Initialize Speech Config
     speech_config = initialize_speech_config()
     if not speech_config:
@@ -279,6 +314,13 @@ def main():
 
     # Chat Interaction
     if st.button("Start Talk"):
+        # Inform the user "I'm now listening" in the current Selected language
+        listening_text = texts["listening"]
+        ui_language_code = "en-GB" if st.session_state.language == "English" else "nl-NL"
+        listening_audio = synthesize_speech(speech_config, listening_text, ui_language_code)
+        if listening_audio:
+            play_audio(listening_audio)
+
         # Prepare temporary file path
         with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
             temp_audio_path = temp_audio.name
@@ -293,10 +335,16 @@ def main():
         os.remove(temp_audio_path)
 
         if user_input:
+            # Display transcribed text
             render_chat_bubble(user_input, is_user=True)
 
-            # Determine the response language
-            response_language = detected_language
+            # Default to detected language
+            if detected_language:
+                response_language = detected_language
+            else:
+                response_language = "en-GB"  # Fallback to English if detection fails
+
+            #st.write(f"**Detected Language:** {response_language}") # Debug output (keep this)
 
             # Generate GPT response
             bot_response = generate_response(user_input, conversation_history, response_language)
@@ -305,12 +353,14 @@ def main():
                 conversation_history.append({"role": "assistant", "content": bot_response})
                 render_chat_bubble(bot_response, is_user=False)
 
-                # Synthesize bot's response with Azure TTS
+                # Synthesize bot's response using detected language
                 bot_audio = synthesize_speech(speech_config, bot_response, response_language)
-                play_audio(bot_audio)
-
+                if bot_audio:
+                    play_audio(bot_audio)
+                else:
+                    st.error("Failed to synthesize speech.")
 
 if __name__ == "__main__":
     main()
 
-# streamlit run c:/Users/stath/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/Main_AI_GPT_only.py
+# streamlit run "AI_voice_chat/Main_AI_GPT_only.py"

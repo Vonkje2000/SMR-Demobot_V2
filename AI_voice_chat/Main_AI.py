@@ -14,8 +14,8 @@ import openai
 
 def load_prompt_and_logo():
     """Load detailed prompt and encode logo as Base64."""
-    prompt_path = "C:/Users/stath/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/Prompttext.text"
-    logo_path = "C:/Users/stath/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/CBLogo.png"
+    prompt_path = "AI_voice_chat/Prompttext.text"
+    logo_path = "AI_voice_chat/CBLogo.png"
     with open(prompt_path, "r", encoding="utf-8") as file:
         detailed_prompt = file.read()
     with open(logo_path, "rb") as image_file:
@@ -303,4 +303,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# streamlit run c:/Users/stath/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/Main_AI.py
+# streamlit run "AI_voice_chat/Main_AI.py"

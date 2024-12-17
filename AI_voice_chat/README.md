@@ -38,7 +38,7 @@ OPENAI_API_KEY: OpenAI GPT API Key.
 Update paths in the script if needed.
 
 # Usage
-1. Open the Terminal and run: streamlit run c://Users/USERNAME/Desktop/PromoBot/AzureStudioChatGPTVoiceBot-main/Main_AI.py
+1. Open the Terminal and run: streamlit run "AI_voice_chat/Main_AI.py"
 
 This will run the streamlit application and open a http://localhost:8501
 

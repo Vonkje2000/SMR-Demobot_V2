@@ -49,8 +49,9 @@ This will run the streamlit application and open a http://localhost:8501
 
 # File Structure
 SMR-DEMOBOT_V2/AI_voice_chat
-│-- Main_AI.py              # Main program
+│-- Main_AI.py              # Main AI_voice_chat program
 │-- Main_AI:GPT_only.py     # Main program using wisper-1 instead of Azuer for Speech to text
+│-- Voice list Azure.py     # Program to generate a list of available Azure voices
 │-- Prompttext.text         # System prompt for OpenAI GPT
 │-- CBLogo.png              # Logo image
 │-- MSCB.mp4                # Video file

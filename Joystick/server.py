@@ -6,10 +6,10 @@ from Promobot_class import Kawasaki_1
 app = Flask(__name__)
 
 k1 = Kawasaki_1()
-k1.SPEED(100)
-k1.TOOL(45, 145, 25, 0, 0, 0)
-k1.JMOVE_TRANS(-200, 600, -60, 90, 90, 90)
-
+k1.SPEED(50)
+k1.TOOL(0, 0, 180, 0, 0, 0)               # Z is the same direction as the tool, so it changed from straight up position
+k1.JMOVE_TRANS(-143, 750, -170, 90.238, 91.971, 94.861)
+#-200,550,-40,90.238,91.971,94.861
 @app.route('/')
 def index():
     return render_template('joystick.html')
@@ -27,14 +27,14 @@ def joystick():
 
     if degreesX == 0 and degreesY == 0:
         # Horizontal
-        k1.LMOVE_TRANS(-200, 600, -60, 90, 90, 90)
+        k1.LMOVE_TRANS(-143, 750, -170, 90.238, 91.971, 94.861)
         print("Horizontal")
     else:
         # General formula for movement
-        base_rotation = 90 - degreesX
-        shoulder_rotation = 90 + degreesY
+        base_rotation = 91.971 - degreesX
+        shoulder_rotation = 94.861 + degreesY
 
-        k1.LMOVE_TRANS(-200, 600, -60, 90, base_rotation, shoulder_rotation)
+        k1.LMOVE_TRANS(-143, 750, -170, 90.238, base_rotation, shoulder_rotation)
 
         # Determine direction using atan2
         angle_rad = math.atan2(degreesY, degreesX)  # Returns angle in radians

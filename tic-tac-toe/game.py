@@ -1,7 +1,3 @@
-"""
-Github: https://www.github.com/kying18 
-"""
-
 import math
 import time
 import random

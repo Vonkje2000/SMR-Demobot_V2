@@ -2,7 +2,7 @@ import cv2
 from ultralytics import YOLO
 
 # 1. Laad het YOLOv8-model
-model = YOLO('best.pt')  # Vervang door het pad naar je YOLOv8-model
+model = YOLO('Rockpaperscissor/best.pt')  # Vervang door het pad naar je YOLOv8-model
 
 # 2. Open de webcam
 cap = cv2.VideoCapture(0)  # Gebruik 0 voor de standaard webcam. Pas aan voor andere camera's.
@@ -43,6 +43,7 @@ while True:
         # Print alleen de class label naar de terminal
         print(f"Detected: {model.names[int(cls)]}")
 
+    # frame_rotated = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
     # Toon het frame in een venster
     cv2.imshow("YOLOv8 Webcam", frame)
 

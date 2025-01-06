@@ -2,9 +2,10 @@ import os
 import tempfile
 from flask import Flask, request, jsonify, render_template
 import logging
-
+import numpy as np
 import azure.cognitiveservices.speech as speechsdk
 import openai
+import webrtcvad
 
 import re
 
@@ -99,7 +100,7 @@ def transcribe_audio():
         temp_audio_path = temp_audio.name
 
     # Record audio
-    record_audio(temp_audio_path)
+    record_audio_until_silence(temp_audio_path)
 
     client = openai.Client()
 
@@ -137,18 +138,44 @@ def transcribe_audio():
 
     return transcription, azure_language_code
 
-def record_audio(temp_audio_path, duration=10, samplerate=44100):
+def record_audio_until_silence(temp_audio_path, samplerate=16000, frame_duration_ms=30, silence_duration=2):
     """
-    Record audio from the default microphone and save to a file.
+    Record audio until silence is detected, using WebRTC VAD.
     """
-    try:
-        audio_data = sd.rec(int(duration * samplerate), samplerate=samplerate, channels=1, dtype='int16')
-        sd.wait()  # Wait until recording is finished
+    vad = webrtcvad.Vad(3)  # Level 3 is the most aggressive noise suppression
+    buffer = []
+    chunksize = int(samplerate * frame_duration_ms / 1000)
+    silence_counter = 0
+    max_silence_chunks = int((samplerate * silence_duration) / chunksize)
 
-        # Save the recording to a wav file
-        sf.write(temp_audio_path, audio_data, samplerate)
+    try:
+        stream = sd.InputStream(samplerate=samplerate, channels=1, dtype='int16', blocksize=chunksize)
+        with stream:
+            while True:
+                data, overflowed = stream.read(chunksize)
+                frame = np.frombuffer(data, dtype=np.int16)
+
+                # WebRTC VAD expects 16-bit mono PCM audio
+                is_speech = vad.is_speech(frame.tobytes(), samplerate)
+                
+                if is_speech:
+                    buffer.extend(frame)
+                    silence_counter = 0
+                else:
+                    silence_counter += 1
+
+                if silence_counter > max_silence_chunks:
+                    break
+
+        buffer = np.array(buffer, dtype='int16')
+        sf.write(temp_audio_path, buffer, samplerate)
+    
     except Exception as e:
+        if os.path.exists(temp_audio_path):
+            os.remove(temp_audio_path)
         raise SystemError(f"Error during audio recording: {e}")
+
+
 
 def filter_text(transcription):
     """

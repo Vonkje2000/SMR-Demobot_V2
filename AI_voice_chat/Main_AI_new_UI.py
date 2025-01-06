@@ -190,7 +190,7 @@ def synthesize_speech(speech_config, text, language_code):
 	voice_name = voice_mapping.get(language_code, "en-GB-RyanNeural")
 	speech_config.speech_synthesis_voice_name = voice_name
 	synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
-	result = synthesizer.speak_text_async(text).get()
+	synthesizer.speak_text_async(text).get()
 
 def start_listening():
 	# Get texts based on the selected language
@@ -199,7 +199,7 @@ def start_listening():
 	# Map session state language to the corresponding speech synthesis language code
 	listening_text = texts["listening"]
 	ui_language_code = "en-GB" if webpage_selected_language == "English" else "nl-NL"
-	listening_audio = synthesize_speech(speech_config, listening_text, ui_language_code)
+	synthesize_speech(speech_config, listening_text, ui_language_code)
 
 	# Transcribe audio using Whisper
 	user_input, detected_language = transcribe_audio()

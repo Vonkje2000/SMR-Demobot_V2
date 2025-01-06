@@ -1,6 +1,7 @@
 import os
 import tempfile
 from flask import Flask, request, jsonify, render_template
+import logging
 
 import azure.cognitiveservices.speech as speechsdk
 import openai
@@ -16,6 +17,7 @@ import sounddevice as sd
 # ================================ #
 
 app = Flask(__name__)
+logging.getLogger('werkzeug').disabled = True
 
 asked_question = " "
 AI_response = " "
@@ -238,4 +240,5 @@ def main():
 	app.run(debug=False)
 
 if __name__ == "__main__":
+	print(" * Running on http://127.0.0.1:5000")
 	main()

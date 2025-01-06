@@ -73,7 +73,6 @@ def initialize_speech_config():
 	
 	return speechsdk.SpeechConfig(subscription=azure_api_key, region=azure_region)
 
-
 def transcribe_audio(speech_config, preferred_language=None):
 	"""
 	Transcribes audio from the default microphone, with support for Nederlands as the default language.

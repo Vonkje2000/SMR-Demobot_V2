@@ -76,6 +76,7 @@ async function message_status() {
 	document.getElementsByClassName("AI_response")[0].textContent = response.AI_answer;
 	if (response.AI_answer != "..."){
 		clearInterval(listen_interval);
+		listen_interval = undefined;
 	}
 }
 

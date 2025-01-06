@@ -12,6 +12,8 @@ from openai import OpenAI
 import soundfile as sf  
 import sounddevice as sd  
 
+import re  # Add this import for regular expressions
+
 # Initialize OpenAI client
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -84,9 +86,8 @@ def transcribe_audio(client, temp_audio_path):
             
         # Extract transcription and language
         transcription = whisper_response.text.strip()
+        transcription = filter_text(transcription)  # Filter the transcription
         detected_language = whisper_response.language.lower()  # Normalize to lowercase
-
-        #st.write(f"**Whisper Detected Language:** {detected_language}")  # Debug output
 
         # Map Whisper's output to Azure-compatible language codes
         azure_language_mapping = {
@@ -104,7 +105,6 @@ def transcribe_audio(client, temp_audio_path):
         return None, "en-GB"  # Default fallback to English
 
     return transcription, azure_language_code
-
 
 def generate_response(input_text, conversation_history, language_code):
     """
@@ -127,7 +127,7 @@ def generate_response(input_text, conversation_history, language_code):
     # Call OpenAI GPT API  
     try:
         response = client.chat.completions.create(
-            model="gpt-4o-2024-11-20", messages=messages, max_tokens=200, temperature=0
+            model="gpt-4o-2024-11-20", messages=messages, max_tokens=200, temperature=0.3
         )
         return response.choices[0].message.content
     except Exception as e:
@@ -266,6 +266,17 @@ def record_audio(temp_audio_path, duration=10, samplerate=44100):
     except Exception as e:
         st.error(f"Error during audio recording: {e}")
         return None
+    
+def filter_text(transcription):
+    """
+    Filters the given transcription to allow only alphanumeric characters, spaces,
+    and the symbols (), !, @. Excludes all other symbols including *.
+    """
+    # Regex to match allowed characters: alphanumeric, spaces, and specific symbols
+    allowed_pattern = r"[^a-zA-Z0-9\s\(\)\!\@]"  # Explicitly excludes all other characters, including *
+    return re.sub(allowed_pattern, "", transcription)
+
+
 
 # ================================ #
 #          Main Application        #

@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid black;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .cell.taken {
+            cursor: not-allowed;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 18px;
+            margin: 10px;
+            color: white;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <h3>EASY MODE</h3>
+    <div class="info">
+        <p id="players"></p> <!-- Shows who is X and O -->
+    </div>
+    <div class="board" id="board">
+        <!-- Cells will be rendered here -->
+    </div>
+    <p id="status"></p>
+    <button id="restart" style="margin-top: 20px;">Restart Game</button>
+    <a href="/back" class="button">Go Back</a>
+
+    <script>
+        const board = document.getElementById('board');
+        const status = document.getElementById('status');
+        const restartButton = document.getElementById('restart');
+        const playersInfo = document.getElementById('players');
+
+        // Initialize the board
+        function initializeBoard(boardState) {
+            board.innerHTML = '';
+            for (let i = 0; i < 9; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('cell');
+                cell.dataset.index = i;
+                if (boardState && boardState[i] !== ' ') {
+                    cell.textContent = boardState[i];
+                    cell.classList.add('taken');
+                }
+                board.appendChild(cell);
+            }
+        }
+        
+        // Fetch the initial board state when the page loads
+        async function fetchInitialBoard() {
+            const response = await fetch('/restart', { method: 'POST' });
+            const data = await response.json();
+            initializeBoard(data.board);
+            playersInfo.textContent = `X: ${data.x_player}, O: ${data.o_player}`;
+            status.textContent = '';
+            board.style.pointerEvents = 'auto';
+        }
+
+        // Handle user clicks
+        board.addEventListener('click', async (e) => {
+            const cell = e.target;
+            const index = cell.dataset.index;
+
+            if (cell.classList.contains('taken')) return;
+
+            // Send the move to the server
+            const response = await fetch('/make_move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ square: parseInt(index) })
+            });
+            const data = await response.json();
+
+            if (data.error) {
+                alert(data.error);
+                return;
+            }
+
+            // Update the board
+            initializeBoard(data.board);
+
+            if (data.winner) {
+                status.textContent = `${data.winner} wins!`;
+                board.style.pointerEvents = 'none';
+                return;
+            } else if (data.is_tie) {
+                status.textContent = "It's a tie!";
+                board.style.pointerEvents = 'none';
+                return;
+            }
+
+            // Get the computer's move
+            const computerResponse = await fetch('/get_move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+            const computerData = await computerResponse.json();
+
+            initializeBoard(computerData.board);
+
+            if (computerData.winner) {
+                status.textContent = `${computerData.winner} wins!`;
+                board.style.pointerEvents = 'none';
+                return;
+            } else if (computerData.is_tie) {
+                status.textContent = "It's a tie!";
+                board.style.pointerEvents = 'none';
+                return;
+            }
+        });
+
+        // Handle Restart
+        restartButton.addEventListener('click', fetchInitialBoard);
+
+        //Load the initial board state when the page loads
+        fetchInitialBoard();
+        
+    </script>
+</body>
+</html>

@@ -9,8 +9,8 @@ import openai
 from openai import OpenAI
 
 # Import audio recording libraries
-import soundfile as sf  
-import sounddevice as sd  
+import soundfile as sf
+import sounddevice as sd 
 
 import re  # Add this import for regular expressions
 

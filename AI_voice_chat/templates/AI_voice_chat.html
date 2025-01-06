@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>AI Chat Bot</title>
+	<link rel="stylesheet" href="static/AI_voice_chat_style.css">
+</head>
+
+<div class="header">
+	<h1>AI Chat Bot</h1>
+</div>
+
+<div class="body">
+	<div class="User_interface">
+		<a class="button" id="Listen_button" onclick="start_listen()">Start Talking</a>
+		<a class="button" onclick="dutch_button()">Nederlands</a>
+		<a class="button" onclick="english_button()">English</a>
+		<span id="language_text">Geselecteerde taal: Nederlands</span>
+	</div>
+
+	<div class="chat">
+		<div class="Robot">
+			<img src="static/CBLogo.png" class="Robot_image">
+			Promobot
+		</div>
+	
+		<div class="chat_space">
+			<div class="question">
+				...
+			</div>
+			<div class="AI_response">
+				...
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="footer"></div>
+<a href="index.html" class="back-to-home" id="Home_button">Back to home</a>				<!-- TODO  add home page reference-->
+<script src="static/AI_voice_chat_script.js"></script>
+<script>setup()</script>
+</body>
+
+</html>

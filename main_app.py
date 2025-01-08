@@ -7,8 +7,8 @@ sys.path.insert(0, 'Joystick/')
 import joystick_server
 
 app = Flask(__name__)
-#logging.getLogger('werkzeug').disabled = True
-logging.getLogger('werkzeug').disabled = False
+logging.getLogger('werkzeug').disabled = True
+#logging.getLogger('werkzeug').disabled = False
 
 @app.route('/')
 @app.route('/index.html')

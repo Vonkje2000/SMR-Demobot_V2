@@ -16,18 +16,21 @@ import sounddevice as sd
 #          Configuration           #
 # ================================ #
 
-app = Flask(__name__)
+#app = Flask(__name__)
 logging.getLogger('werkzeug').disabled = True
 
 asked_question = " "
 AI_response = " "
 webpage_selected_language = "English"
 
-@app.route('/')
-def index():
+#@app.route('/AI_voice_chat')
+#@app.endpoint('/AI_voice_chat')
+def AI_index():
 	return render_template('AI_voice_chat.html')
 
-@app.route('/API', methods=['POST', 'GET'])
+#@app.route('/API', methods=['POST', 'GET'])
+#@app.endpoint('API', methods=['POST', 'GET'])
+#@app.endpoint('API')
 def post_api():
 	global asked_question
 	global AI_response
@@ -236,9 +239,9 @@ detailed_prompt = load_prompt()
 speech_config = initialize_speech_config()
 client = initialize_openAI()
 
-def main():
-	app.run(debug=False)
+#def main():
+#	app.run(debug=False)
 
-if __name__ == "__main__":
-	print(" * Running on http://127.0.0.1:5000")
-	main()
+#if __name__ == "__main__":
+#	print(" * Running on http://127.0.0.1:5000")
+#	main()

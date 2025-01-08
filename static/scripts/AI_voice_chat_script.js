@@ -116,8 +116,26 @@ async function message_status() {
 	}
 }
 
+var inactivityTime = function () {
+    var time;
+    window.onload = resetTimer;
+    // DOM Events
+    document.onclick = resetTimer;
+
+    function logout() {
+		console.log("trigger");
+		document.location.href = "/";
+    }
+
+    function resetTimer() {
+        clearTimeout(time);
+        time = setTimeout(logout, 120*1000)
+    }
+};
+
 function setup(){
 	dutch_button();
 	document.getElementsByClassName("question")[0].style.visibility = "hidden";
 	document.getElementsByClassName("AI_response")[0].style.visibility = "hidden";
+	inactivityTime();
 }

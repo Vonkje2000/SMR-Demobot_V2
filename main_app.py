@@ -6,6 +6,11 @@ import Main_AI_new_UI
 sys.path.insert(0, 'Joystick/')
 import joystick_server
 
+from Promobot_class import Kawasaki_1, Kawasaki_2
+
+k1 = Kawasaki_1(Test_mode=True)
+k2 = Kawasaki_2(Test_mode=True)
+
 app = Flask(__name__)
 logging.getLogger('werkzeug').disabled = True
 #logging.getLogger('werkzeug').disabled = False

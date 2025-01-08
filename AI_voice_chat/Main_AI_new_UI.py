@@ -90,102 +90,108 @@ def initialize_openAI():
 	return openai.Client()
 
 def transcribe_audio():
-    """
-    Transcribes audio using OpenAI's Whisper-1 model with multilingual detection.
-    Handles full language names (e.g., 'dutch') and maps them to Azure-compatible codes.
-    """
-    
+	"""
+	Transcribes audio using OpenAI's Whisper-1 model with multilingual detection.
+	Handles full language names (e.g., 'dutch') and maps them to Azure-compatible codes.
+	"""
+	
 	# Prepare temporary file path
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
-        temp_audio_path = temp_audio.name
+	with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
+		temp_audio_path = temp_audio.name
 
-    # Record audio
-    record_audio_until_silence(temp_audio_path)
+	# Record audio
+	record_audio_until_silence(temp_audio_path)
 
-    client = openai.Client()
+	client = openai.Client()
 
-    try:
-        with open(temp_audio_path, "rb") as audio_file:
-            whisper_response = client.audio.transcriptions.create(
-                model="whisper-1",
-                file=audio_file,
-                response_format="verbose_json"
-            )
-            
-        # Extract transcription and language
-        transcription = whisper_response.text.strip()
-        transcription = filter_text(transcription)  # Filter the transcription
-        detected_language = whisper_response.language.lower()  # Normalize to lowercase
+	try:
+		with open(temp_audio_path, "rb") as audio_file:
+			whisper_response = client.audio.transcriptions.create(
+				model="whisper-1",
+				file=audio_file,
+				response_format="verbose_json"
+			)
+			
+		# Extract transcription and language
+		transcription = whisper_response.text.strip()
+		transcription = filter_text(transcription)  # Filter the transcription
+		detected_language = whisper_response.language.lower()  # Normalize to lowercase
 
-        # Map Whisper's output to Azure-compatible language codes
-        azure_language_mapping = {
-            "en": "en-GB",       # English (ISO code)
-            "nl": "nl-NL",       # Dutch (ISO code)
-            "dutch": "nl-NL",    # Whisper sometimes returns 'dutch' as the language name
-            "english": "en-GB"   # Whisper sometimes returns 'english'
-        }
+		# Map Whisper's output to Azure-compatible language codes
+		azure_language_mapping = {
+			"en": "en-GB",       # English (ISO code)
+			"nl": "nl-NL",       # Dutch (ISO code)
+			"dutch": "nl-NL",    # Whisper sometimes returns 'dutch' as the language name
+			"english": "en-GB"   # Whisper sometimes returns 'english'
+		}
 
-        # Map detected language to Azure-compatible code, default to 'en-GB'
-        azure_language_code = azure_language_mapping.get(detected_language, "en-GB")
+		# Map detected language to Azure-compatible code, default to 'en-GB'
+		azure_language_code = azure_language_mapping.get(detected_language, "en-GB")
 
-    except Exception as e:
-        # Clean up temporary file
-        os.remove(temp_audio_path)
-        raise AttributeError("Error during transcription: {e}")
-    
-    # Clean up temporary file
-    os.remove(temp_audio_path)
+	except Exception as e:
+		# Clean up temporary file
+		os.remove(temp_audio_path)
+		raise AttributeError(f"Error during transcription: {e}")
+	
+	# Clean up temporary file
+	os.remove(temp_audio_path)
 
-    return transcription, azure_language_code
+	return transcription, azure_language_code
 
 def record_audio_until_silence(temp_audio_path, samplerate=16000, frame_duration_ms=30, silence_duration=2):
-    """
-    Record audio until silence is detected, using WebRTC VAD.
-    """
-    vad = webrtcvad.Vad(3)  # Level 3 is the most aggressive noise suppression
-    buffer = []
-    chunksize = int(samplerate * frame_duration_ms / 1000)
-    silence_counter = 0
-    max_silence_chunks = int((samplerate * silence_duration) / chunksize)
+	"""
+	Record audio until silence is detected, using WebRTC VAD.
+	"""
+	vad = webrtcvad.Vad(2)  # Level 3 is the most aggressive noise suppression
+	buffer = []
+	chunksize = int(samplerate * frame_duration_ms / 1000)
+	silence_counter = 0
+	max_silence_chunks = int((samplerate * silence_duration) / chunksize)
 
-    try:
-        stream = sd.InputStream(samplerate=samplerate, channels=1, dtype='int16', blocksize=chunksize)
-        with stream:
-            while True:
-                data, overflowed = stream.read(chunksize)
-                frame = np.frombuffer(data, dtype=np.int16)
+	try:
+		stream = sd.InputStream(samplerate=samplerate, channels=1, dtype='int16', blocksize=chunksize)
+		with stream:
+			while True:
+				data, overflowed = stream.read(chunksize)
+				frame = np.frombuffer(data, dtype=np.int16)
 
-                # WebRTC VAD expects 16-bit mono PCM audio
-                is_speech = vad.is_speech(frame.tobytes(), samplerate)
-                
-                if is_speech:
-                    buffer.extend(frame)
-                    silence_counter = 0
-                else:
-                    silence_counter += 1
+				# WebRTC VAD expects 16-bit mono PCM audio
+				is_speech = vad.is_speech(frame.tobytes(), samplerate)
+				
+				buffer.extend(frame)
 
-                if silence_counter > max_silence_chunks:
-                    break
+				if is_speech:
+					silence_counter = 0
+				else:
+					silence_counter += 1
 
-        buffer = np.array(buffer, dtype='int16')
-        sf.write(temp_audio_path, buffer, samplerate)
-    
-    except Exception as e:
-        if os.path.exists(temp_audio_path):
-            os.remove(temp_audio_path)
-        raise SystemError(f"Error during audio recording: {e}")
+				if silence_counter > max_silence_chunks:
+					break
+
+		buffer = np.array(buffer, dtype='int16')
+		sf.write(temp_audio_path, buffer, samplerate)
+	
+	except Exception as e:
+		if os.path.exists(temp_audio_path):
+			os.remove(temp_audio_path)
+		raise SystemError(f"Error during audio recording: {e}")
 
 
 
 def filter_text(transcription):
-    """
-    Filters the given transcription to allow only alphanumeric characters, spaces,
-    and the symbols (), !, @. Excludes all other symbols including *.
-    """
-    # Regex to match allowed characters: alphanumeric, spaces, and specific symbols
-    transcription = re.sub(r'\*', '', transcription)
-    allowed_pattern = r"[^a-zA-Z0-9\s\(\)\!\@]"  # Explicitly excludes all other characters, including *
-    return re.sub(allowed_pattern, "", transcription)
+	"""
+	Filters the given transcription to allow only alphanumeric characters, spaces,
+	and the symbols (), !, @. Excludes all other symbols including *.
+	"""
+	# Regex to match allowed characters: alphanumeric, spaces, and specific symbols
+	transcription = re.sub(r'\*', '', transcription)
+	transcription = re.sub(r'\`', '', transcription)
+	transcription = re.sub(r'###', '#', transcription)
+	transcription = re.sub(r'\n---\n', '\n', transcription)
+	transcription = re.sub(r'\n\n', '\n', transcription)
+	#transcription = re.sub(r"[^a-zA-Z0-9\s\(\)\!\@\.\,\:\'\\\£\$\%\€\°\?\[\]\&\{\}\;\-\_\+\/]",transcription) # Explicitly excludes all other characters, including *
+	return transcription
+
 
 def generate_response(input_text, conversation_history, language_code):
 	#Generates GPT response using OpenAI based on the detected language.
@@ -209,17 +215,16 @@ def generate_response(input_text, conversation_history, language_code):
 	)
 	return response.choices[0].message.content
 
-
 def synthesize_speech(speech_config, text, language_code):
-	#Generates speech audio data using the appropriate voice for the detected language.
 	voice_mapping = {
-        "en-GB": "en-GB-RyanNeural",  # English voice
-        "nl-NL": "nl-NL-MaartenNeural"  # Dutch voice
-    }
+		"en-GB": "en-GB-RyanNeural",
+		"nl-NL": "nl-NL-MaartenNeural"
+	}
 	voice_name = voice_mapping.get(language_code, "en-GB-RyanNeural")
 	speech_config.speech_synthesis_voice_name = voice_name
 	synthesizer = speechsdk.SpeechSynthesizer(speech_config=speech_config)
 	synthesizer.speak_text_async(text).get()
+
 
 def start_listening():
 	# Get texts based on the selected language

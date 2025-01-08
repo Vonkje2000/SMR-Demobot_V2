@@ -16,3 +16,4 @@ openai
 streamlit_chat
 soundfile
 sounddevice
+webrtcvad

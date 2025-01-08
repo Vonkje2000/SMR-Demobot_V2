@@ -1,7 +1,6 @@
 import os
 import tempfile
 from flask import request, jsonify, render_template
-import logging
 import numpy as np
 import azure.cognitiveservices.speech as speechsdk
 import openai

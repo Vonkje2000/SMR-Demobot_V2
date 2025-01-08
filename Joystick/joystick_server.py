@@ -25,7 +25,7 @@ def joystick():
     if degreesX == 0 and degreesY == 0:
         # Horizontal
         k1.LMOVE_TRANS(-143, 750, -170, 90.238, 91.971, 94.861)
-        print("Horizontal")
+        #print("Horizontal")
     else:
         # General formula for movement
         base_rotation = 91.971 - degreesX
@@ -44,6 +44,6 @@ def joystick():
             "West", "South-West", "South", "South-East"
         ]
         index = int((angle_deg + 22.5) // 45) % 8  # 22.5 ensures correct rounding to nearest direction
-        print(directions[index])
-    print(f"Received joystick data: x={x}, y={y}")
+        #print(directions[index])
+    #print(f"Received joystick data: x={x}, y={y}")
     return jsonify({"status": "success"})

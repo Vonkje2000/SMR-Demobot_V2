@@ -1,7 +1,6 @@
 import os
 import tempfile
-from flask import Flask, request, jsonify, render_template
-import logging
+from flask import request, jsonify, render_template
 import numpy as np
 import azure.cognitiveservices.speech as speechsdk
 import openai
@@ -17,21 +16,13 @@ import sounddevice as sd
 #          Configuration           #
 # ================================ #
 
-#app = Flask(__name__)
-logging.getLogger('werkzeug').disabled = True
-
 asked_question = " "
 AI_response = " "
 webpage_selected_language = "English"
 
-#@app.route('/AI_voice_chat')
-#@app.endpoint('/AI_voice_chat')
 def AI_index():
 	return render_template('AI_voice_chat.html')
 
-#@app.route('/API', methods=['POST', 'GET'])
-#@app.endpoint('API', methods=['POST', 'GET'])
-#@app.endpoint('API')
 def post_api():
 	global asked_question
 	global AI_response
@@ -93,53 +84,53 @@ def initialize_openAI():
 	return openai.Client()
 
 def transcribe_audio():
-	"""
-	Transcribes audio using OpenAI's Whisper-1 model with multilingual detection.
-	Handles full language names (e.g., 'dutch') and maps them to Azure-compatible codes.
-	"""
+    """
+    Transcribes audio using OpenAI's Whisper-1 model with multilingual detection.
+    Handles full language names (e.g., 'dutch') and maps them to Azure-compatible codes.
+    """
+
+    # Prepare temporary file path
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
+        temp_audio_path = temp_audio.name
+
+    # Record audio
+    record_audio_until_silence(temp_audio_path)
+
+    client = openai.Client()
+
+    try:
+        with open(temp_audio_path, "rb") as audio_file:
+            whisper_response = client.audio.transcriptions.create(
+                model="whisper-1",
+                file=audio_file,
+                response_format="verbose_json"
+            )
 	
-	# Prepare temporary file path
-	with tempfile.NamedTemporaryFile(delete=False, suffix=".wav") as temp_audio:
-		temp_audio_path = temp_audio.name
+        # Extract transcription and language
+        transcription = whisper_response.text.strip()
+        transcription = filter_text(transcription)  # Filter the transcription
+        detected_language = whisper_response.language.lower()  # Normalize to lowercase
 
-	# Record audio
-	record_audio_until_silence(temp_audio_path)
+        # Map Whisper's output to Azure-compatible language codes
+        azure_language_mapping = {
+            "en": "en-GB",       # English (ISO code)
+            "nl": "nl-NL",       # Dutch (ISO code)
+            "dutch": "nl-NL",    # Whisper sometimes returns 'dutch' as the language name
+            "english": "en-GB"   # Whisper sometimes returns 'english'
+        }
 
-	client = openai.Client()
+        # Map detected language to Azure-compatible code, default to 'en-GB'
+        azure_language_code = azure_language_mapping.get(detected_language, "en-GB")
 
-	try:
-		with open(temp_audio_path, "rb") as audio_file:
-			whisper_response = client.audio.transcriptions.create(
-				model="whisper-1",
-				file=audio_file,
-				response_format="verbose_json"
-			)
-			
-		# Extract transcription and language
-		transcription = whisper_response.text.strip()
-		transcription = filter_text(transcription)  # Filter the transcription
-		detected_language = whisper_response.language.lower()  # Normalize to lowercase
-
-		# Map Whisper's output to Azure-compatible language codes
-		azure_language_mapping = {
-			"en": "en-GB",       # English (ISO code)
-			"nl": "nl-NL",       # Dutch (ISO code)
-			"dutch": "nl-NL",    # Whisper sometimes returns 'dutch' as the language name
-			"english": "en-GB"   # Whisper sometimes returns 'english'
-		}
-
-		# Map detected language to Azure-compatible code, default to 'en-GB'
-		azure_language_code = azure_language_mapping.get(detected_language, "en-GB")
-
-	except Exception as e:
-		# Clean up temporary file
-		os.remove(temp_audio_path)
-		raise AttributeError(f"Error during transcription: {e}")
+    except Exception as e:
+        # Clean up temporary file
+        os.remove(temp_audio_path)
+        raise AttributeError(f"Error during transcription: {e}")
 	
-	# Clean up temporary file
-	os.remove(temp_audio_path)
+    # Clean up temporary file
+    os.remove(temp_audio_path)
 
-	return transcription, azure_language_code
+    return transcription, azure_language_code
 
 def record_audio_until_silence(temp_audio_path, samplerate=16000, frame_duration_ms=30, silence_duration=2):
 	"""
@@ -179,8 +170,6 @@ def record_audio_until_silence(temp_audio_path, samplerate=16000, frame_duration
 			os.remove(temp_audio_path)
 		raise SystemError(f"Error during audio recording: {e}")
 
-
-
 def filter_text(transcription):
 	"""
 	Filters the given transcription to allow only alphanumeric characters, spaces,
@@ -194,7 +183,6 @@ def filter_text(transcription):
 	transcription = re.sub(r'\n\n', '\n', transcription)
 	#transcription = re.sub(r"[^a-zA-Z0-9\s\(\)\!\@\.\,\:\'\\\£\$\%\€\°\?\[\]\&\{\}\;\-\_\+\/]",transcription) # Explicitly excludes all other characters, including *
 	return transcription
-
 
 def generate_response(input_text, conversation_history, language_code):
 	#Generates GPT response using OpenAI based on the detected language.
@@ -270,10 +258,3 @@ conversation_history = []
 detailed_prompt = load_prompt()
 speech_config = initialize_speech_config()
 client = initialize_openAI()
-
-#def main():
-#	app.run(debug=False)
-
-#if __name__ == "__main__":
-#	print(" * Running on http://127.0.0.1:5000")
-#	main()

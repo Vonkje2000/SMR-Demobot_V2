@@ -208,14 +208,15 @@ class Robot_Hand(metaclass=Singleton):
 		self.Serial.parity = "N"
 		self.Serial.stopbits = 1
 		self.Serial.timeout = None
-		try:
-			self.Serial.open()
-		except:
-			if sys.platform == "win32":
-				print ("You are using windows and your port is wrong so I opened device manager for you :)")
-				os.system('devmgmt.msc')
-			raise ConnectionError("Could not open the connection on Serial {0}".format(self.Serial.port))
-		sleep(0.1)
+		if self.Test_mode == False:
+			try:
+				self.Serial.open()
+			except:
+				if sys.platform == "win32":
+					print ("You are using windows and your port is wrong so I opened device manager for you :)")
+					os.system('devmgmt.msc')
+				raise ConnectionError("Could not open the connection on Serial {0}".format(self.Serial.port))
+			sleep(0.1)
 		self.__send("00000")
 
 	def fingers(self, thumb:int, index:int, middle:int, ring:int, pinkie:int):

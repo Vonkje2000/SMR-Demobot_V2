@@ -4,6 +4,7 @@ import cv2
 import threading
 import random
 import time
+import keyboard  # To detect keypresses
 sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
 from Promobot_class import Kawasaki_2, Robot_Hand
 
@@ -11,7 +12,8 @@ k2 = Kawasaki_2()
 Hand = Robot_Hand("COM9")
 k2.SPEED(50)
 k2.TOOL(0, 0, 0, 0, 0, 0)
-robot_movement_conplete = threading.Event()
+robot_movement_complete = threading.Event()
+camera_active = True
 
 def move_robot():
     counter = 0
@@ -20,12 +22,14 @@ def move_robot():
         k2.LMOVE_TRANS(283, 309, 100, 20, 80, 180)   
         counter += 1
 
-    robot_movement_conplete.set()
+    robot_movement_complete.set()
     # Move down to the lowest position
     k2.LMOVE_TRANS(250, 300, 50, 20, 106, 180)
 
 def perform_hand_gesture():
-    robot_movement_conplete.wait()
+    Hand.rock()
+
+    robot_movement_complete.wait()
 
     time.sleep(0.7)  # Wait for the robot to finish its initial movements (3 movements, 2 seconds each)
     
@@ -33,20 +37,21 @@ def perform_hand_gesture():
     if random.randint(1, 100) == 1:
         gesture = Hand.pistol
     else:
-        gesture = random.choice([Hand.paper, Hand.scissors])                                                    #Hand.rock, 
+        gesture = random.choice([Hand.paper, Hand.scissors])                                         #Hand.rock, 
         gesture()
     
     time.sleep(1)
 
 def display_camera():
+     
     # Open the camera
-    cap = cv2.VideoCapture(2)  # 0 is the default camera
+    cap = cv2.VideoCapture(1)  # 0 is the default cameraq
     
     if not cap.isOpened():
         print("Error: Camera not accessible.")
         return
     
-    while True:
+    while camera_active:
         # Read a frame from the camera
         ret, frame = cap.read()
         if not ret:
@@ -68,20 +73,37 @@ def display_camera():
     cv2.destroyAllWindows()
 
 def main():
-    # Create threads for robot movement, hand gestures, and camera display
-    robot_thread = threading.Thread(target=move_robot)
-    hand_thread = threading.Thread(target=perform_hand_gesture)
-    camera_thread = threading.Thread(target=display_camera)
-    
-    # Start the threads
-    robot_thread.start()
-    hand_thread.start()
+    global camera_active
+
+    # Start the camera thread as a persistent background task
+    camera_thread = threading.Thread(target=display_camera, daemon=True)
     camera_thread.start()
-    
-    # Wait for all threads to complete
-    robot_thread.join()
-    hand_thread.join()
-    camera_thread.join()
+
+    while True:
+        print("Press Spacebar to start a cycle or 'q' to quit.")
+        
+        # Wait for the user to press spacebar
+        while not keyboard.is_pressed('space'):
+            if keyboard.is_pressed('q'):
+                print("Exiting program.")
+                camera_active = False
+                return
+        
+        print("Starting threads...")
+
+        # Reset the event for new execution
+        robot_movement_complete.clear()
+        
+        # Create and start threads for robot movement and hand gestures
+        robot_thread = threading.Thread(target=move_robot)
+        hand_thread = threading.Thread(target=perform_hand_gesture)
+        
+        robot_thread.start()
+        hand_thread.start()
+        
+        # Wait for these threads to complete before allowing another cycle
+        robot_thread.join()
+        hand_thread.join()
 
 if __name__ == "__main__":
     main()

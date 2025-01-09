@@ -26,10 +26,14 @@ function start_listen() {
 
 function dutch_button(){
 	if(!listen_interval){
-	document.getElementById("language_text").textContent = "Geselecteerde taal: Nederlands";
+	document.getElementById("language_text").textContent = "Wijzig de taal";
 	document.getElementById("Listen_button").textContent = "Begin Met Praten";
 	document.getElementById("Home_button").textContent = "Terug naar Start";
 	document.getElementById("Promobot_Titel").textContent = "Smart Manufacturing & Robotics Minor Vertegenwoordiger";
+	
+	// Hide the English button and keep the Dutch button visible
+	document.getElementById("Dutch_button").style.display = "none";
+	document.getElementById("English_button").style.display = "inline-block";
 	fetch('/API', {
 		method: 'POST',
 		headers: {
@@ -45,10 +49,15 @@ function dutch_button(){
 
 function english_button(){
 	if(!listen_interval){
-	document.getElementById("language_text").textContent = "Selected Language: English";
+	document.getElementById("language_text").textContent = "Change the language";
 	document.getElementById("Listen_button").textContent = "Start Talking";
 	document.getElementById("Home_button").textContent = "Back to Home";
 	document.getElementById("Promobot_Titel").textContent = "Smart Manufacturing & Robotics Minor Representative";
+	
+	// Hide the Dutch button and keep the English button visible
+	document.getElementById("English_button").style.display = "none";
+	document.getElementById("Dutch_button").style.display = "inline-block";
+	
 	fetch('/API', {
 		method: 'POST',
 		headers: {
@@ -117,7 +126,8 @@ async function message_status() {
 }
 
 function setup(){
-	dutch_button();
+	dutch_button()
+
 	document.getElementsByClassName("question")[0].style.visibility = "hidden";
 	document.getElementsByClassName("AI_response")[0].style.visibility = "hidden";
 }

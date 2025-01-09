@@ -5,6 +5,8 @@ sys.path.insert(0, 'AI_voice_chat/')
 import Main_AI_new_UI
 sys.path.insert(0, 'Joystick/')
 import joystick_server
+sys.path.insert(0, 'Rockpaperscissor/')
+import rps_wo_cameralogic
 
 app = Flask(__name__)
 logging.getLogger('werkzeug').disabled = True

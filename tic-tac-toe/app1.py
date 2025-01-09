@@ -17,306 +17,292 @@ o_player = None
 current_letter = 'X'
 x_player_moves = []
 o_player_moves = []
+robot_is_moving = False
+
+# Define positions for above each square (in meters), adjust for your board's physical setup
+square_positions = {
+	0: ( -23, 565, -190,  -99, 180,  -99),  # Above Top-left
+	1: ( -23, 437, -190, -123, 180, -123),  # Above Top-center
+	2: ( -23, 313, -190,  137, 180,  137),  # Above Top-right
+	3: (-145, 565, -190,   96, 180,   96),  # Above Middle-left
+	4: (-145, 437, -190,   96, 180,   96),  # Above Center
+	5: (-145, 313, -190,   96, 180,   96),  # Above Middle-right
+	6: (-132, 439,  -21,  -99, 179,  -99),  # Above Bottom-left
+	7: (-278, 437, -190,   97, 180,   97),  # Above Bottom-center
+	8: (-278, 313, -190,   97, 180,   97),  # Above Bottom-right
+	9: (-162, 439,  -21,  -99, 179,  -99),  # safe position
+	10:(-162, 389,  -21,  -99, 179,  -99),  # X storage box
+	11:(-162, 489,  -21,  -99, 179,  -99),  # O storage box
+}
 
 
 def robot_moves(square, player):
-    """
-    :param square: Integer (0-9) specifying the square on the Tic Tac Toe board.
-    :param player: String ('X' or 'O') specifying the current player.
-    """
-    try:
-        # Define safe position (adjust based on your workspace setup)
-        safe_position = (-162, 439, -21, -99, 179, -99)  # Example position
+	"""
+	:param square: Integer (0-9) specifying the square on the Tic Tac Toe board.
+	:param player: String ('X' or 'O') specifying the current player.
+	"""
+	global robot_is_moving
+	while robot_is_moving == True:
+		time.sleep(.01) 
+	robot_is_moving = True
+	try:
+		# Positions for placing tiles on the squares (slightly lower than "above" positions)
+		above_square_positions = {
+			key: (x, y, z + 100, rx, ry, rz) for key, (x, y, z, rx, ry, rz) in square_positions.items()
+		}
 
-        # Define storage positions for X and O tiles
-        x_box = (-162, 439, -21, -99, 179, -99)  # Adjust coordinates for X storage box
-        o_box = (-162, 439, -21, -99, 179, -99)  # Adjust coordinates for O storage box
+		# 1. Move to the safe position
+		print(f"Moving to safe position: {square_positions[9]}")
+		k1.JMOVE_TRANS(*square_positions[9])
 
-        # Define positions for above each square (in meters), adjust for your board's physical setup
-        above_square_positions = {
-            0: (-23, 565, -190, -99, 180, -99),  # Above Top-left
-            1: (-23, 437, -190, -123, 180, -123),  # Above Top-center
-            2: (-23, 313, -190, 137, 180, 137),  # Above Top-right
-            3: (-145, 565, -190, 96, 180, 96),  # Above Middle-left
-            4: (-145, 437, -190, 96, 180, 96),  # Above Center
-            5: (-145, 313, -190, 96, 180, 96),  # Above Middle-right
-            6: (-132, 439, -21, -99, 179, -99) ,  # Above Bottom-left
-            7: (-278, 437, -190, 97, 180, 97),  # Above Bottom-center
-            8: (-278, 313, -190, 97, 180, 97),  # Above Bottom-right
-        }
+		# 2. Move to the appropriate storage box (X or O)
+		if player == 'X':
+			print(f"Moving to X box: {square_positions [10]}")
+			k1.JMOVE_TRANS(*above_square_positions[10])
+			k1.JMOVE_TRANS(*square_positions [10])
+			# turn on the magnet #TODO
+			k1.JMOVE_TRANS(*above_square_positions[10])
+			print("Picking up an X tile.")
+		elif player == 'O':
+			print(f"Moving to O box: {square_positions [11]}")
+			k1.JMOVE_TRANS(*above_square_positions[11])
+			k1.JMOVE_TRANS(*square_positions [11])
+			# turn on the magnet #TODO
+			k1.JMOVE_TRANS(*above_square_positions[11])
+			print("Picking up an O tile.")
 
-        # Positions for placing tiles on the squares (slightly lower than "above" positions)
-        square_positions = {
-            key: (x, y, z - 0.1, rx, ry, rz)  # Lower z by 0.1 meters to "place" tile
-            for key, (x, y, z, rx, ry, rz) in above_square_positions.items()
-        }
+		# 3. Move to the square's "above" position
+		print(f"Moving above square {square}: {above_square_positions[square]}")
+		k1.JMOVE_TRANS(*above_square_positions[square])
 
-        # 1. Move to the safe position
-        print(f"Moving to safe position: {safe_position}")
-        k1.JMOVE_TRANS(*safe_position)
+		# 4. Move to the square's position to place the tile
+		print(f"Placing tile on square {square}: {square_positions[square]}")
+		k1.JMOVE_TRANS(*square_positions[square])
 
-        # 2. Move to the appropriate storage box (X or O)
-        if player == 'X':
-            print(f"Moving to X box: {x_box}")
-            k1.JMOVE_TRANS(*x_box)
-            print("Picking up an X tile.")
-        elif player == 'O':
-            print(f"Moving to O box: {o_box}")
-            k1.JMOVE_TRANS(*o_box)
-            print("Picking up an O tile.")
+		# magnet off #TODO
+		print("Gripper opened. Tile placed.")
 
-        # Simulate a short pause to "pick up" the tile (e.g., close gripper)
-        # Add actual gripper control commands here
-        #robot.set_digital_out(0, True)  # Example: close the gripper
-        print("Gripper closed.")
+		# 5. Return to the safe position
+		print(f"Returning to safe position: {square_positions[9]}")
+		k1.JMOVE_TRANS(*square_positions[9])
+		#time.sleep(4)# Wait 5 seconds (adjust this based on the robot's speed)) #TODO
 
-        # 3. Move to the square's "above" position
-        above_position = above_square_positions[square]
-        print(f"Moving above square {square}: {above_position}")
-        k1.JMOVE_TRANS(*above_position)
+	except Exception as e:
+		print(f"Error during robot movement: {e}")
+	
+	robot_is_moving = False
 
-        # 4. Move to the square's position to place the tile
-        place_position = square_positions[square]
-        print(f"Placing tile on square {square}: {place_position}")
-        k1.JMOVE_TRANS(*place_position)
+def clean_up_board(previous_board):
+	global robot_is_moving
+	while robot_is_moving == True:
+		time.sleep(.01)
+	robot_is_moving = True
+	for square,tile in enumerate (previous_board):
+		if tile != ' ':  # Check if there's a tile in the square
+			print(f"Robot is moving to square {square} to pick up tile '{tile}' and return it to the box.")
+			
+			# Positions for the square itself
+			above_square_positions = {
+				key: (x, y, z + 100, o, a, t) for key, (x, y, z, o, a, t) in square_positions.items()
+			}
 
-        # Simulate a short pause to "release" the tile (e.g., open gripper)
-        # Add actual gripper control commands here
-        #robot.set_digital_out(0, False)  # Example: open the gripper
-        print("Gripper opened. Tile placed.")
+			# Move to the safe position
+			print(f"Moving to safe position: {square_positions[9]}")
+			k1.JMOVE_TRANS(*square_positions[9])
 
-        # 5. Return to the safe position
-        print(f"Returning to safe position: {safe_position}")
-        k1.JMOVE_TRANS(*safe_position)
-        time.sleep(4)# Wait 5 seconds (adjust this based on the robot's speed))
+			# Move above the square
+			print(f"Moving above square {square}: {above_square_positions[square]}")
+			k1.JMOVE_TRANS(*above_square_positions[square])
 
-    except Exception as e:
-        print(f"Error during robot movement: {e}")
+			# Move to the square to pick up the tile
+			print(f"Picking up tile '{tile}' from square {square}: {square_positions[square]}")
+			k1.JMOVE_TRANS(*square_positions[square])
 
-def return_tile_to_box(square, tile):
-    """
-    Moves the robot to a specific square, picks up the tile, and returns it to its storage box.
-    :param square: Integer (0-8), the square number.
-    :param tile: String ('X' or 'O'), the type of tile to return.
-    """
-    try:
-        # Define safe position (example values, adjust as necessary)
-        safe_position = (-162, 439, -21, -99, 179, -99)
+			# Close the gripper to pick up the tile #TODO
+			print("Gripper closed. Tile picked up.")
 
-        # Define storage positions for X and O tiles
-        x_box = (-102, 439, -21, -99, 179, -99)
-        o_box = (-102, 385, -21, -99, 179, -99)
+			# Return to the safe position
+			k1.JMOVE_TRANS(*square_positions[9])
 
-        # Define positions for above each square
-        above_square_positions = {
-            0: (-23, 565, -190, -99, 180, -99),  # Above Top-left
-            1: (-23, 437, -190, -123, 180, -123),  # Above Top-center
-            2: (-23, 313, -190, 137, 180, 137),  # Above Top-right
-            3: (-145, 565, -190, 96, 180, 96),  # Above Middle-left
-            4: (-145, 437, -190, 96, 180, 96),  # Above Center
-            5: (-145, 313, -190, 96, 180, 96),  # Above Middle-right
-            6: (-132, 439, -21, -99, 179, -99) ,  # Above Bottom-left
-            7: (-278, 437, -190, 97, 180, 97),  # Above Bottom-center
-            8: (-278, 313, -190, 97, 180, 97),  # Above Bottom-right
-        }
+			# Move to the appropriate storage box
+			if tile == 'X':
+				print(f"returning to X box: {square_positions [10]}")
+				k1.JMOVE_TRANS(*above_square_positions[10])
+				k1.JMOVE_TRANS(*square_positions [10])
+				k1.JMOVE_TRANS(*above_square_positions[10])
+			elif tile == 'O':
+				print(f"returning to O box: {square_positions [11]}")
+				k1.JMOVE_TRANS(*above_square_positions[11])
+				k1.JMOVE_TRANS(*square_positions [11])
+				k1.JMOVE_TRANS(*above_square_positions[11])
 
-        # Positions for the square itself
-        square_positions = {
-            key: (x, y, z - 0.1, o, a, t) for key, (x, y, z, o, a, t) in above_square_positions.items()
-        }
+			# Open the gripper to release the tile #TODO
+			print(f"Tile '{tile}' returned to its box.")
 
-        # Move to the safe position
-        print(f"Moving to safe position: {safe_position}")
-        k1.JMOVE_TRANS(*safe_position)
+			# Return to the safe position
+			k1.JMOVE_TRANS(*square_positions[9])
 
-        # Move above the square
-        above_position = above_square_positions[square]
-        print(f"Moving above square {square}: {above_position}")
-        k1.JMOVE_TRANS(*above_position)
+	time.sleep(1.5)  # Adjust based on your robot's speed and movements
+	robot_is_moving = False
 
-        # Move to the square to pick up the tile
-        place_position = square_positions[square]
-        print(f"Picking up tile '{tile}' from square {square}: {place_position}")
-        k1.JMOVE_TRANS(*place_position)
+def reset_game():
+	print("Game restarted")
+	global current_game, x_player, o_player, current_letter
+	# Start a new game
+	current_game = TicTacToe()
+	x_player, o_player = get_randomized_players()
+	current_letter = 'X'
 
-        # Close the gripper to pick up the tile
-        #k1.CLOSE_GRIPPER()
-        print("Gripper closed. Tile picked up.")
+	global x_player_moves, o_player_moves
+	x_player_moves.clear()
+	o_player_moves.clear()
 
-        # Return to the safe position
-        k1.JMOVE_TRANS(*safe_position)
-
-        # Move to the appropriate storage box
-        if tile == 'X':
-            print(f"Returning tile '{tile}' to X box: {x_box}")
-            k1.JMOVE_TRANS(*x_box)
-        elif tile == 'O':
-            print(f"Returning tile '{tile}' to O box: {o_box}")
-            k1.JMOVE_TRANS(*o_box)
-
-        # Open the gripper to release the tile
-        #kawasaki_arm.OPEN_GRIPPER()
-        print(f"Tile '{tile}' returned to its box.")
-
-        # Return to the safe position
-        k1.JMOVE_TRANS(*safe_position)
-
-    except Exception as e:
-        print(f"Error while returning tile to box: {e}")
-
+def start_game():
+	print("start Game")
+	global current_game, x_player, o_player, current_letter
+	# If the computer is the first player, make its move immediately
+	if isinstance(x_player, RandomComputerPlayer):
+		move = x_player.get_move(current_game)
+		current_game.make_move(move, current_letter)
+		x_player_moves.append(move)
+		# robot_moves(square, current_letter)
+		# print("waiting for the robot to finish the movement")
+		# time.sleep(3) # Adjust based on the robot's speed and movement time
+		current_letter = 'O'  # Switch to human's turn
 
 @app1.route('/')
 def index():
-    global current_game, x_player, o_player, current_letter
-    # Start a new game
-    current_game = TicTacToe()
-    x_player, o_player = get_randomized_players()
-    current_letter = 'X'
-    
-    # If the computer is the first player, make its move immediately
-    if isinstance(x_player, RandomComputerPlayer):
-        move = x_player.get_move(current_game)
-        square = move
-        current_game.make_move(move, current_letter)
-        robot_moves(square, current_letter)
-        print("waiting for the robot to finish the movement")
-        time.sleep(6) # Adjust based on the robot's speed and movement time
-        current_letter = 'O'  # Switch to human's turn
+	reset_game()
+	
+	start_game() #TODO make this a saperate cal that gets run after the page is loaded
 
-    return render_template('index1.html')  # Render the frontend
+	return render_template('Tic_tac_toe_index1.html')  # Render the frontend
  
-@app1.route('/make_move', methods=['POST'])
+@app1.route('/make_move', methods=['POST']) #handle player moves
 def make_move():
-    global current_game, x_player, o_player, current_letter
+	global current_game, x_player, o_player, current_letter
 
-    # Retrieve data from the frontend
-    square = request.json.get('square')
+	# Retrieve data from the frontend
+	square = request.json.get('square')
 
-    # Ensure the move is valid
-    if not current_game or square not in current_game.available_moves():
-        return jsonify({'error': 'Invalid move'}), 400
+	# Ensure the move is valid
+	if not current_game or square not in current_game.available_moves():
+		return jsonify({'error': 'Invalid move'}), 400
 
-    # Make the move and check for winner
-    current_game.make_move(square, current_letter)
-    
-    if current_letter == 'X':
-        x_player_moves.append(square)
-        print(f"Player 'X' makes a move to square {square}. Moves so far: {x_player_moves}")
-    else:
-        o_player_moves.append(square)
-        print(f"Player 'O' makes a move to square {square}. Moves so far: {o_player_moves}")
-    
-    
-    # Trigger the robot to pick up and place the tile
-    robot_moves(square, current_letter)
-    print("waiting for the robot to finish the movement")
-    time.sleep(6) # Adjust based on the robot's speed and movement time
-    
+	# Make the move and check for winner
+	current_game.make_move(square, current_letter)
+	
+	if current_letter == 'X':
+		x_player_moves.append(square)
+		print(f"Player 'X' makes a move to square {square}. Moves so far: {x_player_moves}")
+	else:
+		o_player_moves.append(square)
+		print(f"Player 'O' makes a move to square {square}. Moves so far: {o_player_moves}")
+	
+	
+	# # Trigger the robot to pick up and place the tile
+	# robot_moves(square, current_letter)
+	# print("waiting for the robot to finish the movement")
+	# time.sleep(3) # Adjust based on the robot's speed and movement time
+	
 
-    winner = current_game.current_winner
-    board = current_game.board
+	winner = current_game.current_winner
+	board = current_game.board
 
-    # Prepare the response
-    response = {
-        'board': board,
-        'winner': winner,
-        'is_tie': not current_game.empty_squares() and not winner
-    }
+	# Prepare the response
+	response = {
+		'board': board,
+		'winner': winner,
+		'is_tie': not current_game.empty_squares() and not winner,
+		'current_letter' : current_letter
+	}
 
-    # Switch the turn
-    current_letter = 'O' if current_letter == 'X' else 'X'
+	# Switch the turn
+	current_letter = 'O' if current_letter == 'X' else 'X'
 
-    return jsonify(response)
+	return jsonify(response)
 
 @app1.route('/back')
 def redirect_to_main():
-    return redirect('http://127.0.0.1:5000')  # Redirects to Welcome page (running on port 5000)
+	return redirect('http://127.0.0.1:5000')  # Redirects to Welcome page (running on port 5000)
 
-@app1.route('/get_move', methods=['POST'])
+@app1.route('/get_move', methods=['POST']) #handle computer moves
 def get_computer_move():
-    global current_game, x_player, o_player, current_letter
+	global current_game, x_player, o_player, current_letter
 
-    # Get the move based on the current player
-    if current_letter == 'X':
-        move = x_player.get_move(current_game)
-        x_player_moves.append(move)
-        print(f"Player 'X' (computer) makes a move to square {move}. Moves so far: {x_player_moves}")
-        square = move
-    else:
-        move = o_player.get_move(current_game)
-        o_player_moves.append(move)
-        print(f"Player 'O' (computer) makes a move to square {move}. Moves so far: {o_player_moves}")
-        square = move
-    
-    
-    # Trigger the robot to pick up and place the tile
-    robot_moves(square, current_letter)
-    print("waiting for the robot to finish the movement")
-    time.sleep(6) # Adjust based on the robot's speed and movement time
+	# Get the move based on the current player
+	if current_letter == 'X':
+		move = x_player.get_move(current_game)
+		x_player_moves.append(move)
+		print(f"Player 'X' (computer) makes a move to square {move}. Moves so far: {x_player_moves}")
+		square = move
+	else:
+		move = o_player.get_move(current_game)
+		o_player_moves.append(move)
+		print(f"Player 'O' (computer) makes a move to square {move}. Moves so far: {o_player_moves}")
+		square = move
+	
+	
+	# # Trigger the robot to pick up and place the tile
+	# robot_moves(square, current_letter)
+	# print("waiting for the robot to finish the movement")
+	# time.sleep(3) # Adjust based on the robot's speed and movement time
 
-    # Make the move and check for winner
-    current_game.make_move(move, current_letter)
-    winner = current_game.current_winner
-    board = current_game.board
+	# Make the move and check for winner
+	current_game.make_move(move, current_letter)
+	winner = current_game.current_winner
+	board = current_game.board
 
-    # Prepare the response
-    response = {
-        'move': move,
-        'board': board,
-        'winner': winner,
-        'is_tie': not current_game.empty_squares() and not winner
-    }
+	# Prepare the response
+	response = {
+		'move': move,
+		'board': board,
+		'winner': winner,
+		'is_tie': not current_game.empty_squares() and not winner,
+		'current_letter' : current_letter
+	}
 
-    # Switch the turn
-    current_letter = 'O' if current_letter == 'X' else 'X'
+	# Switch the turn
+	current_letter = 'O' if current_letter == 'X' else 'X'
 
-    return jsonify(response)
+	return jsonify(response)
+
+@app1.route('/trigger_robot_move', methods=['POST'])
+def trigger_robot_move():
+	square = request.json.get('square')
+	player = request.json.get('player')
+
+	print(f"Triggering robot move for player {player} at square {square}")
+	robot_moves(square, player)  # Call your robot movement function
+
+	return jsonify({'status': 'Robot move completed'})
 
 @app1.route('/restart', methods=['POST'])
 def restart():
-    global current_game, x_player, o_player, current_letter
-    global x_player_moves, o_player_moves
+	global current_game, x_player, o_player, current_letter
+	
+	# Save the current board state before resetting
+	previous_board = current_game.board.copy()
 
-     # Save the current board state before resetting
-    previous_board = current_game.board.copy()
+	reset_game()
 
-    # Reset the game state
-    current_game = TicTacToe()
-    x_player, o_player = get_randomized_players()
-    current_letter = 'X'
+	clean_up_board(previous_board)
+	
+	start_game()
 
-    x_player_moves.clear()
-    o_player_moves.clear()
+	return jsonify({
+		'board': current_game.board, 
+		'current_letter': current_letter,
+		'x_player' : 'Computer' if isinstance(x_player, RandomComputerPlayer) else 'Human',
+		'o_player' : 'Computer' if isinstance(o_player, RandomComputerPlayer) else 'Human'
+		})
 
-    print ("The game has been restarted, the robot will clear the board") 
-
-    # Robot puts tiles back to storage boxes
-    for square,tile in enumerate (previous_board):
-        if tile != ' ':  # Check if there's a tile in the square
-            print(f"Robot is moving to square {square} to pick up tile '{tile}' and return it to the box.")
-            return_tile_to_box(square, tile)  # Return tile to its corresponding box
-            # Wait for the robot to finish before moving to the next square
-            time.sleep(10)  # Adjust based on your robot's speed and movements
-
-    # If the computer is the first player, make its move immediately
-    if isinstance(x_player, RandomComputerPlayer):
-        move = x_player.get_move(current_game)
-        square = move
-        current_game.make_move(move, current_letter)
-        x_player_moves.append(move)
-        robot_moves(square, current_letter)
-        print("waiting for the robot to finish the movement")
-        time.sleep(6) # Adjust based on the robot's speed and movement time
-        current_letter = 'O'  # Switch to human's turn
-        
-
-    return jsonify({
-        'board': current_game.board, 
-        'current_letter': current_letter,
-        'x_player' : 'Computer' if isinstance(x_player, RandomComputerPlayer) else 'Human',
-        'o_player' : 'Computer' if isinstance(o_player, RandomComputerPlayer) else 'Human'
-        })
+@app1.route('/tictactoe_API', methods=['GET'])
+def tictactoe_API():
+	global robot_is_moving
+	response = {"robot_is_moving":robot_is_moving}
+	return jsonify(response)
 
 if __name__ == '__main__':
-    #app1.run(debug=True)
-    app1.run(port=5001)
+	#app1.run(debug=True)
+	app1.run(port=5001)

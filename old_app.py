@@ -7,8 +7,6 @@ import json
 from fer import FER
 import os
 import logging
-import time
-import game
 app = Flask(__name__)
 socketio = SocketIO(app)
 
@@ -41,27 +39,16 @@ def responseSocket(message):
 @socketio.on('message')
 def handle_message(data):
     data = json.loads(data)
-
-    def handle_game_mode():
-        game.send_command_to_arduino('Rock')
-        robotChoice = game.get_rock_paper_scissors_choice()
-        time.sleep(0.5)
-        send_message('2')
-        time.sleep(2.7)
-        game.send_command_to_arduino(robotChoice)
-        data['robotChoice'] = robotChoice
          
     # print(['received message: ', data])
     if data['message'] == 'heyMode':
-            game.send_command_to_arduino('Paper')
+            #game.send_command_to_arduino('Paper')
             send_message('0')
     if data['message'] == 'danceMode':
-            game.send_command_to_arduino('Paper')
-            send_message('1')
-    elif data['message'] == 'gameMode':
-            handle_game_mode()        
+            #game.send_command_to_arduino('Paper')
+            send_message('1') 
     elif data['message'] == 'tvMode':
-            game.send_command_to_arduino('Paper')
+            #game.send_command_to_arduino('Paper')
             send_message('3') 
     elif data['message'] == 'objects_detection':
             send_message('4')     
@@ -70,7 +57,7 @@ def handle_message(data):
     elif data['message'] == 'pose_detection':
             send_message('6')
     elif data['message'] == 'playPongGame':
-            game.send_command_to_arduino('Paper')
+            #game.send_command_to_arduino('Paper')
             send_message('7')                     
     elif data['message'] == 'startEmergency':
             send_message('hold',ROBOT_PORT_EMERGENCY) 

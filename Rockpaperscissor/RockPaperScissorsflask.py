@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, send_file, request
+from flask import render_template, jsonify, send_file, request
 import threading
 import sys
 import cv2
@@ -7,14 +7,6 @@ import time
 from ultralytics import YOLO
 sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
 from Promobot_class import Kawasaki_2, Robot_Hand
-
-# Initialize robot and hand
-k2 = Kawasaki_2()
-Hand = Robot_Hand("COM9")
-k2.SPEED(50)
-k2.TOOL(0, 0, 40, 0, 0, 0)
-
-app = Flask(__name__, static_folder='static', template_folder='templates')
 
 # Variabelen en initiële setup (camera, model, robot, etc.)
 camera = cv2.VideoCapture(1)  # Camera instellen
@@ -87,6 +79,11 @@ def determine_winner(robot_gesture:str, detected_gesture:str) -> str:
 
 def start_move():
     """Perform the robot and hand movements and determine the game result."""
+    # Initialize robot and hand
+    k2 = Kawasaki_2()
+    Hand = Robot_Hand("COM9")
+    k2.SPEED(50)
+    k2.TOOL(0, 0, 40, 0, 0, 0)
     Hand.rock()  # Start with a rock gesture
     counter = 0
     while counter < 4:
@@ -128,7 +125,6 @@ def start_move():
         winner = "none"
         print("No gesture detected from user.") 
 
-@app.route('/rockpaperscissors/start_robot', methods=['POST'])
 def start_signal():
     """Start the robot movements when the button is pressed."""
     data = request.get_json()
@@ -136,19 +132,15 @@ def start_signal():
     threading.Thread(target=start_move).start()  # Start de robotbeweging in een aparte thread
     return jsonify({"status": "move_started"})
 
-@app.route('/rockpaperscissors/get_captured_image', methods=['GET'])
 def get_captured_image():
     """Retourneer de afbeelding van de gedetecteerde handeling."""
     image_path = 'image.jpg'
     return send_file(image_path, mimetype='image/jpg')
     
-@app.route('/rockpaperscissors/game_result', methods=['GET'])
 def get_game_result():
     global winner
     return jsonify({"result": str(winner)})
 
-@app.route('/')
-@app.route('/rockpaperscissors', methods=['GET'])
 def RPS_index():
     return render_template('RPS.html')
 
@@ -158,7 +150,7 @@ def live_feed():
         ret, frame = camera.read()
         if ret:
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-            cv2.imshow("Live Feed", frame)
+            # cv2.imshow("Live Feed", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
     camera.release()
@@ -167,5 +159,3 @@ def live_feed():
 if __name__ == "__main__":
     feed_thread = threading.Thread(target=live_feed, daemon=True)
     feed_thread.start()
-    print("Live feed gestart.")
-    app.run(debug=True, use_reloader=False)

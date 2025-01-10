@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic Tac Toe</title>
+    <link rel="stylesheet" href="static/css/Tic_tac_toe.css">
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <h3 id="mode">EASY MODE</h3>
+    <div class="info">
+        <p id="players"></p> <!-- Shows who is X and O -->
+    </div>
+    <div class="board" id="board">
+		<div class="cell" id="0" onclick="player_move(0)"></div>
+		<div class="cell" id="1" onclick="player_move(1)"></div>
+		<div class="cell" id="2" onclick="player_move(2)"></div>
+		<div class="cell" id="3" onclick="player_move(3)"></div>
+		<div class="cell" id="4" onclick="player_move(4)"></div>
+		<div class="cell" id="5" onclick="player_move(5)"></div>
+		<div class="cell" id="6" onclick="player_move(6)"></div>
+		<div class="cell" id="7" onclick="player_move(7)"></div>
+		<div class="cell" id="8" onclick="player_move(8)"></div>
+    </div>
+    <p id="status"></p>
+    <a class="button" id="random" onclick="start_game('EASY',  'EASY MODE')">Start random</a>
+	<a class="button" id="smart"  onclick="start_game('SMART', 'SMART MODE');">Start smart</a>
+    <!--<a href="/" class="button">Go Back</a>-->
+    <script src="static/scripts/Tic_tac_toe.js"></script>
+	<script>setup()</script>
+</body>
+</html>

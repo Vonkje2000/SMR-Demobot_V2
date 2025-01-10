@@ -5,6 +5,8 @@ sys.path.insert(0, 'AI_voice_chat/')
 import Main_AI_new_UI
 sys.path.insert(0, 'Joystick/')
 import joystick_server
+sys.path.insert(0, 'tic-tac-toe/')
+import tictactoe
 
 from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand
 
@@ -13,8 +15,8 @@ k2 = Kawasaki_2(Test_mode=True)
 RH = Robot_Hand(Test_mode=True)
 
 app = Flask(__name__)
-logging.getLogger('werkzeug').disabled = True
-#logging.getLogger('werkzeug').disabled = False
+#logging.getLogger('werkzeug').disabled = True
+logging.getLogger('werkzeug').disabled = False
 
 @app.route('/')
 @app.route('/index.html')
@@ -26,6 +28,11 @@ app.add_url_rule('/API', view_func=Main_AI_new_UI.post_api, methods=['POST', 'GE
 
 app.add_url_rule('/Maze_game', view_func=joystick_server.joystick_index, methods=['GET'])
 app.add_url_rule('/joystick', view_func=joystick_server.joystick, methods=['POST'])
+
+app.add_url_rule('/tictactoe', view_func=tictactoe.tictactoe_index, methods=['GET'])
+app.add_url_rule('/tictactoe/move/<type>', view_func=tictactoe.make_move, methods=['POST'])
+app.add_url_rule('/tictactoe/trigger_robot_move', view_func=tictactoe.trigger_robot_move, methods=['POST'])
+app.add_url_rule('/tictactoe/restart/<mode>', view_func=tictactoe.restart, methods=['POST'])
 
 def main():
 	app.run(debug=False, use_reloader=True)

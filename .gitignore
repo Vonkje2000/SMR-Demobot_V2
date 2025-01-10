@@ -102,3 +102,6 @@ ENV/
 
 # test file
 test.py
+
+#picture taken by camera
+image.jpg

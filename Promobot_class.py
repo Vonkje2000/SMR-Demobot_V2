@@ -256,6 +256,9 @@ class Robot_Hand(metaclass=Singleton):
 
 	def rock_and_roll(self):
 		self.__send("99009")
+	
+	def pistol(self):
+		self.__send("99000")
 
 	def __send(self, data:str):
 		data = data + "\n"

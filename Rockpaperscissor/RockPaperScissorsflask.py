@@ -1,12 +1,20 @@
-from flask import Flask, render_template, jsonify, send_file
+from flask import Flask, render_template, jsonify, send_file, request
 import threading
-import time
-import random
+import sys
 import cv2
+import random
+import time
 from ultralytics import YOLO
-import os
+sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
+from Promobot_class import Kawasaki_2, Robot_Hand
 
-app = Flask(__name__)
+# Initialize robot and hand
+k2 = Kawasaki_2()
+Hand = Robot_Hand("COM9")
+k2.SPEED(50)
+k2.TOOL(0, 0, 40, 0, 0, 0)
+
+app = Flask(__name__, static_folder='static', template_folder='templates')
 
 # Variabelen en initiële setup (camera, model, robot, etc.)
 camera = cv2.VideoCapture(1)  # Camera instellen
@@ -14,8 +22,8 @@ model = YOLO('Rockpaperscissor/best.pt', verbose=False)
 running = True
 
 # Resultaten en foto variabelen
-game_result = None
 captured_image_path = None
+winner = "none"
 
 def capture_result_image():
     """Capture up to 5 frames and detect gestures using YOLO."""
@@ -47,7 +55,7 @@ def capture_result_image():
                     cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
                     cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1 - 10),
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-                    captured_image_path = "/path/to/save/image.jpg"  # Pas dit pad aan
+                    captured_image_path = "Rockpaperscissor/image.jpg"  # Pas dit pad aan
                     cv2.imwrite(captured_image_path, frame)  # Bewaar de afbeelding
                     cv2.imshow("Detection Result", frame)
                     cv2.waitKey(1)
@@ -60,63 +68,89 @@ def capture_result_image():
         print("No gesture detected after multiple attempts.")
     return detected_gesture
 
-def determine_winner(robot_gesture, detected_gesture):
+def determine_winner(robot_gesture:str, detected_gesture:str) -> str:
     """Determine the winner based on robot's and user's gestures."""
+    robot_gesture = robot_gesture.lower()
+    detected_gesture = detected_gesture.lower()
+    if robot_gesture == detected_gesture:
+        return "draw"
+    
     winning_conditions = {
         "rock": "scissors",
         "scissors": "paper",
         "paper": "rock",
     }
     
-    if robot_gesture == detected_gesture:
-        return "draw"
     if winning_conditions.get(robot_gesture) == detected_gesture:
         return "robot"
     return "user"
 
 def start_move():
-    """Start robot movement and game."""
-    global game_result
-    robot_gesture = random.choice(['rock', 'paper', 'scissors'])
-    print(f"Robot performed gesture: {robot_gesture}")
-    
-    # Simuleer robotbeweging en stel het resultaat in na de timer
-    time.sleep(3)  # Simuleer vertraging voor robotbeweging
-    detected_gesture = capture_result_image()
-    winner = determine_winner(robot_gesture, detected_gesture)
-    
-    if winner == "draw":
-        game_result = f"Result: It's a draw! Both chose {robot_gesture}."
-    elif winner == "robot":
-        game_result = f"Result: Robot wins! Robot: {robot_gesture}, User: {detected_gesture}."
-    else:
-        game_result = f"Result: You win! Robot: {robot_gesture}, User: {detected_gesture}."
+    """Perform the robot and hand movements and determine the game result."""
+    Hand.rock()  # Start with a rock gesture
+    counter = 0
+    while counter < 4:
+        k2.LMOVE_TRANS(250, 300, 50, 20, 106, 180)  # X, Y, Z, Base, Shoulder, Elbow
+        k2.LMOVE_TRANS(283, 309, 100, 20, 80, 180)
+        counter += 1
+    time.sleep(0.7)
 
-@app.route('/start_move', methods=['POST'])
-def start_move_route():
+    # Choose a random hand gesture for the robot
+    if random.randint(1, 100) == 1:
+        robot_gesture = 'pistol'  # Special case
+        gesture = Hand.pistol
+    else:
+        robot_gesture = random.choice(['rock', 'paper', 'scissors'])
+        gesture = getattr(Hand, robot_gesture)
+
+    print(f"Robot performed gesture: {robot_gesture}")
+    gesture()
+
+    # Move back to the lowest position
+    k2.LMOVE_TRANS(250, 300, 50, 20, 106, 180)
+
+    time.sleep(1)  # Wait for the robot to finish its movements
+
+    # Capture and present the result along with YOLO detection
+    detected_gesture = capture_result_image()
+    global winner
+
+    if detected_gesture:
+        # Determine and print the winner
+        winner = determine_winner(robot_gesture, detected_gesture)
+        if winner == "draw":
+            print(f"Result: It's a draw! Both chose {robot_gesture}.")
+        elif winner == "robot":
+            print(f"Result: Robot wins! Robot: {robot_gesture}, User: {detected_gesture}.")
+        else:
+            print(f"Result: You win! Robot: {robot_gesture}, User: {detected_gesture}.")
+    else:
+        winner = "none"
+        print("No gesture detected from user.") 
+
+@app.route('/rockpaperscissors/start_robot', methods=['POST'])
+def start_signal():
     """Start the robot movements when the button is pressed."""
-    print("Start button pressed, starting move...")
+    data = request.get_json()
+    print('Start signal received:', data)
     threading.Thread(target=start_move).start()  # Start de robotbeweging in een aparte thread
     return jsonify({"status": "move_started"})
 
-@app.route('/captured_image', methods=['GET'])
+@app.route('/rockpaperscissors/get_captured_image', methods=['GET'])
 def get_captured_image():
     """Retourneer de afbeelding van de gedetecteerde handeling."""
-    if captured_image_path and os.path.exists(captured_image_path):
-        return send_file(captured_image_path, mimetype='image/jpeg')
-    return jsonify({"error": "No image captured yet."})
-
-@app.route('/game_result', methods=['GET'])
+    image_path = 'image.jpg'
+    return send_file(image_path, mimetype='image/jpg')
+    
+@app.route('/rockpaperscissors/game_result', methods=['GET'])
 def get_game_result():
-    """Retourneer het resultaat van het spel."""
-    if game_result:
-        return jsonify({"result": game_result})
-    return jsonify({"result": "Game not finished yet."})
+    global winner
+    return jsonify({"result": str(winner)})
 
 @app.route('/')
-def index():
-    """Webpagina met de Start-knop."""
-    return render_template('index.html')
+@app.route('/rockpaperscissors', methods=['GET'])
+def RPS_index():
+    return render_template('RPS.html')
 
 def live_feed():
     """Live feed van de camera."""
@@ -124,7 +158,7 @@ def live_feed():
         ret, frame = camera.read()
         if ret:
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-            # cv2.imshow("Live Feed", frame)
+            cv2.imshow("Live Feed", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
     camera.release()

@@ -156,3 +156,15 @@ body {
   display: block;
   margin: 0 auto; 
 }
+
+.result-image-container {
+  width: 200px; /* Adjust the width as needed */
+  height: 200px; /* Adjust the height as needed */
+}
+
+.result-image-container img {
+  max-width: 100%; 
+  max-height: 100%; 
+  display: block;
+  margin: 0 auto; 
+}

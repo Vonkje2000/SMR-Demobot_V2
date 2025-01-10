@@ -1,0 +1,170 @@
+body {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: #ffffff;
+}
+
+.header {
+  width: 100%;
+  background-color: #00e1ff;
+  color: #ffffff;
+  text-align: center;
+  padding: 20px 0;
+  font-size: 24px;
+  font-weight: bold;
+}
+
+.instructions-container {
+  width: 400px; /* Adjust the width as needed */
+  padding: 20px;
+  border: 1px solid #000;
+  background-color: #f9f9f9;
+  position: absolute;
+  left: 20px;
+  top: 180px; /* Adjust the top position as needed */
+}
+
+.instructions-container h2 {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.instructions-container button.language-switch {
+  display: block;
+  margin-bottom: 10px;
+  padding: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.instructions-container label {
+  display: block;
+  margin-bottom: 10px;
+}
+
+.instructions-container select {
+  margin-bottom: 0px;
+  padding: 5px;
+  font-size: 16px;
+}
+
+.instructions {
+  text-align: left;
+}
+
+.instructions ol {
+  list-style-type: decimal;
+  padding: 0;
+  margin: 0;
+  font-size: 16px;
+}
+
+.instructions img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 10px 0;
+}
+
+.footer {
+  width: 100%;
+  height: 80px; /* Adjust the height as needed */
+  background-color: #00e1ff;
+  position: absolute;
+  bottom: 0;
+}
+
+.back-to-home {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 10px 20px;
+  background-color: #000000;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+}
+
+.back-to-home:hover {
+  background-color: #0056b3;
+}
+
+.start-button-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+}
+
+#start-button {
+  background-color: #90ee90; /* Lichtgroen */
+  color: white;
+  border: 0px solid white;
+  padding: 80px 80px;
+  font-size: 20px;
+  cursor: pointer;
+  border-radius: 5%;
+  position: relative;
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 4px;
+  overflow: hidden;
+  box-shadow: 0 0 10px rgb(0, 0, 0);
+  font-family: verdana;
+  font-weight: bolder;
+  text-decoration: none;
+  background: linear-gradient(160deg, #90ee90, #66bb66);
+  text-shadow: 0px 0px 2px rgba(0, 0, 0, .5);
+  transition: 0.2s;
+}
+
+#start-button:hover {
+  background-color: #029f02; 
+}
+
+#start-button:active {
+  box-shadow: 0 0 20px 10px rgba(0, 255, 0, 0.5); /* Voeg een gloed toe */
+}
+
+.timer {
+  margin-top: 20px;
+  font-size: 100px;
+  font-weight: bold;
+  display: none;
+}
+
+.image-container {
+  position: absolute;
+  right: 20px;
+  top: 180px; /* Adjust the top position as needed */
+  width: 400px; /* Adjust the width as needed */
+  height: 400px; /* Adjust the height as needed */
+  border: 0px solid #000;
+  background-color: #e5d6d600;
+  padding: 20px;
+}
+
+.image-container img {
+  max-width: 100%; 
+  max-height: 100%; 
+  display: block;
+  margin: 0 auto; 
+}
+
+.result-image-container {
+  width: 200px; /* Adjust the width as needed */
+  height: 200px; /* Adjust the height as needed */
+}
+
+.result-image-container img {
+  max-width: 100%; 
+  max-height: 100%; 
+  display: block;
+  margin: 0 auto; 
+}

@@ -36,7 +36,7 @@ startButton.addEventListener('mousedown', function() {
       clearInterval(interval);
       timerElement.textContent = 'Go!';
       // Fetch the image from the Flask backend
-      setTimeout(fetchImage, 2000);
+      setTimeout(fetchImage, 2500);
     }
   }, 1000);
 });
@@ -70,25 +70,6 @@ document.getElementById('language-switch').addEventListener('click', function() 
 
 async function fetchImage() {
   console.log('Fetching image...');
-  await fetch('/rockpaperscissors/get_captured_image') // Gebruik localhost of 127.0.0.1   get_captured_image
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.blob();
-    })
-    .then(blob => {
-      console.log('Image fetched successfully');
-      let img = document.createElement('img');
-      img.src = URL.createObjectURL(blob);
-      img.alt = 'Captured Hand Gesture';
-      let imageContainer = document.getElementById('image-container');
-      imageContainer.innerHTML = ''; // Clear any existing content
-      imageContainer.appendChild(img);
-      startButton.style.display = 'block';
-      timerElement.style.display = 'none';
-    })
-    .catch(error => console.error('Error fetching image:', error));
 
   var response = await fetch('/rockpaperscissors/game_result', {
     method: 'GET',
@@ -110,7 +91,31 @@ async function fetchImage() {
     image_path = '/static/images/draw.png';
   }
 
-  if(image_path !== "") {
+  if(image_path !== '') {
+  await fetch('/rockpaperscissors/get_captured_image') // Gebruik localhost of 127.0.0.1   get_captured_image
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.blob();
+    })
+    .then(blob => {
+      console.log('Image fetched successfully');
+      let img = document.createElement('img');
+      img.src = URL.createObjectURL(blob);
+      img.alt = 'Captured Hand Gesture';
+      let imageContainer = document.getElementById('image-container');
+      imageContainer.innerHTML = ''; // Clear any existing content
+      imageContainer.appendChild(img);
+    })
+    .catch(error => console.error('Error fetching image:', error));
+	}
+	else{
+		let imageContainer = document.getElementById('image-container');
+    	imageContainer.innerHTML = ''; // Clear any existing content
+	}
+
+  if(image_path !== '') {
     await fetch(image_path) // Gebruik localhost of 127.0.0.1   get_captured_image
     .then(response => {
       if (!response.ok) {
@@ -129,4 +134,10 @@ async function fetchImage() {
     })
     .catch(error => console.error('Error fetching image:', error));
   }
+  else{
+	let imageContainer = document.getElementById('result-image-container');
+    imageContainer.innerHTML = ''; // Clear any existing content
+  }
+  	startButton.style.display = 'block';
+	timerElement.style.display = 'none';
 }

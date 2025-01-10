@@ -21,20 +21,21 @@ def capture_result_image():
     """Capture up to 5 frames and detect gestures using YOLO."""
     global captured_image_path
     detected_gesture = None
-    print("Starting gesture detection...")
+    #print("Starting gesture detection...")
     if cv2.getWindowProperty("Detection Result", cv2.WND_PROP_VISIBLE) == 1:
         cv2.destroyWindow("Detection Result")
 
     for attempt in range(5):
+        print("picture taken: " + str(attempt))
         ret, frame = camera.read()
         if not ret:
-            print("Failed to capture frame.")
+            #print("Failed to capture frame.")
             continue
         
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
         # Perform YOLO detection
-        results = model.predict(frame, conf=0.4, save=False, show=False)
+        results = model.predict(frame, conf=0.4, save=False, show=False, verbose=False)
 
         # Process results
         for result in results:
@@ -49,12 +50,11 @@ def capture_result_image():
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
                     captured_image_path = "Rockpaperscissor/image.jpg"  # Pas dit pad aan
                     cv2.imwrite(captured_image_path, frame)  # Bewaar de afbeelding
-                    cv2.imshow("Detection Result", frame)
-                    cv2.waitKey(1)
+                    #cv2.imshow("Detection Result", frame)
+                    #cv2.waitKey(1)
         
         if detected_gesture:
             break
-        time.sleep(0.5)
 
     if not detected_gesture:
         print("No gesture detected after multiple attempts.")
@@ -64,6 +64,8 @@ def determine_winner(robot_gesture:str, detected_gesture:str) -> str:
     """Determine the winner based on robot's and user's gestures."""
     robot_gesture = robot_gesture.lower()
     detected_gesture = detected_gesture.lower()
+    if robot_gesture == "pistol":
+        return "robot"
     if robot_gesture == detected_gesture:
         return "draw"
     
@@ -100,7 +102,7 @@ def start_move():
         robot_gesture = random.choice(['rock', 'paper', 'scissors'])
         gesture = getattr(Hand, robot_gesture)
 
-    print(f"Robot performed gesture: {robot_gesture}")
+    #print(f"Robot performed gesture: {robot_gesture}")
     gesture()
 
     # Move back to the lowest position
@@ -115,20 +117,11 @@ def start_move():
     if detected_gesture:
         # Determine and print the winner
         winner = determine_winner(robot_gesture, detected_gesture)
-        if winner == "draw":
-            print(f"Result: It's a draw! Both chose {robot_gesture}.")
-        elif winner == "robot":
-            print(f"Result: Robot wins! Robot: {robot_gesture}, User: {detected_gesture}.")
-        else:
-            print(f"Result: You win! Robot: {robot_gesture}, User: {detected_gesture}.")
     else:
         winner = "none"
-        print("No gesture detected from user.") 
 
 def start_signal():
     """Start the robot movements when the button is pressed."""
-    data = request.get_json()
-    print('Start signal received:', data)
     threading.Thread(target=start_move).start()  # Start de robotbeweging in een aparte thread
     return jsonify({"status": "move_started"})
 

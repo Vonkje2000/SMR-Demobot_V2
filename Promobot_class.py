@@ -12,15 +12,19 @@ class Singleton(type):
 		return cls._instances[cls]
 
 class Kawasaki_arm(object):
-	def __init__(self, ip:str, port:int):
+	def __init__(self, ip:str, port:int, Test_mode:bool=False):
 		if not isinstance(ip, str):
 			raise TypeError("ip must be a string")
 		if not isinstance(port, int):
 			raise TypeError("port must be an int")
+		if not isinstance(Test_mode, bool):
+			raise TypeError("Test_mode must be an bool")
 		self.ip = ip
 		self.port = port
 		self.socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.__open_Connection()
+		self.Test_mode=Test_mode
+		if self.Test_mode == False:
+			self.__open_Connection()
 
 	def printIP(self):
 		print(self.ip)
@@ -156,19 +160,24 @@ class Kawasaki_arm(object):
 		self.CP(True)
 
 	def __open_Connection(self):
-		try:
-			self.socket_connection.connect((self.ip, self.port))
-		except:
-			raise ConnectionError("Could not connect to kawasaki robot arm on IP: {0}, Port: {1}".format(self.ip, self.port))
+		if self.Test_mode == False:
+			try:
+				self.socket_connection.connect((self.ip, self.port))
+			except:
+				raise ConnectionError("Could not connect to kawasaki robot arm on IP: {0}, Port: {1}".format(self.ip, self.port))
 
 	def __close_Connection(self):
-		self.socket_connection.close()
+		if self.Test_mode == False:
+			self.socket_connection.close()
 
 	def __send_to_arm(self, data:str):
 		if not isinstance(data, str):
 			raise TypeError("ip must be a string")
-		self.__receive_from_arm()
-		self.socket_connection.send(data.encode('utf-8'))
+		if self.Test_mode == False:
+			self.__receive_from_arm()
+			self.socket_connection.send(data.encode('utf-8'))
+		else:
+			print("Test_mode: " + data)
 
 	def __receive_from_arm(self):
 		return self.socket_connection.recv(1024).decode()
@@ -178,15 +187,20 @@ class Kawasaki_arm(object):
 			self.__close_Connection()
 
 class Kawasaki_1(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip = "192.168.0.1", port = 42069):
-		super().__init__(ip, port)
+	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
+		super().__init__(ip, port, Test_mode)
 
 class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip = "192.168.0.3", port = 42069):
-		super().__init__(ip, port)
+	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
+		super().__init__(ip, port, Test_mode)
 
 class Robot_Hand(metaclass=Singleton):
-	def __init__(self, port = "COM8") -> None:
+	def __init__(self, port:str = "COM8", Test_mode:bool=False) -> None:
+		if not isinstance(port, str):
+			raise TypeError("port must be a string")
+		if not isinstance(Test_mode, bool):
+			raise TypeError("Test_mode must be a bool")
+		self.Test_mode = Test_mode
 		self.Serial = serial.Serial()
 		self.Serial.port = port
 		self.Serial.baudrate = 9600
@@ -194,14 +208,15 @@ class Robot_Hand(metaclass=Singleton):
 		self.Serial.parity = "N"
 		self.Serial.stopbits = 1
 		self.Serial.timeout = None
-		try:
-			self.Serial.open()
-		except:
-			if sys.platform == "win32":
-				print ("You are using windows and your port is wrong so I opened device manager for you :)")
-				os.system('devmgmt.msc')
-			raise ConnectionError("Could not open the connection on Serial {0}".format(self.Serial.port))
-		sleep(0.1)
+		if self.Test_mode == False:
+			try:
+				self.Serial.open()
+			except:
+				if sys.platform == "win32":
+					print ("You are using windows and your port is wrong so I opened device manager for you :)")
+					os.system('devmgmt.msc')
+				raise ConnectionError("Could not open the connection on Serial {0}".format(self.Serial.port))
+			sleep(0.1)
 		self.__send("00000")
 
 	def fingers(self, thumb:int, index:int, middle:int, ring:int, pinkie:int):
@@ -247,14 +262,17 @@ class Robot_Hand(metaclass=Singleton):
 
 	def __send(self, data:str):
 		data = data + "\n"
-		try:
-			self.Serial.write(data.encode('utf-8'))
-		except:
-			raise ConnectionError ("Serial device disconnected")
-		sleep(0.1)
-		received = self.Serial.read_all().decode()
-		if (received != ""):
-			print(received)
+		if self.Test_mode == False:
+			try:
+				self.Serial.write(data.encode('utf-8'))
+			except:
+				raise ConnectionError ("Serial device disconnected")
+			sleep(0.1)
+			received = self.Serial.read_all().decode()
+			if (received != ""):
+				print(received)
+		else:
+			print("Test_mode: " + data)
 
 	def __del__(self):
 		if(self.Serial.is_open):

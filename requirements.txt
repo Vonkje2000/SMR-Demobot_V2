@@ -11,8 +11,10 @@ moviepy
 imageio-ffmpeg
 pyserial
 streamlit 
-azure-cognitiveservices-speech 
+azure-cognitiveservices-speech
+azure-cognitiveservices-vision-computervision
 openai
 streamlit_chat
 soundfile
 sounddevice
+webrtcvad

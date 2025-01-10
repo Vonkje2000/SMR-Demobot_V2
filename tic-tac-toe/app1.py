@@ -1,22 +1,18 @@
 from flask import Flask, request, jsonify, render_template, redirect, url_for
-from game import TicTacToe, RandomComputerPlayer, HumanPlayer, get_randomized_players
+from game import TicTacToe, RandomComputerPlayer, SmartComputerPlayer, HumanPlayer, get_randomized_players, get_smart_players
 import sys
-sys.path.insert(0, 'D:/Berkas/SMR/Block 2/SMR-Demobot_V2')
+import os
+sys.path.append(os.path.abspath(r"../SMR-Demobot_V2/"))
 from Promobot_class import Kawasaki_1
 import time
 
 app1 = Flask(__name__)
-k1 = Kawasaki_1()
-k1.SPEED(20)
-k1.TOOL(0, 0, 30, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
 
 # Store the game state globally for simplicity
 current_game = None
 x_player = None
 o_player = None
 current_letter = 'X'
-x_player_moves = []
-o_player_moves = []
 robot_is_moving = False
 
 # Define positions for above each square (in meters), adjust for your board's physical setup
@@ -45,50 +41,51 @@ def robot_moves(square, player):
 	while robot_is_moving == True:
 		time.sleep(.01) 
 	robot_is_moving = True
-	try:
-		# Positions for placing tiles on the squares (slightly lower than "above" positions)
-		above_square_positions = {
-			key: (x, y, z + 100, rx, ry, rz) for key, (x, y, z, rx, ry, rz) in square_positions.items()
-		}
 
-		# 1. Move to the safe position
-		print(f"Moving to safe position: {square_positions[9]}")
-		k1.JMOVE_TRANS(*square_positions[9])
+	k1 = Kawasaki_1(Test_mode=True)
+	k1.SPEED(20)
+	k1.TOOL(0, 0, 30, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
+	
+	# Positions for placing tiles on the squares (slightly lower than "above" positions)
+	above_square_positions = {
+		key: (x, y, z + 100, rx, ry, rz) for key, (x, y, z, rx, ry, rz) in square_positions.items()
+	}
 
-		# 2. Move to the appropriate storage box (X or O)
-		if player == 'X':
-			print(f"Moving to X box: {square_positions [10]}")
-			k1.JMOVE_TRANS(*above_square_positions[10])
-			k1.JMOVE_TRANS(*square_positions [10])
-			# turn on the magnet #TODO
-			k1.JMOVE_TRANS(*above_square_positions[10])
-			print("Picking up an X tile.")
-		elif player == 'O':
-			print(f"Moving to O box: {square_positions [11]}")
-			k1.JMOVE_TRANS(*above_square_positions[11])
-			k1.JMOVE_TRANS(*square_positions [11])
-			# turn on the magnet #TODO
-			k1.JMOVE_TRANS(*above_square_positions[11])
-			print("Picking up an O tile.")
+	# 1. Move to the safe position
+	print(f"Moving to safe position: {square_positions[9]}")
+	k1.JMOVE_TRANS(*square_positions[9])
 
-		# 3. Move to the square's "above" position
-		print(f"Moving above square {square}: {above_square_positions[square]}")
-		k1.JMOVE_TRANS(*above_square_positions[square])
+	# 2. Move to the appropriate storage box (X or O)
+	if player == 'X':
+		print(f"Moving to X box: {square_positions [10]}")
+		k1.JMOVE_TRANS(*above_square_positions[10])
+		k1.JMOVE_TRANS(*square_positions [10])
+		# turn on the magnet #TODO
+		k1.JMOVE_TRANS(*above_square_positions[10])
+		print("Picking up an X tile.")
+	elif player == 'O':
+		print(f"Moving to O box: {square_positions [11]}")
+		k1.JMOVE_TRANS(*above_square_positions[11])
+		k1.JMOVE_TRANS(*square_positions [11])
+		# turn on the magnet #TODO
+		k1.JMOVE_TRANS(*above_square_positions[11])
+		print("Picking up an O tile.")
 
-		# 4. Move to the square's position to place the tile
-		print(f"Placing tile on square {square}: {square_positions[square]}")
-		k1.JMOVE_TRANS(*square_positions[square])
+	# 3. Move to the square's "above" position
+	print(f"Moving above square {square}: {above_square_positions[square]}")
+	k1.JMOVE_TRANS(*above_square_positions[square])
 
-		# magnet off #TODO
-		print("Gripper opened. Tile placed.")
+	# 4. Move to the square's position to place the tile
+	print(f"Placing tile on square {square}: {square_positions[square]}")
+	k1.JMOVE_TRANS(*square_positions[square])
 
-		# 5. Return to the safe position
-		print(f"Returning to safe position: {square_positions[9]}")
-		k1.JMOVE_TRANS(*square_positions[9])
-		#time.sleep(4)# Wait 5 seconds (adjust this based on the robot's speed)) #TODO
+	# magnet off #TODO
+	print("Gripper opened. Tile placed.")
 
-	except Exception as e:
-		print(f"Error during robot movement: {e}")
+	# 5. Return to the safe position
+	print(f"Returning to safe position: {square_positions[9]}")
+	k1.JMOVE_TRANS(*square_positions[9])
+	#time.sleep(4)# Wait 5 seconds (adjust this based on the robot's speed)) #TODO
 	
 	robot_is_moving = False
 
@@ -97,6 +94,11 @@ def clean_up_board(previous_board):
 	while robot_is_moving == True:
 		time.sleep(.01)
 	robot_is_moving = True
+
+	k1 = Kawasaki_1(Test_mode=True)
+	k1.SPEED(20)
+	k1.TOOL(0, 0, 30, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
+
 	for square,tile in enumerate (previous_board):
 		if tile != ' ':  # Check if there's a tile in the square
 			print(f"Robot is moving to square {square} to pick up tile '{tile}' and return it to the box.")
@@ -145,118 +147,66 @@ def clean_up_board(previous_board):
 	time.sleep(1.5)  # Adjust based on your robot's speed and movements
 	robot_is_moving = False
 
-def reset_game():
+def reset_game(level=0):
 	print("Game restarted")
 	global current_game, x_player, o_player, current_letter
 	# Start a new game
 	current_game = TicTacToe()
-	x_player, o_player = get_randomized_players()
+	match level:
+		case 0:
+			x_player, o_player = get_randomized_players()
+		case _:
+			x_player, o_player = get_smart_players()
 	current_letter = 'X'
-
-	global x_player_moves, o_player_moves
-	x_player_moves.clear()
-	o_player_moves.clear()
 
 def start_game():
 	print("start Game")
 	global current_game, x_player, o_player, current_letter
 	# If the computer is the first player, make its move immediately
-	if isinstance(x_player, RandomComputerPlayer):
+	if isinstance(x_player, RandomComputerPlayer) or isinstance(x_player, SmartComputerPlayer):
 		move = x_player.get_move(current_game)
 		current_game.make_move(move, current_letter)
-		x_player_moves.append(move)
 		# robot_moves(square, current_letter)
-		# print("waiting for the robot to finish the movement")
-		# time.sleep(3) # Adjust based on the robot's speed and movement time
+		time.sleep(2) # for testing without a robot arm
 		current_letter = 'O'  # Switch to human's turn
 
 @app1.route('/')
-def index():
-	reset_game()
-	
-	start_game() #TODO make this a saperate cal that gets run after the page is loaded
-
+def tictactoe_index():
 	return render_template('Tic_tac_toe_index1.html')  # Render the frontend
  
-@app1.route('/make_move', methods=['POST']) #handle player moves
-def make_move():
+@app1.route('/tictactoe/move/<type>', methods=['POST']) #handle player moves
+def make_move(type):
 	global current_game, x_player, o_player, current_letter
-
-	# Retrieve data from the frontend
-	square = request.json.get('square')
-
-	# Ensure the move is valid
-	if not current_game or square not in current_game.available_moves():
-		return jsonify({'error': 'Invalid move'}), 400
-
-	# Make the move and check for winner
-	current_game.make_move(square, current_letter)
 	
-	if current_letter == 'X':
-		x_player_moves.append(square)
-		print(f"Player 'X' makes a move to square {square}. Moves so far: {x_player_moves}")
-	else:
-		o_player_moves.append(square)
-		print(f"Player 'O' makes a move to square {square}. Moves so far: {o_player_moves}")
-	
-	
-	# # Trigger the robot to pick up and place the tile
-	# robot_moves(square, current_letter)
-	# print("waiting for the robot to finish the movement")
-	# time.sleep(3) # Adjust based on the robot's speed and movement time
-	
-
-	winner = current_game.current_winner
-	board = current_game.board
-
-	# Prepare the response
-	response = {
-		'board': board,
-		'winner': winner,
-		'is_tie': not current_game.empty_squares() and not winner,
-		'current_letter' : current_letter
-	}
-
-	# Switch the turn
-	current_letter = 'O' if current_letter == 'X' else 'X'
-
-	return jsonify(response)
-
-@app1.route('/back')
-def redirect_to_main():
-	return redirect('http://127.0.0.1:5000')  # Redirects to Welcome page (running on port 5000)
-
-@app1.route('/get_move', methods=['POST']) #handle computer moves
-def get_computer_move():
-	global current_game, x_player, o_player, current_letter
-
 	# Get the move based on the current player
 	if current_letter == 'X':
-		move = x_player.get_move(current_game)
-		x_player_moves.append(move)
-		print(f"Player 'X' (computer) makes a move to square {move}. Moves so far: {x_player_moves}")
-		square = move
+		if type == "make":
+			move = request.json.get('square')
+			#print(f"Player 'X' makes a move to square {move}.")
+		elif type == "get":
+			move = x_player.get_move(current_game)
+			#print(f"Player 'X' (computer) makes a move to square {move}.")
 	else:
-		move = o_player.get_move(current_game)
-		o_player_moves.append(move)
-		print(f"Player 'O' (computer) makes a move to square {move}. Moves so far: {o_player_moves}")
-		square = move
-	
+		if type == "make":
+			move = request.json.get('square')
+			#print(f"Player 'O' makes a move to square {move}.")
+		elif type == "get":
+			move = o_player.get_move(current_game)
+			#print(f"Player 'O' (computer) makes a move to square {move}.")
 	
 	# # Trigger the robot to pick up and place the tile
-	# robot_moves(square, current_letter)
-	# print("waiting for the robot to finish the movement")
-	# time.sleep(3) # Adjust based on the robot's speed and movement time
+	# robot_moves(move, current_letter)
+	time.sleep(2) # for testing without a robot arm
 
 	# Make the move and check for winner
+	
 	current_game.make_move(move, current_letter)
 	winner = current_game.current_winner
-	board = current_game.board
 
 	# Prepare the response
 	response = {
 		'move': move,
-		'board': board,
+		'board': current_game.board,
 		'winner': winner,
 		'is_tie': not current_game.empty_squares() and not winner,
 		'current_letter' : current_letter
@@ -277,14 +227,17 @@ def trigger_robot_move():
 
 	return jsonify({'status': 'Robot move completed'})
 
-@app1.route('/restart', methods=['POST'])
-def restart():
+@app1.route('/tictactoe/restart/<mode>', methods=['POST'])
+def restart(mode):
 	global current_game, x_player, o_player, current_letter
 	
 	# Save the current board state before resetting
 	previous_board = current_game.board.copy()
 
-	reset_game()
+	if mode == "EASY":
+		reset_game(0)
+	else:
+		reset_game(69)
 
 	clean_up_board(previous_board)
 	
@@ -293,15 +246,12 @@ def restart():
 	return jsonify({
 		'board': current_game.board, 
 		'current_letter': current_letter,
-		'x_player' : 'Computer' if isinstance(x_player, RandomComputerPlayer) else 'Human',
-		'o_player' : 'Computer' if isinstance(o_player, RandomComputerPlayer) else 'Human'
+		'x_player' : 'Computer' if not isinstance(x_player, HumanPlayer) else 'Human',
+		'o_player' : 'Computer' if not isinstance(o_player, HumanPlayer) else 'Human'
 		})
 
-@app1.route('/tictactoe_API', methods=['GET'])
-def tictactoe_API():
-	global robot_is_moving
-	response = {"robot_is_moving":robot_is_moving}
-	return jsonify(response)
+reset_game(0)
+start_game()	#TODO make this a saperate cal that gets run after the page is loaded
 
 if __name__ == '__main__':
 	#app1.run(debug=True)

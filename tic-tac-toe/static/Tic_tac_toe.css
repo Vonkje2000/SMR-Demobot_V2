@@ -9,6 +9,7 @@ body {
     justify-content: center;
     margin-top: 50px;
 }
+
 .cell {
     width: 100px;
     height: 100px;
@@ -21,7 +22,9 @@ body {
 }
 .cell.taken {
     cursor: not-allowed;
+	pointer-events: none;
 }
+
 .button {
     display: inline-block;
     padding: 10px 20px;

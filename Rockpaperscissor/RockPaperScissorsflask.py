@@ -9,7 +9,7 @@ sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
 from Promobot_class import Kawasaki_2, Robot_Hand
 
 # Variabelen en initiële setup (camera, model, robot, etc.)
-camera = cv2.VideoCapture(1)  # Camera instellen
+camera = cv2.VideoCapture(2)  # Camera instellen
 model = YOLO('Rockpaperscissor/best.pt', verbose=False)
 running = True
 
@@ -134,7 +134,7 @@ def start_signal():
 
 def get_captured_image():
     """Retourneer de afbeelding van de gedetecteerde handeling."""
-    image_path = 'image.jpg'
+    image_path = 'Rockpaperscissor\image.jpg'
     return send_file(image_path, mimetype='image/jpg')
     
 def get_game_result():
@@ -150,12 +150,11 @@ def live_feed():
         ret, frame = camera.read()
         if ret:
             frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-            # cv2.imshow("Live Feed", frame)
+            #cv2.imshow("Live Feed", frame)
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
     camera.release()
     cv2.destroyAllWindows()
 
-if __name__ == "__main__":
-    feed_thread = threading.Thread(target=live_feed, daemon=True)
-    feed_thread.start()
+feed_thread = threading.Thread(target=live_feed, daemon=True)
+feed_thread.start()

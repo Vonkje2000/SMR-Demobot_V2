@@ -4,9 +4,9 @@ import logging
 
 from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand
 
-k1 = Kawasaki_1()
-k2 = Kawasaki_2(Test_mode=True)
-RH = Robot_Hand(Test_mode=True)
+k1 = Kawasaki_1(Test_mode=True)
+k2 = Kawasaki_2()
+RH = Robot_Hand()
 
 sys.path.insert(0, 'AI_voice_chat/')
 import Main_AI_new_UI
@@ -14,8 +14,8 @@ sys.path.insert(0, 'Joystick/')
 import joystick_server
 sys.path.insert(0, 'tic-tac-toe/')
 import tictactoe
-# sys.path.insert(0, 'Rockpaperscissor/')
-# import RockPaperScissorsflask
+sys.path.insert(0, 'Rockpaperscissor/')
+import RockPaperScissorsflask
 
 app = Flask(__name__)
 #logging.getLogger('werkzeug').disabled = True
@@ -36,10 +36,10 @@ app.add_url_rule('/tictactoe', view_func=tictactoe.tictactoe_index, methods=['GE
 app.add_url_rule('/tictactoe/move/<type>', view_func=tictactoe.make_move, methods=['POST'])
 app.add_url_rule('/tictactoe/restart/<mode>', view_func=tictactoe.restart, methods=['POST'])
 
-# app.add_url_rule('/rockpaperscissors', view_func=RockPaperScissorsflask.RPS_index, methods=['GET'])
-# app.add_url_rule('/rockpaperscissors/start_robot', view_func=RockPaperScissorsflask.start_signal, methods=['POST'])
-# app.add_url_rule('/rockpaperscissors/get_captured_image', view_func=RockPaperScissorsflask.get_captured_image, methods=['GET'])
-# app.add_url_rule('/rockpaperscissors/game_result', view_func=RockPaperScissorsflask.get_game_result, methods=['GET'])
+app.add_url_rule('/rockpaperscissors', view_func=RockPaperScissorsflask.RPS_index, methods=['GET'])
+app.add_url_rule('/rockpaperscissors/start_robot', view_func=RockPaperScissorsflask.start_signal, methods=['POST'])
+app.add_url_rule('/rockpaperscissors/get_captured_image', view_func=RockPaperScissorsflask.get_captured_image, methods=['GET'])
+app.add_url_rule('/rockpaperscissors/game_result', view_func=RockPaperScissorsflask.get_game_result, methods=['GET'])
 
 def main():
 	app.run(debug=False, use_reloader=False)

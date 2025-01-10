@@ -40,7 +40,7 @@ def robot_moves(square, player):
 		time.sleep(.01) 
 	robot_is_moving = True
 
-	k1 = Kawasaki_1(Test_mode=True)
+	k1 = Kawasaki_1()
 	k1.SPEED(20)
 	k1.TOOL(0, 0, 30, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
 	
@@ -49,39 +49,41 @@ def robot_moves(square, player):
 		key: (x, y, z + 100, rx, ry, rz) for key, (x, y, z, rx, ry, rz) in square_positions.items()
 	}
 
+	print(f"Moving a {player} to the {square} position")
+
 	# 1. Move to the safe position
-	print(f"Moving to safe position: {square_positions[9]}")
+	#print(f"Moving to safe position: {square_positions[9]}")
 	k1.JMOVE_TRANS(*square_positions[9])
 
 	# 2. Move to the appropriate storage box (X or O)
 	if player == 'X':
-		print(f"Moving to X box: {square_positions [10]}")
+		#print(f"Moving to X box: {square_positions [10]}")
 		k1.JMOVE_TRANS(*above_square_positions[10])
 		k1.JMOVE_TRANS(*square_positions [10])
 		# turn on the magnet #TODO
 		k1.JMOVE_TRANS(*above_square_positions[10])
-		print("Picking up an X tile.")
+		#print("Picking up an X tile.")
 	elif player == 'O':
-		print(f"Moving to O box: {square_positions [11]}")
+		#print(f"Moving to O box: {square_positions [11]}")
 		k1.JMOVE_TRANS(*above_square_positions[11])
 		k1.JMOVE_TRANS(*square_positions [11])
 		# turn on the magnet #TODO
 		k1.JMOVE_TRANS(*above_square_positions[11])
-		print("Picking up an O tile.")
+		#print("Picking up an O tile.")
 
 	# 3. Move to the square's "above" position
-	print(f"Moving above square {square}: {above_square_positions[square]}")
+	#print(f"Moving above square {square}: {above_square_positions[square]}")
 	k1.JMOVE_TRANS(*above_square_positions[square])
 
 	# 4. Move to the square's position to place the tile
-	print(f"Placing tile on square {square}: {square_positions[square]}")
+	#print(f"Placing tile on square {square}: {square_positions[square]}")
 	k1.JMOVE_TRANS(*square_positions[square])
 
 	# magnet off #TODO
-	print("Gripper opened. Tile placed.")
+	#print("Gripper opened. Tile placed.")
 
 	# 5. Return to the safe position
-	print(f"Returning to safe position: {square_positions[9]}")
+	#print(f"Returning to safe position: {square_positions[9]}")
 	k1.JMOVE_TRANS(*square_positions[9])
 	#time.sleep(4)# Wait 5 seconds (adjust this based on the robot's speed)) #TODO
 	
@@ -93,7 +95,7 @@ def clean_up_board(previous_board):
 		time.sleep(.01)
 	robot_is_moving = True
 
-	k1 = Kawasaki_1(Test_mode=True)
+	k1 = Kawasaki_1()
 	k1.SPEED(20)
 	k1.TOOL(0, 0, 30, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
 
@@ -164,7 +166,7 @@ def start_game():
 	if isinstance(x_player, RandomComputerPlayer) or isinstance(x_player, SmartComputerPlayer):
 		move = x_player.get_move(current_game)
 		current_game.make_move(move, current_letter)
-		# robot_moves(square, current_letter)
+		robot_moves(move, current_letter)
 		time.sleep(2) # for testing without a robot arm
 		current_letter = 'O'  # Switch to human's turn
 
@@ -191,8 +193,8 @@ def make_move(type):
 			#print(f"Player 'O' (computer) makes a move to square {move}.")
 	
 	# # Trigger the robot to pick up and place the tile
-	# robot_moves(move, current_letter)
-	time.sleep(2) # for testing without a robot arm
+	robot_moves(move, current_letter)
+	#time.sleep(2) # for testing without a robot arm
 
 	# Make the move and check for winner
 	
@@ -212,15 +214,6 @@ def make_move(type):
 	current_letter = 'O' if current_letter == 'X' else 'X'
 
 	return jsonify(response)
-
-def trigger_robot_move():
-	square = request.json.get('square')
-	player = request.json.get('player')
-
-	print(f"Triggering robot move for player {player} at square {square}")
-	robot_moves(square, player)  # Call your robot movement function
-
-	return jsonify({'status': 'Robot move completed'})
 
 def restart(mode):
 	global current_game, x_player, o_player, current_letter

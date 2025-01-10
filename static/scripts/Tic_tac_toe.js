@@ -26,20 +26,6 @@ async function start_game(restart, mode_text) {
 	document.getElementById('board').style.pointerEvents = 'auto';
 }
 
-// Trigger the robot movement after the board is updated
-async function triggerRobotMove(square, player) {
-	//console.log(`Triggering robot move for player '${player}' at square ${square}.`);
-	fetch('/tictactoe/trigger_robot_move', {
-		method: 'POST',
-		headers: { 'Content-Type': 'application/json' },
-		body: JSON.stringify({ square: square, player: player })
-	})
-	.then(response => response.json())
-	.then(data => {
-		//console.log(`Robot move triggered for player ${player} at square ${square}`); // Log the robot movement status
-	});
-}
-
 // Handle user clicks
 async function player_move(i){
 	document.getElementById('board').style.pointerEvents = 'none';
@@ -68,9 +54,6 @@ async function move(type, index){
 
 	// Update the board
 	update_board(data.board);
-
-	// Trigger robot movement
-	await triggerRobotMove(data.move, data.current_letter);
 
 	if (data.winner) {
 		document.getElementById('status').textContent = `${data.winner} wins!`;

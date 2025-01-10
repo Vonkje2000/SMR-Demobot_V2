@@ -6,8 +6,12 @@
     <title>Tic Tac Toe</title>
     <link rel="stylesheet" href="static/css/Tic_tac_toe.css">
 </head>
+
+<div class="header">
+	<h1>Tic Tac Toe</h1>
+</div>
+
 <body>
-    <h1>Tic Tac Toe</h1>
     <h3 id="mode">EASY MODE</h3>
     <div class="info">
         <p id="players"></p> <!-- Shows who is X and O -->
@@ -26,7 +30,9 @@
     <p id="status"></p>
     <a class="button" id="random" onclick="start_game('EASY',  'EASY MODE')">Start random</a>
 	<a class="button" id="smart"  onclick="start_game('SMART', 'SMART MODE');">Start smart</a>
-    <!--<a href="/" class="button">Go Back</a>-->
+    
+	<div class="footer"></div>
+	<a href="index.html" class="back-to-home" id="Home_button">Back to home</a>
     <script src="static/scripts/Tic_tac_toe.js"></script>
 	<script>setup()</script>
 </body>

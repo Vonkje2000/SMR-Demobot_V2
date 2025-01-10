@@ -4,6 +4,25 @@ let countdown = 3;
 let pressTimer;
 
 startButton.addEventListener('mousedown', function() {
+  // Stuur een signaal naar de server
+  fetch('http://127.0.0.1:5000/start_signal', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ message: 'start button pressed' })
+  })
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('Network response was not ok');
+    }
+    return response.json();
+  })
+  .then(data => {
+    console.log('Server response:', data);
+  })
+  .catch(error => console.error('Error sending start signal:', error));
+
   pressTimer = setTimeout(function() {
     // Verberg de startknop en toon de timer
     startButton.style.display = 'none';

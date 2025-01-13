@@ -3,6 +3,8 @@ import serial
 from time import sleep
 import os
 import sys
+import cv2
+import threading
 
 class Singleton(type):
 	_instances = {}
@@ -278,3 +280,44 @@ class Robot_Hand(metaclass=Singleton):
 		if(self.Serial.is_open):
 			self.Serial.close()
 			#print("close serial {0}".format(self.Serial.port))
+
+class Intel_Camera(object, metaclass=Singleton):
+	def __init__(self, cameranumbr:int = 1, Demo_Mode:bool=False,Test_Mode:bool=False):
+		if not isinstance(cameranumbr, int):
+			raise TypeError("Camera number must be an int")
+		if not isinstance(Demo_Mode, bool):
+			raise TypeError("Demo Mode must be a bool")
+		if not isinstance(Test_Mode, bool):
+			raise TypeError("Test Mode must be a bool")
+		self.Test_Mode = Test_Mode
+		if Test_Mode == False:	
+			self.camera = cv2.VideoCapture(cameranumbr)
+			self.lock = threading.Lock()
+			self.t = threading.Thread(target=self.__reader)
+			self.t.daemon = True
+			self.t.start()
+			self.Demo_Mode = Demo_Mode
+		else:
+			print("Test Mode: Camera initialized")
+
+	def __reader(self):
+		while True:
+			with self.lock:
+				ret = self.camera.grab()
+			if not ret:
+				break
+			if self.Demo_Mode == True:
+				ret = cv2.rotate(ret, cv2.ROTATE_90_CLOCKWISE)
+				cv2.imshow("Live Feed", ret)
+				if cv2.waitKey(1) & 0xFF == ord('q'):
+					break
+		self.camera.release()
+		cv2.destroyAllWindows()
+	
+	def read(self):
+		if self.Test_Mode == False:
+			with self.lock:
+				_, frame = self.camera.retrieve()
+			return frame
+		else:
+			return cv2.imread("test_image.jpg")

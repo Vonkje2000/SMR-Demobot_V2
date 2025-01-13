@@ -24,14 +24,14 @@ def joystick():
 
     if degreesX == 0 and degreesY == 0:
         # Horizontal
-        k1.LMOVE_TRANS(-143, 750, -170, 90.238, 91.971, 94.861)
+        k1.LMOVE_TRANS(-143, 750, 40, 90.238, 91.971, 94.861)
         #print("Horizontal")
     else:
         # General formula for movement
         base_rotation = 91.971 - degreesX
         shoulder_rotation = 94.861 + degreesY
 
-        k1.LMOVE_TRANS(-143, 750, -170, 90.238, base_rotation, shoulder_rotation)
+        k1.LMOVE_TRANS(-143, 750, 40, 90.238, base_rotation, shoulder_rotation)
 
         # Determine direction using atan2
         angle_rad = math.atan2(degreesY, degreesX)  # Returns angle in radians

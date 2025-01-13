@@ -281,8 +281,8 @@ class Robot_Hand(metaclass=Singleton):
 			self.Serial.close()
 			#print("close serial {0}".format(self.Serial.port))
 
-class Intel_Camera(object, metaclass=Singleton):
-	def __init__(self, cameranumbr:int = 1, Demo_Mode:bool=False,Test_Mode:bool=False):
+class Intel_Camera(metaclass=Singleton):
+	def __init__(self, cameranumbr:int = 1, Demo_Mode:bool=False,Test_Mode:bool=False) -> None:
 		if not isinstance(cameranumbr, int):
 			raise TypeError("Camera number must be an int")
 		if not isinstance(Demo_Mode, bool):
@@ -290,25 +290,28 @@ class Intel_Camera(object, metaclass=Singleton):
 		if not isinstance(Test_Mode, bool):
 			raise TypeError("Test Mode must be a bool")
 		self.Test_Mode = Test_Mode
-		if Test_Mode == False:	
+		self.Demo_Mode = Demo_Mode
+		if Test_Mode == False:
 			self.camera = cv2.VideoCapture(cameranumbr)
-			self.lock = threading.Lock()
-			self.t = threading.Thread(target=self.__reader)
-			self.t.daemon = True
-			self.t.start()
-			self.Demo_Mode = Demo_Mode
 		else:
 			print("Test Mode: Camera initialized")
+		self.lock = threading.Lock()
+		self.t = threading.Thread(target=self.__reader)
+		self.t.daemon = True
+		self.t.start()
 
 	def __reader(self):
 		while True:
-			with self.lock:
-				ret = self.camera.grab()
-			if not ret:
-				break
+			if self.Test_Mode == False:
+				with self.lock:
+					ret, frame = self.camera.read()
+				if not ret:
+					break
+			else:
+				frame = cv2.imread("test_image.jpg")
 			if self.Demo_Mode == True:
-				ret = cv2.rotate(ret, cv2.ROTATE_90_CLOCKWISE)
-				cv2.imshow("Live Feed", ret)
+				frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+				cv2.imshow("Live Feed", frame)
 				if cv2.waitKey(1) & 0xFF == ord('q'):
 					break
 		self.camera.release()
@@ -317,7 +320,9 @@ class Intel_Camera(object, metaclass=Singleton):
 	def read(self):
 		if self.Test_Mode == False:
 			with self.lock:
-				_, frame = self.camera.retrieve()
+				ret, frame = self.camera.read()
+			if not ret:
+				return None
 			return frame
 		else:
 			return cv2.imread("test_image.jpg")

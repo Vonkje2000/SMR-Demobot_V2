@@ -9,7 +9,6 @@ sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
 from Promobot_class import Kawasaki_2, Robot_Hand, Intel_Camera
 
 # Variabelen en initiële setup (camera, model, robot, etc.)
-camera = Intel_Camera(Debug_Mode=True)  # Camera instellen
 model = YOLO('Rockpaperscissor/best.pt', verbose=False)
 running = True
 
@@ -25,12 +24,10 @@ def capture_result_image():
     if cv2.getWindowProperty("Detection Result", cv2.WND_PROP_VISIBLE) == 1:
         cv2.destroyWindow("Detection Result")
 
+    camera = Intel_Camera()
     for attempt in range(5):
         print("picture taken: " + str(attempt))
         frame = camera.read()
-        if not frame:
-            #print("Failed to capture frame.")
-            continue
         
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
@@ -82,8 +79,8 @@ def determine_winner(robot_gesture:str, detected_gesture:str) -> str:
 def start_move():
     """Perform the robot and hand movements and determine the game result."""
     # Initialize robot and hand
-    k2 = Kawasaki_2(Test_mode=True)
-    Hand = Robot_Hand("COM9", test_mode=True)
+    k2 = Kawasaki_2()
+    Hand = Robot_Hand("COM9")
     k2.SPEED(50)
     k2.TOOL(0, 0, 40, 0, 0, 0)
     Hand.rock()  # Start with a rock gesture
@@ -127,7 +124,7 @@ def start_signal():
 
 def get_captured_image():
     """Retourneer de afbeelding van de gedetecteerde handeling."""
-    image_path = 'Rockpaperscissor\image.jpg'
+    image_path = 'Rockpaperscissor/image.jpg'
     return send_file(image_path, mimetype='image/jpg')
     
 def get_game_result():

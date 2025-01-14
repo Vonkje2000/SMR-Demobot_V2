@@ -6,7 +6,7 @@ opencv-python
 deepface
 tf_keras
 ultralytics
-pyrealsense2
+pyrealsense
 moviepy
 imageio-ffmpeg
 pyserial
@@ -17,4 +17,4 @@ openai
 streamlit_chat
 soundfile
 sounddevice
-webrtcvad
+webrtcvad-wheels

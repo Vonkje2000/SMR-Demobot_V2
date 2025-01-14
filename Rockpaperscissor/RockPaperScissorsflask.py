@@ -6,10 +6,9 @@ import random
 import time
 from ultralytics import YOLO
 sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
-from Promobot_class import Kawasaki_2, Robot_Hand
+from Promobot_class import Kawasaki_2, Robot_Hand, Intel_Camera
 
 # Variabelen en initiële setup (camera, model, robot, etc.)
-camera = cv2.VideoCapture(2)  # Camera instellen
 model = YOLO('Rockpaperscissor/best.pt', verbose=False)
 running = True
 
@@ -25,12 +24,10 @@ def capture_result_image():
     if cv2.getWindowProperty("Detection Result", cv2.WND_PROP_VISIBLE) == 1:
         cv2.destroyWindow("Detection Result")
 
+    camera = Intel_Camera()
     for attempt in range(5):
         print("picture taken: " + str(attempt))
-        ret, frame = camera.read()
-        if not ret:
-            #print("Failed to capture frame.")
-            continue
+        frame = camera.read()
         
         frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
@@ -127,7 +124,7 @@ def start_signal():
 
 def get_captured_image():
     """Retourneer de afbeelding van de gedetecteerde handeling."""
-    image_path = 'Rockpaperscissor\image.jpg'
+    image_path = 'Rockpaperscissor/image.jpg'
     return send_file(image_path, mimetype='image/jpg')
     
 def get_game_result():
@@ -137,17 +134,3 @@ def get_game_result():
 def RPS_index():
     return render_template('RPS.html')
 
-def live_feed():
-    """Live feed van de camera."""
-    while running:
-        ret, frame = camera.read()
-        if ret:
-            frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
-            #cv2.imshow("Live Feed", frame)
-            if cv2.waitKey(1) & 0xFF == ord('q'):
-                break
-    camera.release()
-    cv2.destroyAllWindows()
-
-feed_thread = threading.Thread(target=live_feed, daemon=True)
-feed_thread.start()

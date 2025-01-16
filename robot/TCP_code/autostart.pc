@@ -1,0 +1,114 @@
+.PROGRAM autostart.pc() ;
+  ; *******************************************************************
+  ;
+  ; Program:      autostart.pc
+  ; Comment:
+  ;
+  ; Author:       Anton Vonk
+  ; Date:         14/1/2024
+  ;
+  ; *******************************************************************
+  ;
+  ; SWITCH      SWITCH autostart.pc OFF
+  ; SWITCH      SWITCH autostart.pc ON
+  ; look at ONE for error handling
+  ; WAIT FOR POWER TO START main PROGRAM, OTHERWISE WE GET ERRORS
+  WAIT SWITCH (POWER )
+  TWAIT 5
+  ;
+  new_message = 0
+  overwrite_mode = 0
+  ;
+  MC EXECUTE promo_v2_front
+  TWAIT 1
+  ;
+  .port = 42069
+  .$recv_buf[0] = ""
+  .receive_amount = 0
+  .transmission_co = FALSE
+  .message_number = 0
+  ;
+  IF TASK (1) == 1 THEN  ;check if robot is CONTINUE before HOLD
+    MC HOLD
+  END
+  ;
+  IF socket_ID > -1 THEN
+    CALL TCP_server_clos (socket_ID, .port)
+    socket_id = -1
+    tcp_listen_act = FALSE
+  END
+  IF TCP_listen_act == TRUE THEN
+    .error_id = 0
+    TCP_END_LISTEN .error_id, .port
+    tcp_listen_act = FALSE
+  END
+  WHILE TRUE DO                         ;maybe an aditional while loop is needed to fix the exit_end
+    tcp_listen_act = TRUE
+    CALL TCP_server_open (.port, socket_ID)
+    IF socket_ID < 0 THEN
+      GOTO exit_end
+    END
+    IF TASK (1) == 2 THEN    ;check if robot is HOLD before CONTINUE
+      MC CONTINUE
+    END
+    $message = ""
+    new_message = 0
+    WHILE TRUE DO
+      ;
+      CALL TCP_server_recv (socket_ID, .$recv_buf[], .receive_amount);Receiving the result of processing 1
+      IF .receive_amount < 0 THEN
+        IF .receive_amount == -34025 THEN
+          PRINT "CONNECTION HAS BEEN CLOSED FROM THE OTHER SIDE"
+          GOTO exit
+        ELSE
+          PRINT "CODE 003 RECV ERROR"
+          GOTO exit
+        END
+      END
+      PRINT .$recv_buf[0]
+      IF Overwrite_mode == 1 THEN
+        IF INSTR (0 , .$recv_buf[0] , "Overwrite_mode") > 0 THEN
+          WHILE new_message == 1 DO
+            .break_code = FALSE
+            CALL TCP_S_detec_clo (socket_ID, .break_code)
+            IF .break_code == TRUE THEN
+              GOTO exit
+            END
+          END
+        END
+        ;
+        $message = .$recv_buf[0]
+        new_message = 1
+      ELSE
+        WHILE new_message == 1 DO
+          TWAIT 0.1
+        END
+        $message = .$recv_buf[0]
+        new_message = 1
+        WHILE new_message == 1 DO
+          .break_code = FALSE
+          CALL TCP_S_detec_clo (socket_ID, .break_code)
+          IF .break_code == TRUE THEN
+            GOTO exit
+          END
+        END
+      END
+      ;
+      .message_number = .message_number + 1
+      .$data = "Message: " + $ENCODE (.message_number)
+      CALL TCP_server_send (socket_ID, .$data, .transmission_co);Instructing processing 1
+      IF .transmission_co <> TRUE THEN
+        PRINT "CODE 001 SEND ERROR"
+        GOTO exit
+      END
+    END
+exit:
+    IF TASK (1) == 1 THEN  ;check if robot is CONTINUE before HOLD
+      MC HOLD
+    END
+    ;CALL TCP_server_clos (socket_ID, .port);Closing communication
+    tcp_listen_act = FALSE
+    socket_id = -1
+  END
+exit_end:
+.END

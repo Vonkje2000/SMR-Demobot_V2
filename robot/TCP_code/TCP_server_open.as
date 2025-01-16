@@ -39,6 +39,5 @@
 	  TCP_ACCEPT .socket_ID,.port,.timeout,.ip[0]
 	END
 	PRINT "TCP_ACCEPT OK id=",.socket_ID,", IP: ",.ip[0],".",.ip[1],".",.ip[2],".",.ip[3]
-	
   exit: 
   .END

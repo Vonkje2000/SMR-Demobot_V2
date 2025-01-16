@@ -18,8 +18,6 @@
 	  IF .error_ID < 0 THEN
 		PRINT "TCP_CLOSE error id=",.socket_ID
 	  END
-	ELSE
-	  ;PRINT "TCP_CLOSE OK id=",.socket_ID
 	END
 	.error_ID = 0
 	TCP_END_LISTEN .error_ID,.port

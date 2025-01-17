@@ -26,13 +26,42 @@
 		RETURN
 	END
 	;
-	IF INSTR (0 , .$message , "Overwrite_mode ENABLE") > 0 THEN
-		overwrite_mode = 1
+	IF INSTR (0 , .$message , "Overwrite_mode") > 0 THEN
+		IF INSTR (0 , .$message , "ENABLE") > 0 THEN
+			Overwrite_mode = 1
+			RETURN
+		END
+		Overwrite_mode = 0
 		RETURN
 	END
 	;
-	IF INSTR (0 , .$message , "Overwrite_mode DISABLE") > 0 THEN
-		overwrite_mode = 0
+	IF INSTR (0 , .$message , "HERE JT") > 0 THEN
+		HERE .#local_pos
+		DECOMPOSE .value[0] = .#local_pos
+		.$string = ""
+		.$string = .$string + $ENCODE(/F8.2,.value[0]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[1]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[2]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[3]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[4]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[5])
+		$return_message = .$string
+		ret_data_avail = TRUE
+		RETURN
+	END
+	;
+	IF INSTR (0 , .$message , "HERE POS") > 0 THEN
+		HERE .local_pos
+		DECOMPOSE .value[0] = .local_pos
+		.$string = ""
+		.$string = .$string + $ENCODE(/F8.2,.value[0]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[1]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[2]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[3]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[4]) + ", "
+		.$string = .$string + $ENCODE(/F8.2,.value[5])
+		$return_message = .$string
+		ret_data_avail = TRUE
 		RETURN
 	END
 	;

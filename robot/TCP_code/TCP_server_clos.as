@@ -12,19 +12,18 @@
 	.error_ID = 0
 	TCP_CLOSE .error_ID,.socket_ID
 	IF .error_ID < 0 THEN
-	  PRINT "TCP_CLOSE error ERROE=(”,.ret,” ) ",$ERROR(.error_ID)
-	  .error_ID = 0
-	  TCP_CLOSE .error_ID,.socket_ID
-	  IF .error_ID < 0 THEN
-		PRINT "TCP_CLOSE error id=",.socket_ID
-	  END
+		PRINT "TCP_CLOSE error ERROE=(”,.ret,” ) ",$ERROR(.error_ID)
+		.error_ID = 0
+		TCP_CLOSE .error_ID,.socket_ID
+		IF .error_ID < 0 THEN
+			PRINT "TCP_CLOSE error id=",.socket_ID
+		END
 	END
 	.error_ID = 0
 	TCP_END_LISTEN .error_ID,.port
 	IF .error_ID < 0 THEN
-	  PRINT "TCP_END_LISTEN error id=",.socket_ID
+		PRINT "TCP_END_LISTEN error id=",.socket_ID
 	ELSE
-	  ;PRINT "TCP_END_LISTEN OK id=",.socket_ID
-	  .socket_ID = -1
+	  	socket_ID = -1
 	END
   .END

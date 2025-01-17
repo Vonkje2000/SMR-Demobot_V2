@@ -3,7 +3,7 @@
 	;
 	; Program:      TCP_S_detec_clo
 	; Comment:      a small function to detect if the connection got closed
-	; Author:       User
+	; Author:       Anton Vonk
 	;
 	; Date:         1/16/2025
 	;
@@ -16,7 +16,12 @@
 	.$recv_buf[0] = ""
 	TCP_RECV .error_id, .socket_id, .$recv_buf[0], .receive_amount, .timeout, .max_length
 	IF .error_id <> -34024 AND .error_id < 0 THEN ;if a timeout occurs do not do anything but if the connection closses it stops the code
-	  .output = TRUE
+		.output = 1
+		RETURN
 	END
-	.output = FALSE
+	IF INSTR (0 , .$recv_buf[0] , "PAUSE") > 0 THEN
+		.output = 2
+		RETURN
+	END
+	.output = 0
   .END

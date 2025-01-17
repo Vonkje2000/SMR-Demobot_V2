@@ -12,7 +12,9 @@
 	WHILE TRUE DO
 		IF new_message == 1 THEN
 			CALL Run_message ($message)
-			new_message = 0
+			IF Overwrite_mode == FALSE THEN
+				new_message = 0
+			END
 		END
 	END
   .END

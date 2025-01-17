@@ -1,0 +1,27 @@
+.REALS
+new_message = 0
+Overwrite_mode = 0
+ret_data_avail = 0
+socket_ID = -1
+TCP_listen_act = -1
+.END
+
+.STRINGS
+$message = ""
+$return_message = ""
+.END
+
+.REALS ;SIGNALS Internal
+switch_1_up = 2001
+switch_1_dw = 2002
+o_teach_mode = 2182
+o_motor_on = 2005
+o_home_1 = 2181
+o_cycle_start = 2003
+I_motor_on = 2010
+I_error_reset = 2011
+I_cycle_start = 2012
+button_start = 2020
+button_RIGHT = 2022
+button_LEFT = 2021
+.END

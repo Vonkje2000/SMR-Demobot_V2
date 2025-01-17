@@ -91,6 +91,32 @@
 		SPEED .value[0] ALWAYS
 		RETURN
 	END
+  ;
+	IF INSTR (0 , .$message , "ACCEL") > 0 THEN
+		IF INSTR (0 , .$message , "ALWAYS") > 0 THEN
+			.$value_string = $MID (.$message, LEN ("ACCEL ") + 1, LEN (.$message) - LEN ("ACCEL "))
+			.value[0] = VAL (.$value_string, 0)
+			ACCEL .value[0] ALWAYS
+		ELSE
+			.$value_string = $MID (.$message, LEN ("ACCEL ") + 1, LEN (.$message) - LEN ("ACCEL "))
+			.value[0] = VAL (.$value_string, 0)
+			ACCEL .value[0]
+		END
+		RETURN
+	END
+  ;
+	IF INSTR (0 , .$message , "DECEL") > 0 THEN
+		IF INSTR (0 , .$message , "ALWAYS") > 0 THEN
+			.$value_string = $MID (.$message, LEN ("DECEL ") + 1, LEN (.$message) - LEN ("DECEL "))
+			.value[0] = VAL (.$value_string, 0)
+			DECEL .value[0] ALWAYS
+		ELSE
+			.$value_string = $MID (.$message, LEN ("DECEL ") + 1, LEN (.$message) - LEN ("DECEL "))
+			.value[0] = VAL (.$value_string, 0)
+			DECEL .value[0]
+		END
+		RETURN
+	END
 	;
 	IF INSTR(0, .$message, "JMOVE") > 0 THEN
 		IF INSTR(0, .$message, "TRANS") > 0 THEN

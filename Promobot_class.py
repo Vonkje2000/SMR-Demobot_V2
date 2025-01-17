@@ -28,6 +28,12 @@ class Kawasaki_arm(object):
 		if self.Test_mode == False:
 			self.__open_Connection()
 
+	def PAUSE(self):
+		self.__send_to_arm("PAUSE")
+
+	def CONTINUE(self):
+		self.__send_to_arm("CONTINUE")
+
 	def WAIT_UNTIL_DONE(self):	#only works when overwrite_mode = TRUE
 		self.__send_to_arm("WAIT_UNTIL_DONE")
 
@@ -47,6 +53,26 @@ class Kawasaki_arm(object):
 
 	def HOME2(self):
 		self.__send_to_arm("HOME 2")
+
+	def HERE(self):
+		pos = self.__send_to_arm("HERE JT")
+		pos = pos.replace(" ", "")
+		split = pos.split(",")
+		pos_array = []
+		for x in range(len(split)):
+			pos_array.append(float(split[x])) 
+		print(pos_array)
+		return pos_array
+
+	def HERE_TRANS(self):
+		pos = self.__send_to_arm("HERE POS")
+		pos = pos.replace(" ", "")
+		split = pos.split(",")
+		pos_array = []
+		for x in range(len(split)):
+			pos_array.append(float(split[x])) 
+		print(pos_array)
+		return pos_array
 
 	def CP(self, value:bool):
 		if not isinstance(value, bool):
@@ -188,7 +214,7 @@ class Kawasaki_arm(object):
 			raise TypeError("ip must be a string")
 		if self.Test_mode == False:
 			self.socket_connection.send(data.encode('utf-8'))
-			self.__receive_from_arm()
+			return self.__receive_from_arm()
 		else:
 			print("Test_mode: " + data)
 

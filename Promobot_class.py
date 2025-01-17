@@ -45,6 +45,30 @@ class Kawasaki_arm(object):
 		else:
 			self.__send_to_arm("CP OFF")
 
+	def ACCEL(self, ACCEL:float|int):
+		if not isinstance(ACCEL, float|int):
+			raise TypeError("Acceleration must be a float or an int")
+		ACCEL = round(ACCEL)
+		self.__send_to_arm("ACCEL {0}".format(ACCEL))
+
+	def ACCEL_ALWAYS(self, ACCEL:float|int):
+		if not isinstance(ACCEL, float|int):
+			raise TypeError("Acceleration must be a float or an int")
+		ACCEL = round(ACCEL)
+		self.__send_to_arm("ACCEL {0} ALWAYS".format(ACCEL))
+
+	def DECEL(self, DECEL:float|int):
+		if not isinstance(DECEL, float|int):
+			raise TypeError("Deceleration must be a float or an int")
+		DECEL = round(DECEL)
+		self.__send_to_arm("DECEL {0}".format(DECEL))	
+
+	def DECEL_ALWAYS(self, DECEL:float|int):
+		if not isinstance(DECEL, float|int):
+			raise TypeError("Deceleration must be a float or an int")
+		DECEL = round(DECEL)
+		self.__send_to_arm("DECEL {0} ALWAYS".format(DECEL))
+
 	def SPEED(self, SPEED:float|int):
 		if not isinstance(SPEED, float|int):
 			raise TypeError("SPEED must be a float or an int")

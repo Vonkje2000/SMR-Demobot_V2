@@ -18,6 +18,8 @@
 	;
 	new_message = 0
 	overwrite_mode = 0
+	socket_ID = -1
+	TCP_listen_act = FALSE
 	;
 	MC EXECUTE promo_v2_front
 	TWAIT 1

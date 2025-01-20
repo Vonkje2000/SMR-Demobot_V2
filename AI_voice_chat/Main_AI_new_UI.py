@@ -132,11 +132,11 @@ def transcribe_audio():
 
     return transcription, azure_language_code
 
-def record_audio_until_silence(temp_audio_path, samplerate=16000, frame_duration_ms=30, silence_duration=2):
+def record_audio_until_silence(temp_audio_path, samplerate=8000, frame_duration_ms=10, silence_duration=2):
 	"""
 	Record audio until silence is detected, using WebRTC VAD.
 	"""
-	vad = webrtcvad.Vad(2)  # Level 3 is the most aggressive noise suppression
+	vad = webrtcvad.Vad(3)  # Level 3 is the most aggressive noise suppression
 	buffer = []
 	chunksize = int(samplerate * frame_duration_ms / 1000)
 	silence_counter = 0
@@ -185,26 +185,26 @@ def filter_text(transcription):
 	return transcription
 
 def generate_response(input_text, conversation_history, language_code):
-	#Generates GPT response using OpenAI based on the detected language.
-	messages = [{"role": "system", "content": detailed_prompt}] + conversation_history + [
-		{"role": "user", "content": input_text}]
+	# Generates GPT response using OpenAI based on the selected language.
+    messages = [{"role": "system", "content": detailed_prompt}] + conversation_history + [
+        {"role": "user", "content": input_text}]
 
-	# Set prompt and response language for GPT
-	if language_code == "en-GB":
-		prompt_language = "Respond in English."
-	elif language_code == "nl-BE":
-		prompt_language = "Respond in Nederlands."
-	else:
-		prompt_language = "Respond in the appropriate language."
+	# Set prompt and response language based on user's selection
+    if language_code == "en-GB":
+        prompt_language = "Respond in English."
+    elif language_code == "nl-NL":
+        prompt_language = "Respond in Nederlands."
+    else:
+        prompt_language = "Respond in the appropriate language."
 
 	# Add language-specific instruction
-	messages.insert(0, {"role": "system", "content": prompt_language})
+    messages.insert(0, {"role": "system", "content": prompt_language})
 
-	client = openai.Client()
-	response = client.chat.completions.create(
+    client = openai.Client()
+    response = client.chat.completions.create(
 		model="gpt-4o-2024-11-20", messages=messages, max_tokens=200, temperature=0
 	)
-	return response.choices[0].message.content
+    return response.choices[0].message.content
 
 def synthesize_speech(speech_config, text, language_code):
 	voice_mapping = {
@@ -223,29 +223,25 @@ def start_listening():
 
 	# Map session state language to the corresponding speech synthesis language code
 	listening_text = texts["listening"]
-	ui_language_code = "en-GB" if webpage_selected_language == "English" else "nl-NL"
-	synthesize_speech(speech_config, listening_text, ui_language_code)
+	response_language = "en-GB" if webpage_selected_language == "English" else "nl-NL"
+	synthesize_speech(speech_config, listening_text, response_language)
 
 	# Transcribe audio using Whisper
-	user_input, detected_language = transcribe_audio()
+	user_input, _ = transcribe_audio()
 		
 	if user_input:
 		global asked_question
 		global AI_response
 		asked_question = user_input
 
-		# Default to detected language
-		if detected_language:
-			response_language = detected_language
-		else:
-			response_language = "en-GB"  # Fallback to English if detection fails
-
-		# Generate and Play Bot Response
+		# Generate Bot Response in selected language
 		bot_response = generate_response(user_input, conversation_history, response_language)
-		bot_response = filter_text(bot_response)  # Filter the transcription
+		bot_response = filter_text(bot_response)  # Filter the response text
 		conversation_history.append({"role": "user", "content": user_input})
 		conversation_history.append({"role": "assistant", "content": bot_response})
 		AI_response = bot_response
+
+        # Synthesize response using the selected language's voice
 		synthesize_speech(speech_config, bot_response, response_language)
 
 # ================================ #

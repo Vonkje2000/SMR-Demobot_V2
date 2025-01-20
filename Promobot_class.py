@@ -323,6 +323,18 @@ class Robot_Hand(metaclass=Singleton):
 	def pistol(self):
 		self.__send("99000")
 
+	def magnet_ON(self):
+		self.__send("magnet_ON")
+
+	def magnet_OFF(self):
+		self.__send("magnet_OFF")
+	
+	def stop_state(self):
+		if (self.__send("pause_state") == "TRUE"):
+			return True
+		else:
+			return False
+
 	def __send(self, data:str):
 		data = data + "\n"
 		if self.Test_mode == False:
@@ -334,8 +346,10 @@ class Robot_Hand(metaclass=Singleton):
 			received = self.Serial.read_all().decode()
 			if (received != ""):
 				print(received)
+				return received
 		else:
 			print("Test_mode: " + data)
+			return "TRUE"
 
 	def __del__(self):
 		if(self.Serial.is_open):

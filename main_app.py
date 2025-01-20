@@ -36,6 +36,7 @@ app.add_url_rule('/joystick', view_func=joystick_server.joystick, methods=['POST
 app.add_url_rule('/tictactoe', view_func=tictactoe.tictactoe_index, methods=['GET'])
 app.add_url_rule('/tictactoe/move/<type>', view_func=tictactoe.make_move, methods=['POST'])
 app.add_url_rule('/tictactoe/restart/<mode>', view_func=tictactoe.restart, methods=['POST'])
+app.add_url_rule('/tictactoe/cleanup', view_func=tictactoe.cleanup, methods=['GET'])
 
 app.add_url_rule('/rockpaperscissors', view_func=RockPaperScissorsflask.RPS_index, methods=['GET'])
 app.add_url_rule('/rockpaperscissors/start_robot', view_func=RockPaperScissorsflask.start_signal, methods=['POST'])

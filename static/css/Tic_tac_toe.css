@@ -1,12 +1,12 @@
 *{
     margin: 0;
     padding: 0;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 body {
 	height:95%;
-    font-family: Arial, sans-serif;
-    text-align: center;
+  text-align: center;
 	display: block;
 	align-content: center;
 }
@@ -16,43 +16,51 @@ html {
   }
 
   .header {
-	width: 100%;
-	height: 10%;
-	background-color: #00e1ff;
-	color: #ffffff;
-	text-align: center;
-	font-size: 24px;
-	font-weight: bold;
-	position: absolute;
-	top: 0;
+    width: 100%;
+    height: 11%;
+    background-color: #009ee0;
+    color: #ffffff;
+    text-align: center;
+    font-size: 24px;
+    font-weight: bold;
+    position: absolute;
+    top: 0;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
   }
 
   .body {
-	display: block;
-	height: 55%;
-	width: 100%;
-	background-color: #ffffff;
-  }
+    display: flex; /* Use flexbox for layout */
+    flex-direction: column; /* Stack children vertically */
+    align-items: center; /* Center items horizontally */
+    justify-content: center; /* Center items vertically */
+    height: 80%; /* Adjust height to leave space for header and footer */
+    width: 100%;
+    background-color: #ffffff;
+}
 
 .footer {
 	width: 100%;
 	height: 10%; /* Adjust the height as needed */
-	background-color: #00e1ff;
+	background-color: #009ee0;
 	position: absolute;
 	bottom: 0;
   }
 
-.board {
-    display: grid;
-    grid-template-columns: repeat(3, 100px);
-    gap: 10px;
-    justify-content: center;
-    margin-top: 50px;
+
+  .board {
+    display: grid; /* Retain grid layout for cells */
+    grid-template-columns: repeat(3, 150px); /* Ensure cells are properly sized */
+    justify-content: center; /* Center grid horizontally */
+    row-gap: 10px;
+    column-gap: 40px;
+    margin-top: 20px;
 }
 
 .cell {
-    width: 100px;
-    height: 100px;
+    width: 180px;
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -65,31 +73,89 @@ html {
 	pointer-events: none;
 }
 
+.button-group {
+  margin-top: 25px; /* Add space above the buttons */
+  display: flex; /* Use flexbox for buttons */
+  justify-content: center; /* Center buttons horizontally */
+  gap: 20px; /* Add spacing between buttons */
+  padding-left: 25px;
+}
+
 .button {
-    display: inline-block;
-    padding: 10px 20px;
-    font-size: 18px;
-    margin: 10px;
-    color: white;
-    background-color: #007BFF;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    text-decoration: none;
+  display: inline-block;
+  padding: 40px 55px; /* Adjust button padding for better size */
+  font-size: 18px;
+  color: white;
+  background-color: #2a2929e6;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  text-decoration: none;
+  
 }
 
 .back-to-home {
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	padding: 10px 20px;
-	background-color: #000000;
-	color: #ffffff;
-	text-decoration: none;
-	border-radius: 5px;
-	font-weight: bold;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 35px 60px;
+  background-color: #000000;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 15px;
+  font-weight: bold;
+  font-size: 18px;
   }
 
   .back-to-home:hover {
 	background-color: #0056b3;
   }
+
+  #mode {
+    font-size: 25px; /* Adjust the font size as needed */
+    font-weight: bold; /* Optional: Make it bold for emphasis */
+    color: #333; /* Optional: Customize the text color */
+    margin-bottom: 20px; /* Optional: Add spacing below the heading */
+}
+
+
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it appears above other content */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background-color: #fff;
+    padding: 70px;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content p {
+    margin: 0 0 20px;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.modal-content button {
+    padding: 40px 60px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 22px;
+}
+
+.modal-content button:hover {
+    background-color: #0056b3;
+}

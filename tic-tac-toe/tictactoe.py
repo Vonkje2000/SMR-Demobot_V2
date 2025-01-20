@@ -237,5 +237,19 @@ def restart(mode):
 		'o_player' : 'Computer' if not isinstance(o_player, HumanPlayer) else 'Human'
 		})
 
+def cleanup():
+	global current_game
+	
+	# Save the current board state before resetting
+	previous_board = current_game.board.copy()
+
+	clean_up_board(previous_board)
+	reset_game(0)
+
+	return jsonify({
+		'board':'cleanup'
+		})
+	
+
 reset_game(0)
-start_game()	#TODO make this a saperate cal that gets run after the page is loaded
+#start_game()	#TODO make this a saperate cal that gets run after the page is loaded

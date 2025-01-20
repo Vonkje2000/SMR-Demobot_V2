@@ -13,19 +13,29 @@
 	<h1>Main Menu</h1>
 </div>
 
-<div class="body">
+<div class="body"> <!--- #TODO# Remove controls for finished product-->
+	<video controls autoplay loop width="1250" >
+		<source
+		src="static/videos/SMR1 2024-2025 Promotional Video.mp4" type="video/mp4" id="video">
+		Welcome to SMR Delft
+	</video>
 	<div class="User_interface">
-		<a href="tictactoe" class="button">Tic Tac Toe</a>
-		<a href="AI_voice_chat" class="button">AI Voice Chat</a>
-		<a href="Maze_game" class="button">Maze</a>
-		<a href="rockpaperscissors" class="button">Rock Paper Scisors</a>
-		<a href="Dance" class="button">Dance</a>
-		<a href="Machine_vision" class="button">Machine vision</a>
-	</div>
+		<div class="button-group">
+			<h2>Select a Mini Game:</h2>
+			<a href="rockpaperscissors" class="button">Rock Paper Scisors</a>
+			<a href="tictactoe" class="button">Tic Tac Toe</a>
+			<a href="Maze_game" class="button">Maze</a>
+		</div>
+		<div class="button-group">
+			<h2>Interact with Promobot:</h2>
+			<a href="AI_voice_chat" class="button">AI Voice Chat</a>
+			<a href="Machine_vision" class="button">Machine vision</a>
+			<a href="Dance" class="button">Dance</a>
+		</div>
 </div>
 
 <div class="footer"></div>
-<a href="index.html" class="back-to-home" id="Home_button">Back to home</a>
+
 <script src="static/scripts/main_page.js"></script>
 <script>setup()</script>
 </body>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock_Paper_Scissor</title>
+  <link rel="stylesheet" href="static/css/RPS_style.css">
+</head>
+
+<body>
+  <div class="header">
+    <h1>Welcome to the Rock-Paper-Scissor game!</h1>
+  </div>
+
+  <div class="instructions-container">
+    <button id="language-switch" class="language-switch">Switch to Dutch</button>
+    <h2 id="instructions-title">Instructions</h2>
+    <div id="instructions-en" class="instructions">
+      <ol>
+        <li>Begin the game by clicking on the green start button.</li>
+        <li>Once the button is pressed, a timer will count down from 3 seconds (3... 2... 1...)</li>
+        <li>At the end of the countdown, choose one of the following hand gestures:
+          <img src="{{ url_for('static', filename='images/hand_gesture.png') }}" alt="Hand Gesture">
+        </li>
+        <li>After the countdown, the robot arms vision system will capture a photo of your hand gesture.</li>
+        <li>Press the green button to restart the game and challenge the robot to another round!</li>
+      </ol>
+    </div>
+    <div id="instructions-nl" class="instructions" style="display: none;">
+      <ol>
+        <li>Begin het spel door op de groene startknop te klikken.</li>
+        <li>Nadat de knop is ingedrukt, telt een timer af van 3 seconden (3... 2... 1...)</li>
+        <li>Aan het einde van de aftelling, kies een van de volgende handgebaren:
+          <img src="{{ url_for('static', filename='images/hand_gesture.png') }}" alt="Hand Gesture">
+        </li>
+        <li>Na de aftelling maakt het visiesysteem van de robotarm een foto van je handgebaar.</li>
+        <li>Druk op de groene knop om het spel opnieuw te starten en de robot uit te dagen voor een nieuwe ronde!</li>
+      </ol>
+    </div>
+  </div>
+
+  <div class="footer"></div>
+  <a href="index.html" class="back-to-home">Back to home</a>
+
+  <div id="result-image-container" class="result-image-container"></div>
+
+  <div class="start-button-container">
+    <button id="start-button">START</button>
+    <div id="timer" class="timer"></div>
+  </div>
+
+  <!-- Placeholder for the image -->
+  <div id="image-container" class="image-container"></div>
+
+  <script src="static/scripts/RPS_script.js"></script>
+</body>
+</html>

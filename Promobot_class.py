@@ -3,6 +3,8 @@ import serial
 from time import sleep
 import os
 import sys
+import cv2
+import threading
 
 class Singleton(type):
 	_instances = {}
@@ -12,15 +14,36 @@ class Singleton(type):
 		return cls._instances[cls]
 
 class Kawasaki_arm(object):
-	def __init__(self, ip:str, port:int):
+	def __init__(self, ip:str, port:int, Test_mode:bool=False):
 		if not isinstance(ip, str):
 			raise TypeError("ip must be a string")
 		if not isinstance(port, int):
 			raise TypeError("port must be an int")
+		if not isinstance(Test_mode, bool):
+			raise TypeError("Test_mode must be an bool")
 		self.ip = ip
 		self.port = port
 		self.socket_connection = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-		self.__open_Connection()
+		self.Test_mode=Test_mode
+		if self.Test_mode == False:
+			self.__open_Connection()
+
+	def PAUSE(self):
+		self.__send_to_arm("PAUSE")
+
+	def CONTINUE(self):
+		self.__send_to_arm("CONTINUE")
+
+	def WAIT_UNTIL_DONE(self):	#only works when overwrite_mode = TRUE
+		self.__send_to_arm("WAIT_UNTIL_DONE")
+
+	def overwrite_mode(self, value:bool):
+		if not isinstance(value, bool):
+			raise TypeError("value must be a bool")
+		if value:
+			self.__send_to_arm("Overwrite_mode ENABLE")
+		else:
+			self.__send_to_arm("Overwrite_mode DISABLE")
 
 	def printIP(self):
 		print(self.ip)
@@ -31,6 +54,26 @@ class Kawasaki_arm(object):
 	def HOME2(self):
 		self.__send_to_arm("HOME 2")
 
+	def HERE(self):
+		pos = self.__send_to_arm("HERE JT")
+		pos = pos.replace(" ", "")
+		split = pos.split(",")
+		pos_array = []
+		for x in range(len(split)):
+			pos_array.append(float(split[x])) 
+		print(pos_array)
+		return pos_array
+
+	def HERE_TRANS(self):
+		pos = self.__send_to_arm("HERE POS")
+		pos = pos.replace(" ", "")
+		split = pos.split(",")
+		pos_array = []
+		for x in range(len(split)):
+			pos_array.append(float(split[x])) 
+		print(pos_array)
+		return pos_array
+
 	def CP(self, value:bool):
 		if not isinstance(value, bool):
 			raise TypeError("value must be a bool")
@@ -38,6 +81,30 @@ class Kawasaki_arm(object):
 			self.__send_to_arm("CP ON")
 		else:
 			self.__send_to_arm("CP OFF")
+
+	def ACCEL(self, ACCEL:float|int):
+		if not isinstance(ACCEL, float|int):
+			raise TypeError("Acceleration must be a float or an int")
+		ACCEL = round(ACCEL)
+		self.__send_to_arm("ACCEL {0}".format(ACCEL))
+
+	def ACCEL_ALWAYS(self, ACCEL:float|int):
+		if not isinstance(ACCEL, float|int):
+			raise TypeError("Acceleration must be a float or an int")
+		ACCEL = round(ACCEL)
+		self.__send_to_arm("ACCEL {0} ALWAYS".format(ACCEL))
+
+	def DECEL(self, DECEL:float|int):
+		if not isinstance(DECEL, float|int):
+			raise TypeError("Deceleration must be a float or an int")
+		DECEL = round(DECEL)
+		self.__send_to_arm("DECEL {0}".format(DECEL))	
+
+	def DECEL_ALWAYS(self, DECEL:float|int):
+		if not isinstance(DECEL, float|int):
+			raise TypeError("Deceleration must be a float or an int")
+		DECEL = round(DECEL)
+		self.__send_to_arm("DECEL {0} ALWAYS".format(DECEL))
 
 	def SPEED(self, SPEED:float|int):
 		if not isinstance(SPEED, float|int):
@@ -156,19 +223,24 @@ class Kawasaki_arm(object):
 		self.CP(True)
 
 	def __open_Connection(self):
-		try:
-			self.socket_connection.connect((self.ip, self.port))
-		except:
-			raise ConnectionError("Could not connect to kawasaki robot arm on IP: {0}, Port: {1}".format(self.ip, self.port))
+		if self.Test_mode == False:
+			try:
+				self.socket_connection.connect((self.ip, self.port))
+			except:
+				raise ConnectionError("Could not connect to kawasaki robot arm on IP: {0}, Port: {1}".format(self.ip, self.port))
 
 	def __close_Connection(self):
-		self.socket_connection.close()
+		if self.Test_mode == False:
+			self.socket_connection.close()
 
 	def __send_to_arm(self, data:str):
 		if not isinstance(data, str):
 			raise TypeError("ip must be a string")
-		self.__receive_from_arm()
-		self.socket_connection.send(data.encode('utf-8'))
+		if self.Test_mode == False:
+			self.socket_connection.send(data.encode('utf-8'))
+			return self.__receive_from_arm()
+		else:
+			print("Test_mode: " + data)
 
 	def __receive_from_arm(self):
 		return self.socket_connection.recv(1024).decode()
@@ -178,15 +250,20 @@ class Kawasaki_arm(object):
 			self.__close_Connection()
 
 class Kawasaki_1(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip = "192.168.0.1", port = 42069):
-		super().__init__(ip, port)
+	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
+		super().__init__(ip, port, Test_mode)
 
 class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip = "192.168.0.3", port = 42069):
-		super().__init__(ip, port)
+	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
+		super().__init__(ip, port, Test_mode)
 
 class Robot_Hand(metaclass=Singleton):
-	def __init__(self, port = "COM8") -> None:
+	def __init__(self, port:str = "COM8", Test_mode:bool=False) -> None:
+		if not isinstance(port, str):
+			raise TypeError("port must be a string")
+		if not isinstance(Test_mode, bool):
+			raise TypeError("Test_mode must be a bool")
+		self.Test_mode = Test_mode
 		self.Serial = serial.Serial()
 		self.Serial.port = port
 		self.Serial.baudrate = 9600
@@ -194,14 +271,15 @@ class Robot_Hand(metaclass=Singleton):
 		self.Serial.parity = "N"
 		self.Serial.stopbits = 1
 		self.Serial.timeout = None
-		try:
-			self.Serial.open()
-		except:
-			if sys.platform == "win32":
-				print ("You are using windows and your port is wrong so I opened device manager for you :)")
-				os.system('devmgmt.msc')
-			raise ConnectionError("Could not open the connection on Serial {0}".format(self.Serial.port))
-		sleep(0.1)
+		if self.Test_mode == False:
+			try:
+				self.Serial.open()
+			except:
+				if sys.platform == "win32":
+					print ("You are using windows and your port is wrong so I opened device manager for you :)")
+					os.system('devmgmt.msc')
+				raise ConnectionError("Could not open the connection on Serial {0}".format(self.Serial.port))
+			sleep(0.1)
 		self.__send("00000")
 
 	def fingers(self, thumb:int, index:int, middle:int, ring:int, pinkie:int):
@@ -241,19 +319,71 @@ class Robot_Hand(metaclass=Singleton):
 
 	def rock_and_roll(self):
 		self.__send("99009")
+	
+	def pistol(self):
+		self.__send("99000")
 
 	def __send(self, data:str):
 		data = data + "\n"
-		try:
-			self.Serial.write(data.encode('utf-8'))
-		except:
-			raise ConnectionError ("Serial device disconnected")
-		sleep(0.1)
-		received = self.Serial.read_all().decode()
-		if (received != ""):
-			print(received)
+		if self.Test_mode == False:
+			try:
+				self.Serial.write(data.encode('utf-8'))
+			except:
+				raise ConnectionError ("Serial device disconnected")
+			sleep(0.1)
+			received = self.Serial.read_all().decode()
+			if (received != ""):
+				print(received)
+		else:
+			print("Test_mode: " + data)
 
 	def __del__(self):
 		if(self.Serial.is_open):
 			self.Serial.close()
 			#print("close serial {0}".format(self.Serial.port))
+
+class Intel_Camera(metaclass=Singleton):
+	def __init__(self, cameranumbr:int = 1, Demo_Mode:bool=False,Test_Mode:bool=False) -> None:
+		if not isinstance(cameranumbr, int):
+			raise TypeError("Camera number must be an int")
+		if not isinstance(Demo_Mode, bool):
+			raise TypeError("Demo Mode must be a bool")
+		if not isinstance(Test_Mode, bool):
+			raise TypeError("Test Mode must be a bool")
+		self.Test_Mode = Test_Mode
+		self.Demo_Mode = Demo_Mode
+		if Test_Mode == False:
+			self.camera = cv2.VideoCapture(cameranumbr)
+		else:
+			print("Test Mode: Camera initialized")
+		self.lock = threading.Lock()
+		self.t = threading.Thread(target=self.__reader)
+		self.t.daemon = True
+		self.t.start()
+
+	def __reader(self):
+		while True:
+			if self.Test_Mode == False:
+				with self.lock:
+					ret, frame = self.camera.read()
+				if not ret:
+					break
+			else:
+				frame = cv2.imread("test_image.jpg")
+			if self.Demo_Mode == True:
+				frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+				cv2.imshow("Live Feed", frame)
+				if cv2.waitKey(1) & 0xFF == ord('q'):
+					break
+		self.camera.release()
+		cv2.destroyAllWindows()
+	
+	def read(self):
+		if self.Test_Mode == False:
+			with self.lock:
+				ret, frame = self.camera.read()
+			if not ret:
+				return None
+			return frame
+		else:
+			return cv2.imread("test_image.jpg")

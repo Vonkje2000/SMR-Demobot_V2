@@ -6,12 +6,13 @@ opencv-python
 deepface
 tf_keras
 ultralytics
-pyrealsense2
+pyrealsense
 moviepy
 imageio-ffmpeg
 pyserial
 streamlit 
-azure-cognitiveservices-speech 
+azure-cognitiveservices-speech
+azure-cognitiveservices-vision-computervision
 openai
 streamlit_chat
 soundfile

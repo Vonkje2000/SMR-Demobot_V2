@@ -10,6 +10,7 @@ body {
 	display: block;
 	background-color: #ffffff;
 	overflow: hidden;  /* Prevents scrolling */
+	touch-action: pan-x pan-y;
 }
 
 html {
@@ -38,15 +39,36 @@ html {
 	height: 80%;
 	width: 100%;
 	background-color: #ffffff;
+	overflow: hidden; /* Prevent internal scrollbars */
 }
 
 .footer {
-	width: 100%;
-	height: 100px; /* Adjust the height as needed */
-	background-color: #009ee0;
-	position: absolute;
-	bottom: 0;
+    width: 100%;
+    height: 100px; /* Adjust the height as needed */
+    background-color: #009ee0;
+    position: absolute;
+    bottom: 0;
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Push content to the edges */
+    align-items: center; /* Center text vertically */
+    padding: 0 20px; /* Add padding to ensure proper spacing from edges */
+    box-sizing: border-box; /* Ensure padding doesn't affect total width */
 }
+
+.footer-text-left {
+    color: white;
+    font-size: 26px; /* Adjust text size as needed */
+    font-weight: bold;
+    text-align: left; /* Align text to the left */
+}
+
+.footer-text-right {
+    color: white;
+    font-size: 26px; /* Adjust text size as needed */
+    font-weight: bold;
+    text-align: right; /* Align text to the right */
+}
+
 
 .Interface {
 	display: flex;

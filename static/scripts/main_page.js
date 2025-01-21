@@ -8,3 +8,9 @@ function setup(){
     document.getElementById('video').parentElement.load();
 
 }
+
+
+document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+});
+

@@ -113,6 +113,10 @@ async function closeModal() {
 	}
 }
 
+document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+});
+
 function setup(){
 	document.getElementById('board').style.pointerEvents = 'none';
 	//if(document.getElementById("players").textContent === ''){

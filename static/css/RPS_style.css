@@ -32,9 +32,9 @@ body {
 .instructions-container {
   width: 600px; /* Adjust the width as needed */
   padding-left: 30px;
-  padding-right: 10px;
+  padding-right: 15px;
   padding-top: 15px;
-  padding-bottom: 10px;
+  padding-bottom: 15px;
   border: 1px solid #000;
   background-color: #f9f9f9;
   position: absolute;

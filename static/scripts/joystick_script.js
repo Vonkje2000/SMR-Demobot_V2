@@ -76,6 +76,10 @@ function drag(e) {
   }
 }
 
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+});
+
 function stopDrag() {
   dragging = false;
   joystick.style.left = '50%';
@@ -91,3 +95,5 @@ function stopDrag() {
     body: JSON.stringify({ x: parseFloat(0), y: parseFloat(0) })
   })
 }
+
+

@@ -27,7 +27,7 @@ function start_listen() {
 function dutch_button(){
 	if(!listen_interval){
 	document.getElementById("language_text").textContent = "Wijzig de taal";
-	document.getElementById("Listen_button").textContent = "Begin Met Praten";
+	document.getElementById("Listen_button").textContent = "Start Chat";
 	document.getElementById("Home_button").textContent = "Terug naar Start";
 	document.getElementById("Promobot_Titel").textContent = "Smart Manufacturing & Robotics Minor Vertegenwoordiger";
 	
@@ -50,7 +50,7 @@ function dutch_button(){
 function english_button(){
 	if(!listen_interval){
 	document.getElementById("language_text").textContent = "Change the language";
-	document.getElementById("Listen_button").textContent = "Start Talking";
+	document.getElementById("Listen_button").textContent = "Start Chat";
 	document.getElementById("Home_button").textContent = "Back to Home";
 	document.getElementById("Promobot_Titel").textContent = "Smart Manufacturing & Robotics Minor Representative";
 	
@@ -142,6 +142,10 @@ var inactivityTime = function () {
     }
 };
 
+document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+});
+
 function setup(){
 	dutch_button()
 
@@ -149,3 +153,4 @@ function setup(){
 	document.getElementsByClassName("AI_response")[0].style.visibility = "hidden";
 	inactivityTime();
 }
+

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+<link rel="shortcut icon" href="static/images/Tab_Icon_1.png">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,11 +9,11 @@
 </head>
 
 <div class="header">
-	<h1>Tic Tac Toe</h1>
+	<h1>Welcome to the Tic-Tac-Toe game!</h1>
 </div>
 
 <body>
-    <h3 id="mode">EASY MODE</h3>
+    <h3 id="mode">Select a mode</h3>
     <div class="info">
         <p id="players"></p> <!-- Shows who is X and O -->
     </div>
@@ -27,11 +28,23 @@
 		<div class="cell" id="7" onclick="player_move(7)"></div>
 		<div class="cell" id="8" onclick="player_move(8)"></div>
     </div>
-    <p id="status"></p>
-    <a class="button" id="random" onclick="start_game('EASY',  'EASY MODE')">Start random</a>
-	<a class="button" id="smart"  onclick="start_game('SMART', 'SMART MODE');">Start smart</a>
+	<div class="button-group">
+		<a class="button" id="random" onclick="start_game('EASY',  'EASY MODE')">Start Easy mode</a>
+		<a class="button" id="smart"  onclick="start_game('SMART', 'HARD MODE');">Start Hard mode</a>
+	</div>
+
+	<div id="status-modal" class="modal">
+		<div class="modal-content">
+			<p id="status"></p>
+			<button id="close-modal" onclick="closeModal()">Clean the board</button>
+		</div>
+	</div>
+	
     
-	<div class="footer"></div>
+	<div class="footer">
+		<div class="footer-text-left">Smart Manufacturing & Robotics Delft</div>
+		<div class="footer-text-right">Promo Bot</div>
+	</div>
 	<a href="index.html" class="back-to-home" id="Home_button">Back to home</a>
     <script src="static/scripts/Tic_tac_toe.js"></script>
 	<script>setup()</script>

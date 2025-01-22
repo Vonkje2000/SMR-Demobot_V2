@@ -1,3 +1,8 @@
+*{
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	
+}
+
 body {
   margin: 0;
   display: flex;
@@ -5,16 +10,22 @@ body {
   align-items: center;
   height: 100vh;
   background-color: #ffffff;
+  touch-action: pan-x pan-y;
 }
 
 .header {
-  width: 100%;
-  background-color: #00e1ff;
-  color: #ffffff;
-  text-align: center;
-  padding: 20px 0;
-  font-size: 24px;
-  font-weight: bold;
+	width: 100%;
+	height: 11%;
+	background-color: #009ee0;
+	color: #ffffff;
+	text-align: center;
+	font-size: 24px;
+	font-weight: bold;
+	position: absolute;
+	top: 0;
+	display: flex;
+	justify-content: center; /* Center horizontally */
+	align-items: center; /* Center vertically */
 }
 
 .coordinates {
@@ -31,22 +42,43 @@ body {
 
 .footer {
   width: 100%;
-  height: 80px; /* Adjust the height as needed */
-  background-color: #00e1ff;
+  height: 100px; /* Adjust the height as needed */
+  background-color: #009ee0;
   position: absolute;
   bottom: 0;
+  display: flex; /* Use flexbox for layout */
+  justify-content: space-between; /* Push content to the edges */
+  align-items: center; /* Center text vertically */
+  padding: 0 20px; /* Add padding to ensure proper spacing from edges */
+  box-sizing: border-box; /* Ensure padding doesn't affect total width */
 }
+
+.footer-text-left {
+  color: white;
+  font-size: 26px; /* Adjust text size as needed */
+  font-weight: bold;
+  text-align: left; /* Align text to the left */
+}
+
+.footer-text-right {
+  color: white;
+  font-size: 26px; /* Adjust text size as needed */
+  font-weight: bold;
+  text-align: right; /* Align text to the right */
+}
+
 
 .back-to-home {
   position: absolute;
   top: 10px;
   left: 10px;
-  padding: 10px 20px;
+  padding: 35px 60px;
   background-color: #000000;
   color: #ffffff;
   text-decoration: none;
-  border-radius: 5px;
+  border-radius: 15px;
   font-weight: bold;
+  font-size: 18px;
 }
 
 .back-to-home:hover {
@@ -54,19 +86,19 @@ body {
 }
 
 .joystick-container {
-  width: 300px;
-  height: 300px;
+  width: 500px;
+  height: 500px;
   background: rgb(117, 117, 117);
   border: 4px solid #000000;
   border-radius: 50%;
   position: relative;
   touch-action: none; /* Disable default gestures */
-  margin-top: 80px; /* Add some space below the header */
+  margin-top: 300px; /* Add some space below the header */
 }
 
 .joystick {
-  width: 100px;
-  height: 100px;
+  width: 200px;
+  height: 200px;
   background-color: #ff0000;
   border-radius: 50%;
   position: absolute;
@@ -78,7 +110,7 @@ body {
   align-items: center;
   color: #ffffff;
   font-weight: bold;
-  font-size: 20px;
+  font-size: 40px;
   text-align: center;
 }
 
@@ -88,7 +120,7 @@ body {
 
 .joystick-stick {
   width: 20px; /* Adjust the width as needed */
-  height: 100px; /* Adjust the height as needed */
+  height: 10px; /* Adjust the height as needed */
   background-color: #000000;
   position: absolute;
   top: 50%;

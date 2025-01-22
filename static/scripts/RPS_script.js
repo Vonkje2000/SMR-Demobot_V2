@@ -141,3 +141,7 @@ async function fetchImage() {
   	startButton.style.display = 'block';
 	timerElement.style.display = 'none';
 }
+
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+});

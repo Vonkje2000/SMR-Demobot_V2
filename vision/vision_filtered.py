@@ -1,14 +1,7 @@
 from flask import Flask, render_template, Response
 import cv2
-import threading
-import numpy as np
 from flask_socketio import SocketIO
 from ultralytics import YOLO
-# import torch
-# import torchvision.transforms as T
-# from torchvision.models.segmentation import fcn_resnet50
-# import mediapipe as mp
-
 
 # Initialize Flask app and SocketIO
 app = Flask(__name__)
@@ -76,6 +69,7 @@ def apply_solarize(frame, threshold=128):
     frame[frame > threshold] = 255 - frame[frame > threshold]
     return frame
 
+#TODO Replace the 1-5 for the names of the filters so that every body can understand what each filter does
 def apply_filter(filter_id, frame):
     # Apply the selected filter
     if filter_id == 1:  # People detection

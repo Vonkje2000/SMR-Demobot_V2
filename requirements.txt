@@ -18,3 +18,4 @@ streamlit_chat
 soundfile
 sounddevice
 webrtcvad-wheels
+ultralytics

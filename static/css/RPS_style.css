@@ -31,16 +31,19 @@ body {
 
 .instructions-container {
   width: 600px; /* Adjust the width as needed */
-  padding: 30px;
+  padding-left: 30px;
+  padding-right: 10px;
+  padding-top: 15px;
+  padding-bottom: 10px;
   border: 1px solid #000;
   background-color: #f9f9f9;
   position: absolute;
   left: 10px;
-  top: 180px; /* Adjust the top position as needed */
+  top: 140px; /* Adjust the top position as needed */
 }
 
 .instructions-container h2 {
-  margin-top: 20px;
+  margin-top: 10px;
   text-align: center;
 }
 
@@ -76,8 +79,8 @@ body {
 }
 
 .instructions li {
-  padding-bottom: 12px;
-  font-size: 25px;
+  padding-bottom: 10px;
+  font-size: 22px;
 }
 
 .instructions img {

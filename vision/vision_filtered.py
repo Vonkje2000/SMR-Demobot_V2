@@ -2,23 +2,25 @@ from flask import Flask, render_template, Response
 import cv2
 from flask_socketio import SocketIO
 from ultralytics import YOLO
+import sys
+import os
+sys.path.append(os.path.abspath(r"../SMR-Demobot_V2/"))
+from Promobot_class import Intel_Camera
+Realsense = Intel_Camera()
 
 # Initialize Flask app and SocketIO
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-# Initialize webcam
-camera = cv2.VideoCapture(0)
-
 #load the models
-model = YOLO('yolov8n.pt')
+model = YOLO('yolov8n.pt', verbose=False)
 
 # Load the Haar cascade
 face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
 
 def detect_people(frame):
    # Run YOLO inference
-    results = model(frame)
+    results = model.predict(frame, conf=0.4, save=False, show=False, verbose=False)
 
     # Draw bounding boxes for detected people
     for result in results[0].boxes:
@@ -27,9 +29,10 @@ def detect_people(frame):
             cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
     return frame
 
+# not in use function
 def detect_non_people_objects(frame):
     # Run YOLO inference
-    results = model(frame)
+    results = model.predict(frame, conf=0.4, save=False, show=False, verbose=False)
 
     # Draw bounding boxes for non-person objects
     for result in results[0].boxes:
@@ -85,26 +88,18 @@ def apply_filter(filter_id, frame):
     else:  # outline
         return apply_edges(frame)
 
+#TODO THIS IS A MEMORY LEAK IT NEVER STOPS TAKING PICTURES
+#IT ALSO STARTS MY FANS INSTANTLY
 def generate_frames(filter_id):
     while True:
-        success, frame = camera.read()
-        if not success:
-            break
-        else:
-            frame = apply_filter(filter_id, frame)
-            _, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        frame = Realsense.read()
+        frame = apply_filter(filter_id, frame)
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-#TODO fix this becouse the last changes has not been tested
-@app.route('/')
-def index():
+def vision_index():
     return render_template('vision_index.html')
 
-@app.route('/video_feed/<int:filter_id>')
 def video_feed(filter_id):
     return Response(generate_frames(filter_id), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-if __name__ == "__main__":
-    socketio.run(app,debug=False, use_reloader=False)

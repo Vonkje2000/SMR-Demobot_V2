@@ -10,7 +10,6 @@ from Promobot_class import Kawasaki_2, Robot_Hand, Intel_Camera
 
 # Variabelen en initiële setup (camera, model, robot, etc.)
 model = YOLO('Rockpaperscissor/best.pt', verbose=False)
-running = True
 
 # Resultaten en foto variabelen
 captured_image_path = None

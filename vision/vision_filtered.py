@@ -97,7 +97,7 @@ def generate_frames(filter_id):
             yield (b'--frame\r\n'
                    b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-
+#TODO fix this becouse the last changes has not been tested
 @app.route('/')
 def index():
     return render_template('vision_index.html')

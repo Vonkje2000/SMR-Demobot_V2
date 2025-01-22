@@ -1,5 +1,6 @@
 #include <Wire.h>
 #include <Adafruit_PWMServoDriver.h>
+#include <FastLED.h>
 
 // Initialize the Adafruit PWM Servo Driver
 Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
@@ -11,6 +12,15 @@ Adafruit_PWMServoDriver pwm = Adafruit_PWMServoDriver();
 // 3 Ring finger
 // 4 Little finger
 
+#define Magnet_pin 5
+#define Magnet_PWM 6
+
+#define pause_button 2
+
+#define LED_DATA_PIN 11
+#define NUM_LEDS 420 //60 leds/m	7 meter strip
+CRGB leds[NUM_LEDS];
+
 void setup() {
     Serial.begin(9600);
 
@@ -20,28 +30,37 @@ void setup() {
 
     // Set initial servo positions
     set_servos(0, 0, 0, 0, 0);
+
+	// Set IO Magnet
+	pinMode(Magnet_pin, OUTPUT);
+	pinMode(Magnet_PWM, OUTPUT);
+	digitalWrite(Magnet_pin, 0);
+	analogWrite(Magnet_PWM, 0);
+
+	// Set IO Pause button
+	pinMode(pause_button, INPUT_PULLUP);
+	attachInterrupt(digitalPinToInterrupt(pause_button), ISR_pause_button, CHANGE);
+
+	//Set IO LED strip
+	FastLED.addLeds<NEOPIXEL, LED_DATA_PIN>(leds, NUM_LEDS);
+	for (uint16_t i = 0; i < NUM_LEDS; i++){
+		leds[i].setRGB( 0, 0, 0);
+	}
 }
 
-char receive_buffer[20] = {0};
-uint8_t buffer_index = 0;
-uint8_t receive_done = 0;
+String receive_buffer = "";
+uint8_t led_update_bit = 0;
+
+volatile uint8_t pause_state = false;
 
 void loop() {
-  //Serial.availible does not register more than 1 character on the serial interface because the baute rate is to slow.
-	//It works with higher baute rates but those baute rates are instable with an arduino uno.
-	//To solve the issue that the uC is to fast without being blocking in the code I added an receive_done bit to know that the end of the message is received.
-	//This character must be a character with an ascii value lower than 32 like an enter or a carage return character.
-    while (Serial.available()) {
-        char received_character = Serial.read();
-        if (received_character > 31) {
-            receive_buffer[buffer_index] = received_character;
-            buffer_index++;
-        } else {
-            receive_done = 1;
-        }
-    }
+	receive_buffer =  Serial.readStringUntil('\n');
 
-    if (buffer_index == 5 && receive_done) {
+	if (digitalRead(pause_button)) {
+		pause_state = true;
+	}
+
+    if (receive_buffer.length() == 5) {
         //for (uint8_t i = 0; i < 5; i++) { Serial.println(receive_buffer[i]); }	// for debugging only
 
         uint8_t legal_input = 1; //checks if the 5 character input is a legal input for the convertion.
@@ -60,22 +79,34 @@ void loop() {
                 20 * (receive_buffer[4] - '0')
             );
         }
-    } else if (receive_done) {
-        uint8_t i = 0;
-        while (receive_buffer[i] != 0) {
-            Serial.print(receive_buffer[i]);
-            i++;
-        }
-        Serial.println();
+    } else if (receive_buffer != "") {
+		if(receive_buffer.equals("pause_state")){
+			if (pause_state){
+				Serial.println("TRUE");
+				pause_state = false;
+			}
+			else {
+				Serial.println("FALSE");
+			}
+		}
+		else if(receive_buffer.equals("magnet ON")){
+			digitalWrite(Magnet_pin, 1);
+			digitalWrite(Magnet_PWM, 1);
+		}
+		else if(receive_buffer.equals("magnet OFF")){
+			digitalWrite(Magnet_pin, 0);
+			digitalWrite(Magnet_PWM, 0);
+		}
+		else {
+			//Serial.println(receive_buffer.length());
+        	Serial.println(receive_buffer);
+		}
     }
 
-    if (receive_done) {
-        for (uint8_t i = 0; i < sizeof(receive_buffer); i++) {
-            receive_buffer[i] = 0;
-        }
-        buffer_index = 0;
-        receive_done = 0;
-    }
+	if (bitRead(millis(), 11) == led_update_bit){
+		FastLED.show();
+		led_update_bit != led_update_bit;
+	}
 }
 
 // Function to set servos to the given angles
@@ -94,4 +125,8 @@ void set_servos(uint8_t angle_s0, uint8_t angle_s1, uint8_t angle_s2, uint8_t an
     for (uint8_t i = 0; i < 5; i++) {
         pwm.setPWM(i, 4095-servo_pulses[i], servo_pulses[i]);
     }
+}
+
+void ISR_pause_button(){
+	pause_state = true;
 }

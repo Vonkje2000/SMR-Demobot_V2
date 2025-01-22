@@ -90,6 +90,10 @@ html {
 .cell.taken {
     cursor: not-allowed;
 	pointer-events: none;
+	background-color: #00e1ff;
+	color: #ffffff;
+	font-size: 48px;
+	font-weight: bold;
 }
 
 .button-group {

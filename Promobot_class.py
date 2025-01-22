@@ -250,11 +250,11 @@ class Kawasaki_arm(object):
 			self.__close_Connection()
 
 class Kawasaki_1(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
+	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
 		super().__init__(ip, port, Test_mode)
 
 class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
+	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
 		super().__init__(ip, port, Test_mode)
 
 class Robot_Hand(metaclass=Singleton):
@@ -323,6 +323,18 @@ class Robot_Hand(metaclass=Singleton):
 	def pistol(self):
 		self.__send("99000")
 
+	def magnet_ON(self):
+		self.__send("magnet_ON")
+
+	def magnet_OFF(self):
+		self.__send("magnet_OFF")
+	
+	def stop_state(self):
+		if (self.__send("pause_state") == "TRUE"):
+			return True
+		else:
+			return False
+
 	def __send(self, data:str):
 		data = data + "\n"
 		if self.Test_mode == False:
@@ -334,8 +346,10 @@ class Robot_Hand(metaclass=Singleton):
 			received = self.Serial.read_all().decode()
 			if (received != ""):
 				print(received)
+				return received
 		else:
 			print("Test_mode: " + data)
+			return "TRUE"
 
 	def __del__(self):
 		if(self.Serial.is_open):
@@ -343,7 +357,7 @@ class Robot_Hand(metaclass=Singleton):
 			#print("close serial {0}".format(self.Serial.port))
 
 class Intel_Camera(metaclass=Singleton):
-	def __init__(self, cameranumbr:int = 1, Demo_Mode:bool=False,Test_Mode:bool=False) -> None:
+	def __init__(self, cameranumbr:int = 0, Demo_Mode:bool=False,Test_Mode:bool=False) -> None:
 		if not isinstance(cameranumbr, int):
 			raise TypeError("Camera number must be an int")
 		if not isinstance(Demo_Mode, bool):

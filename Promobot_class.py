@@ -250,11 +250,11 @@ class Kawasaki_arm(object):
 			self.__close_Connection()
 
 class Kawasaki_1(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
+	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
 		super().__init__(ip, port, Test_mode)
 
 class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
+	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
 		super().__init__(ip, port, Test_mode)
 
 class Robot_Hand(metaclass=Singleton):

@@ -6,7 +6,7 @@ opencv-python
 deepface
 tf_keras
 ultralytics
-pyrealsense
+pyrealsense2
 moviepy
 imageio-ffmpeg
 pyserial

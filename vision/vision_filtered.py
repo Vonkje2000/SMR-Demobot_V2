@@ -42,20 +42,20 @@ def detect_non_people_objects(frame):
     
     return frame
 
-def blur_faces(frame):
-    # Convert the frame to grayscale for Haar Cascade
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
+# def blur_faces(frame):
+#     # Convert the frame to grayscale for Haar Cascade
+#     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+#     faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5, minSize=(30, 30))
     
-    for (x, y, w, h) in faces:
-        # Extract the face region
-        face_region = frame[y:y+h, x:x+w]
-        # Apply Gaussian blur to the face region
-        blurred_face = cv2.GaussianBlur(face_region, (99, 99), 30)
-        # Replace the original face region with the blurred one
-        frame[y:y+h, x:x+w] = blurred_face
+#     for (x, y, w, h) in faces:
+#         # Extract the face region
+#         face_region = frame[y:y+h, x:x+w]
+#         # Apply Gaussian blur to the face region
+#         blurred_face = cv2.GaussianBlur(face_region, (99, 99), 30)
+#         # Replace the original face region with the blurred one
+#         frame[y:y+h, x:x+w] = blurred_face
 
-    return frame
+#     return frame
 
 def apply_cartoon(frame):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
@@ -77,8 +77,8 @@ def apply_filter(filter_id, frame):
     # Apply the selected filter
     if filter_id == 1:  # People detection
         return detect_people(frame)
-    elif filter_id == 2:  # Face blur
-        return blur_faces(frame)
+    # elif filter_id == 2:  # Face blur
+    #     return blur_faces(frame)
     elif filter_id == 3:  # grayscale
          return cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     elif filter_id == 4:  # non people detection

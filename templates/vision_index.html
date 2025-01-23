@@ -6,21 +6,33 @@
     <title>Robot Vision</title>
     <link rel="stylesheet" href="static/css/vision_style.css">
 </head>
-
+<body>
 <div class="header">
-    <h1> Vision </h1>
+    <h1>Vision</h1>
 </div>
 
 <div class="body">
-    <div class="video-container">
-        <div><img class="video-box" src="/Machine_vision/video_feed/1" alt="Filter 1"></div>
-        <div><img class="video-box" src="/Machine_vision/video_feed/2" alt="Filter 2"></div>
-        <div><img class="video-box" src="/Machine_vision/video_feed/3" alt="Filter 3"></div>
-        <div><img class="video-box" src="/Machine_vision/video_feed/4" alt="Filter 4"></div>
-        <div><img class="video-box" src="/Machine_vision/video_feed/5" alt="Filter 5"></div>
-        <div><img class="video-box" src="/Machine_vision/video_feed/6" alt="Filter 6"></div>
+    <div class="main-container">
+        <!-- Left Side: Main Filter -->
+        <div class="Main_Filter">
+            <img class="video-box" src="/Machine_vision/video_feed/1" alt="Main Filter">
+        </div>
+
+        <!-- Right Side: Video Filters in a Column -->
+        <div class="video-container">
+            <img class="video-box" src="/Machine_vision/video_feed/4" alt="Filter 4">
+            <img class="video-box" src="/Machine_vision/video_feed/5" alt="Filter 5">
+            <img class="video-box" src="/Machine_vision/video_feed/6" alt="Filter 6">
+        </div>
     </div>
 </div>
-<div class="footer"></div>
+
+<div class="footer">
+    <div class="footer-text-left">Smart Manufacturing & Robotics Delft</div>
+    <div class="footer-text-right">Promo Bot</div>
+</div>
+
+<a href="index.html" class="back-to-home">Back to home</a>
+
 </body>
 </html>

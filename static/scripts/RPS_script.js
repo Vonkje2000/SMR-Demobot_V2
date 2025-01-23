@@ -23,7 +23,7 @@ startButton.addEventListener('mousedown', function() {
   .catch(error => console.error('Error sending start signal:', error));
 
   // Verberg de startknop en toon de timer
-  let countdown = 3;
+  let countdown = 13;
   startButton.style.display = 'none';
   timerElement.style.display = 'block';
   timerElement.textContent = countdown;

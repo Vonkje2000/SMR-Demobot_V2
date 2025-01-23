@@ -1,5 +1,5 @@
 import sys
-from flask import Flask, render_template
+from flask import Flask, render_template, jsonify
 import logging
 
 from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera, Internet_detector
@@ -24,6 +24,14 @@ import vision_filtered
 app = Flask(__name__)
 #logging.getLogger('werkzeug').disabled = True
 logging.getLogger('werkzeug').disabled = False
+
+
+@app.route('/internet_status', methods=['GET'])
+def internet_status():
+    """API endpoint to check internet status."""
+    is_connected = id.status()
+    return jsonify({"connected": is_connected})
+
 
 @app.route('/')
 @app.route('/index.html')

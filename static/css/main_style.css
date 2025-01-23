@@ -122,3 +122,12 @@ justify-content: center; /* Center text horizontally */
 .button:hover {
 background-color: #0056b3;
   }
+
+
+  button[disabled] {
+    background-color: #aaa; /* Greyed-out background */
+    color: #ccc; /* Faded text */
+    cursor: not-allowed; /* Unclickable cursor */
+    opacity: 0.5; /* Reduced opacity */
+}
+

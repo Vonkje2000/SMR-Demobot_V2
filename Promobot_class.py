@@ -5,6 +5,7 @@ import os
 import sys
 import cv2
 import threading
+from urllib import request
 
 class Singleton(type):
 	_instances = {}
@@ -401,3 +402,25 @@ class Intel_Camera(metaclass=Singleton):
 			return frame
 		else:
 			return cv2.imread("test_image.jpg")
+		
+class Internet_detector(metaclass=Singleton):
+	def __init__(self, ip:str = "8.8.8.8") -> None:
+		if not isinstance(ip, str):
+			raise TypeError("ip must be a str")
+		self.ip = ip
+		self.lock = threading.Lock()
+		self.t = threading.Thread(target=self.__reader)
+		self.t.daemon = True
+		self.t.start()
+
+	def __reader(self):
+		while True:
+			try:
+				request.urlopen(url="https://{0}".format(self.ip), timeout=1)
+				self.connected = True
+			except request.URLError as err: 
+				self.connected = False
+			sleep(2)
+	
+	def status(self):
+		return self.connected

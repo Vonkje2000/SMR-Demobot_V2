@@ -2,12 +2,13 @@ import sys
 from flask import Flask, render_template
 import logging
 
-from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera
+from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera, Internet_detector
 
 k1 = Kawasaki_1(Test_mode=True)
 k2 = Kawasaki_2(Test_mode=True)
 RH = Robot_Hand(Test_mode=True)
 Realsense = Intel_Camera(Test_Mode=True, Demo_Mode=False)
+id = Internet_detector()
 
 sys.path.insert(0, 'AI_voice_chat/')
 import Main_AI_new_UI

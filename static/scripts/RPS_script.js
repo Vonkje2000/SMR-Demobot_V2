@@ -115,6 +115,10 @@ async function fetchImage() {
     	imageContainer.innerHTML = ''; // Clear any existing content
 	}
 
+	if(image_path === ''){
+		image_path = '/static/images/No_hand_detected.png';
+	}
+
   if(image_path !== '') {
     await fetch(image_path) // Gebruik localhost of 127.0.0.1   get_captured_image
     .then(response => {

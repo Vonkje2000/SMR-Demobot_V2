@@ -39,6 +39,11 @@ def internet_status():
 def index():
 	return render_template('main.html')
 
+@app.errorhandler(404)
+def page_not_found(e):
+	print("probably you forgot to add the video from video/promobot/ to the static/videos/")
+	return "<h1>404 Page not found</h1>", 404
+
 app.add_url_rule('/AI_voice_chat', view_func=Main_AI_new_UI.AI_index, methods=['GET'])
 app.add_url_rule('/API', view_func=Main_AI_new_UI.post_api, methods=['POST', 'GET'])
 

@@ -15,13 +15,10 @@ document.addEventListener('touchmove', drag);
 document.addEventListener('mouseup', stopDrag);
 document.addEventListener('touchend', stopDrag);
 
-var lastMove = 0;
-
 function startDrag(e) {
   e.preventDefault();
   dragging = true;
   containerRect = joystickContainer.getBoundingClientRect(); // Update containerRect on drag start
-  lastMove = 0
 }
 
 function drag(e) {
@@ -60,20 +57,17 @@ function drag(e) {
   coordinatesDisplay.textContent = `x: ${normalizedX.toFixed(2)}, y: ${normalizedY.toFixed(2)}`;
 
   // Send data to server
-  if(Date.now() - lastMove > 200) {
-    fetch('/joystick', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ x: parseFloat(normalizedX.toFixed(2)), y: parseFloat(normalizedY.toFixed(2)) })
-    })
+	fetch('/joystick', {
+	  method: 'POST',
+	  headers: {
+		'Content-Type': 'application/json'
+	  },
+	  body: JSON.stringify({ x: parseFloat(normalizedX.toFixed(2)), y: parseFloat(normalizedY.toFixed(2)) })
+	})
   
-    .then(response => response.json())
-    .then(data => console.log(data))
-    .catch(error => console.error('Error:', error));
-  lastMove = Date.now();
-  }
+	.then(response => response.json())
+	.then(data => console.log(data))
+	.catch(error => console.error('Error:', error));
 }
 
 document.addEventListener('contextmenu', function (e) {
@@ -88,14 +82,35 @@ function stopDrag() {
   joystickStick.style.transform = 'translateX(-50%)';
   coordinatesDisplay.textContent = 'x: 0.00, y: 0.00';
   fetch('/joystick', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ x: parseFloat(0), y: parseFloat(0) })
+	method: 'POST',
+	headers: {
+	  'Content-Type': 'application/json'
+	},
+	body: JSON.stringify({ x: parseFloat(0), y: parseFloat(0) })
   })
 }
 
+async function close_cleanup() {
+	await fetch('/Maze_game/cleanup', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({message: 'Home button pressed'})
+	})
+	.then(response => {
+		if (!response.ok){
+			throw new Error('Network response was not ok');
+		}
+		return response.json();
+	})
+	.then(data => {
+		console.log('server response:', data);
+	})
+	.catch(error => console.error('Error sending start signal:', error));
+
+  window.location.href="/index";
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   const fullscreenButton = document.getElementById("fullscreen-button");

@@ -3,7 +3,7 @@ from game import TicTacToe, RandomComputerPlayer, SmartComputerPlayer, HumanPlay
 import sys
 import os
 sys.path.append(os.path.abspath(r"../SMR-Demobot_V2/"))
-from Promobot_class import Kawasaki_1
+from Promobot_class import Kawasaki_1, Robot_Hand
 import time
 
 # Store the game state globally for simplicity
@@ -13,20 +13,26 @@ o_player = None
 current_letter = 'X'
 robot_is_moving = False
 
-# Define positions for above each square (in meters), adjust for your board's physical setup
+# Define positions for above each square (in mm), adjust for your board's physical setup
+# x+ move to the left
+# x- move to the right
+# y+ move back to the big television
+# y- move forward to the small television
+# z+ move up, awai from the table
+# z- move down to the table 
 square_positions = {
-	0: ( -23, 565, -190,  -99, 180,  -99),  # Above Top-left
-	1: ( -23, 437, -190, -123, 180, -123),  # Above Top-center
-	2: ( -23, 313, -190,  137, 180,  137),  # Above Top-right
-	3: (-145, 565, -190,   96, 180,   96),  # Above Middle-left
-	4: (-145, 437, -190,   96, 180,   96),  # Above Center
-	5: (-145, 313, -190,   96, 180,   96),  # Above Middle-right
-	6: (-132, 439,  -21,  -99, 179,  -99),  # Above Bottom-left
-	7: (-278, 437, -190,   97, 180,   97),  # Above Bottom-center
-	8: (-278, 313, -190,   97, 180,   97),  # Above Bottom-right
-	9: (-162, 439,  -21,  -99, 179,  -99),  # safe position
-	10:(-162, 389,  -21,  -99, 179,  -99),  # X storage box
-	11:(-162, 489,  -21,  -99, 179,  -99),  # O storage box
+	0: (490,  39, -70, -151, 180, -151),  # Top-left
+	1: (490, 148, -70, -151, 180, -151),  # Top-center
+	2: (490, 261, -70, -151, 180, -151),  # Top-right
+	3: (380,  39, -70, -151, 180, -151),  # Middle-left
+	4: (380, 148, -70, -151, 180, -151),  # Center
+	5: (380, 261, -70, -151, 180, -151),  # Middle-right
+	6: (270,  39, -70, -151, 180, -151),  # Bottom-left
+	7: (270, 148, -70, -151, 180, -151),  # Bottom-center
+	8: (270, 261, -70, -151, 180, -151),  # Bottom-right
+	9: (380, 148,   0, -151, 180, -151),  # safe position
+	10:(326, -81, -22, -151, 180, -151),  # X storage box
+	11:(431, -81, -22, -151, 180, -151),  # O storage box
 }
 
 
@@ -39,6 +45,8 @@ def robot_moves(square, player):
 	while robot_is_moving == True:
 		time.sleep(.01) 
 	robot_is_moving = True
+	
+	magnetcontroller = Robot_Hand()
 
 	k1 = Kawasaki_1()
 	k1.SPEED(20)
@@ -46,7 +54,7 @@ def robot_moves(square, player):
 	
 	# Positions for placing tiles on the squares (slightly lower than "above" positions)
 	above_square_positions = {
-		key: (x, y, z + 100, rx, ry, rz) for key, (x, y, z, rx, ry, rz) in square_positions.items()
+		key: (x, y, z + 70, rx, ry, rz) for key, (x, y, z, rx, ry, rz) in square_positions.items()
 	}
 
 	print(f"Moving a {player} to the {square} position")
@@ -105,19 +113,19 @@ def clean_up_board(previous_board):
 			
 			# Positions for the square itself
 			above_square_positions = {
-				key: (x, y, z + 100, o, a, t) for key, (x, y, z, o, a, t) in square_positions.items()
+				key: (x, y, z + 70, o, a, t) for key, (x, y, z, o, a, t) in square_positions.items()
 			}
 
 			# Move to the safe position
-			print(f"Moving to safe position: {square_positions[9]}")
+			#print(f"Moving to safe position: {square_positions[9]}")
 			k1.JMOVE_TRANS(*square_positions[9])
 
 			# Move above the square
-			print(f"Moving above square {square}: {above_square_positions[square]}")
+			#print(f"Moving above square {square}: {above_square_positions[square]}")
 			k1.JMOVE_TRANS(*above_square_positions[square])
 
 			# Move to the square to pick up the tile
-			print(f"Picking up tile '{tile}' from square {square}: {square_positions[square]}")
+			#print(f"Picking up tile '{tile}' from square {square}: {square_positions[square]}")
 			k1.JMOVE_TRANS(*square_positions[square])
 
 			# Close the gripper to pick up the tile #TODO
@@ -128,18 +136,19 @@ def clean_up_board(previous_board):
 
 			# Move to the appropriate storage box
 			if tile == 'X':
-				print(f"returning to X box: {square_positions [10]}")
+				#print(f"returning to X box: {square_positions [10]}")
 				k1.JMOVE_TRANS(*above_square_positions[10])
 				k1.JMOVE_TRANS(*square_positions [10])
+				# Open the gripper to release the tile #TODO
+				print(f"Tile '{tile}' returned to its box.")
 				k1.JMOVE_TRANS(*above_square_positions[10])
 			elif tile == 'O':
-				print(f"returning to O box: {square_positions [11]}")
+				#print(f"returning to O box: {square_positions [11]}")
 				k1.JMOVE_TRANS(*above_square_positions[11])
 				k1.JMOVE_TRANS(*square_positions [11])
+				# Open the gripper to release the tile #TODO
+				print(f"Tile '{tile}' returned to its box.")
 				k1.JMOVE_TRANS(*above_square_positions[11])
-
-			# Open the gripper to release the tile #TODO
-			print(f"Tile '{tile}' returned to its box.")
 
 			# Return to the safe position
 			k1.JMOVE_TRANS(*square_positions[9])

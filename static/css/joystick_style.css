@@ -112,6 +112,7 @@ body {
   font-weight: bold;
   font-size: 40px;
   text-align: center;
+  box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.4); /* Outer glow effect */
 }
 
 .joystick::before {
@@ -188,3 +189,36 @@ body {
 .fullscreen-button:hover {
   background-color: #0056b3;
 }
+
+.button-group {
+  position: absolute;
+  left: 40px; /* Adjust to set the button's distance from the left edge */
+  top: 50%; /* Align vertically with the joystick */
+  transform: translateY(-50%); /* Center vertically */
+}
+
+.button {
+  width: 180px; /* Set a fixed width for the circle */
+  height: 180px; /* Set the same height to make it a square */
+  background-color: #ff0000;
+  color: #ffffff;
+  text-decoration: none;
+  text-align: center;
+  font-size: 22px; /* Adjust font size to fit within the circle */
+  border-radius: 50%; /* Make it a circle */
+  font-weight: bold;
+  margin: 12px 0;
+  display: flex; /* Use flexbox to center the text */
+  justify-content: center; /* Center text horizontally */
+  align-items: center; /* Center text vertically */
+
+  /* Add shadow for an outline effect */
+  box-shadow: 0 0 15px 5px rgba(0, 0, 0, 0.4); /* Outer glow effect */
+}
+
+
+.button:hover {
+  background-color: #0056b3;
+  box-shadow: 0 0 25px 10px rgba(0, 0, 0, 0.7);
+  }
+

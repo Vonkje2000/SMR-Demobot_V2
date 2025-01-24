@@ -5,28 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Robot Vision</title>
     <link rel="stylesheet" href="static/css/vision_style.css">
+    <link rel="stylesheet" href="static/css/Default_style.css">
 </head>
-
+<body>
 <div class="header">
-    <h1> Vision </h1>
+    <h1>Welcome to Vision</h1>
+    <a id="fullscreen-button" class="fullscreen-button" style="display: none;">Fullscreen</a>
 </div>
 
 <div class="body">
     <div class="main-container">
+
         <!-- Main video box -->
         <div class="main-video">
-            <img src="/video_feed/1" alt="Filter 1">
+            <img class="video-box" src="/Machine_vision/video_feed/1" alt="Main Filter">
         </div>
 
         <!-- Sidebar for smaller videos -->
         <div class="sidebar">
-            <img src="/video_feed/2" alt="Filter 2">
-            <img src="/video_feed/3" alt="Filter 3">
-            <img src="/video_feed/4" alt="Filter 4">
+            <img class="video-box" src="/Machine_vision/video_feed/2" alt="Filter 2">
+            <img class="video-box" src="/Machine_vision/video_feed/3" alt="Filter 3">
+            <img class="video-box" src="/Machine_vision/video_feed/4" alt="Filter 4">
         </div>
     </div>
 </div>
 
-<div class="footer"></div>
+<div class="footer">
+    <div class="footer-text-left">Smart Manufacturing & Robotics Delft</div>
+    <div class="footer-text-right">Promo Bot</div>
+</div>
+
+<a href="index.html" class="back-to-home">Back to home</a>
+
+<div id="reset-modal" class="modal">
+    <div class="modal-content">
+        <p id="reset-status">Promo Bot has been stopped, press and hold the Reset button to bring it back to life.</p>
+        <button id="reset-button">Hold to Reset</button>
+    </div>
+
+<script src="static/scripts/Default_Script.js"></script>
 </body>
 </html>

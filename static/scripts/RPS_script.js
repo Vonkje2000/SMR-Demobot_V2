@@ -23,7 +23,7 @@ startButton.addEventListener('mousedown', function() {
   .catch(error => console.error('Error sending start signal:', error));
 
   // Verberg de startknop en toon de timer
-  let countdown = 3;
+  let countdown = 13;
   startButton.style.display = 'none';
   timerElement.style.display = 'block';
   timerElement.textContent = countdown;
@@ -115,6 +115,10 @@ async function fetchImage() {
     	imageContainer.innerHTML = ''; // Clear any existing content
 	}
 
+	if(image_path === ''){
+		image_path = '/static/images/No_hand_detected.png';
+	}
+
   if(image_path !== '') {
     await fetch(image_path) // Gebruik localhost of 127.0.0.1   get_captured_image
     .then(response => {
@@ -141,3 +145,7 @@ async function fetchImage() {
   	startButton.style.display = 'block';
 	timerElement.style.display = 'none';
 }
+
+document.addEventListener('contextmenu', function (e) {
+  e.preventDefault();
+});

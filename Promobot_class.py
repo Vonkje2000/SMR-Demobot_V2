@@ -5,6 +5,7 @@ import os
 import sys
 import cv2
 import threading
+from urllib import request
 
 class Singleton(type):
 	_instances = {}
@@ -250,11 +251,11 @@ class Kawasaki_arm(object):
 			self.__close_Connection()
 
 class Kawasaki_1(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
+	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
 		super().__init__(ip, port, Test_mode)
 
 class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
-	def __init__(self, ip:str = "192.168.0.3", port:int = 42069, Test_mode:bool=False):
+	def __init__(self, ip:str = "192.168.0.1", port:int = 42069, Test_mode:bool=False):
 		super().__init__(ip, port, Test_mode)
 
 class Robot_Hand(metaclass=Singleton):
@@ -357,7 +358,7 @@ class Robot_Hand(metaclass=Singleton):
 			#print("close serial {0}".format(self.Serial.port))
 
 class Intel_Camera(metaclass=Singleton):
-	def __init__(self, cameranumbr:int = 1, Demo_Mode:bool=False,Test_Mode:bool=False) -> None:
+	def __init__(self, cameranumbr:int = 0, Demo_Mode:bool=False,Test_Mode:bool=False) -> None:
 		if not isinstance(cameranumbr, int):
 			raise TypeError("Camera number must be an int")
 		if not isinstance(Demo_Mode, bool):
@@ -401,3 +402,25 @@ class Intel_Camera(metaclass=Singleton):
 			return frame
 		else:
 			return cv2.imread("test_image.jpg")
+		
+class Internet_detector(metaclass=Singleton):
+	def __init__(self, ip:str = "8.8.8.8") -> None:
+		if not isinstance(ip, str):
+			raise TypeError("ip must be a str")
+		self.ip = ip
+		self.lock = threading.Lock()
+		self.t = threading.Thread(target=self.__reader)
+		self.t.daemon = True
+		self.t.start()
+
+	def __reader(self):
+		while True:
+			try:
+				request.urlopen(url="https://{0}".format(self.ip), timeout=1)
+				self.connected = True
+			except request.URLError as err: 
+				self.connected = False
+			sleep(2)
+	
+	def status(self):
+		return self.connected

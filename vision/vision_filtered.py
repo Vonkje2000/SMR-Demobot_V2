@@ -3,26 +3,27 @@ import cv2
 from flask_socketio import SocketIO
 from ultralytics import YOLO
 
+import sys
+import os
+sys.path.append(os.path.abspath(r"../SMR-Demobot_V2/"))
+from Promobot_class import Intel_Camera
+Realsense = Intel_Camera()
+
 # Initialize Flask app and SocketIO
 app = Flask(__name__)
 socketio = SocketIO(app)
 
-# Initialize webcam
-camera = cv2.VideoCapture(0)
-
 #load the models
-model = YOLO('yolov8n.pt')
+model = YOLO('yolov8n.pt', verbose=False)
 
 def detect_people(frame):
    # Run YOLO inference
-    results = model(frame)
+    results = model.predict(frame, conf=0.4, save=False, show=False, verbose=False)
 
     # Draw bounding boxes for detected people
     for result in results[0].boxes:
         if result.cls == 0:  # Class 0 = 'person'
             x1, y1, x2, y2 = map(int, result.xyxy[0])
-            
-            # Extract the class index and confidence score
             class_id = int(result.cls)
             confidence = float(result.conf)  # Confidence score
             
@@ -56,41 +57,30 @@ def apply_thermal(frame):
     thermal_frame = cv2.applyColorMap(inverted_gray, cv2.COLORMAP_JET)
     return thermal_frame
 
+#TODO Replace the 1-5 for the names of the filters so that every body can understand what each filter does
 def apply_filter(filter_id, frame):
     # Apply the selected filter
     if filter_id == 1:  # People detection
         return detect_people(frame)
-    elif filter_id == 2:  # Face blur
+    elif filter_id == 2:  # only show the line
         return apply_edges(frame)
-    elif filter_id == 3:  # grayscale
+    elif filter_id == 3:  # thermal pallets filter
          return apply_thermal(frame)
-    elif filter_id == 4:  # non people detection
+    elif filter_id == 4:  # bold edge and soft blur with other
         return apply_cartoon(frame)
-    # elif filter_id == 5:  # cartoonized
-    #     return apply_cartoon(frame)
-    # else:  # outline
-    #     return apply_edges(frame)
 
+#TODO THIS IS A MEMORY LEAK IT NEVER STOPS TAKING PICTURES
+#IT ALSO STARTS MY FANS INSTANTLY
 def generate_frames(filter_id):
     while True:
-        success, frame = camera.read()
-        if not success:
-            break
-        else:
-            frame = apply_filter(filter_id, frame)
-            _, buffer = cv2.imencode('.jpg', frame)
-            frame = buffer.tobytes()
-            yield (b'--frame\r\n'
-                   b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
+        frame = Realsense.read()
+        frame = apply_filter(filter_id, frame)
+        _, buffer = cv2.imencode('.jpg', frame)
+        frame = buffer.tobytes()
+        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
 
-
-@app.route('/')
-def index():
+def vision_index():
     return render_template('vision_index.html')
 
-@app.route('/video_feed/<int:filter_id>')
 def video_feed(filter_id):
     return Response(generate_frames(filter_id), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-if __name__ == "__main__":
-    socketio.run(app,debug=False, use_reloader=False)

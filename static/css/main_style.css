@@ -1,85 +1,132 @@
 *{
     margin: 0;
     padding: 0;
+	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 
 body {
-	height:100%;
-	display: block;
-	background-color: #ffffff;
-  }
+height:100%;
+display: block;
+background-color: #ffffff;
+touch-action: pan-x pan-y;
+}
 
 html {
-	height: 100%;
-  }
+height: 100%;
+}
   
-  .header {
+.header {
 	width: 100%;
-	height: 10%;
-	background-color: #00e1ff;
+	height: 11%;
+	background-color: #009ee0;
 	color: #ffffff;
 	text-align: center;
 	font-size: 24px;
 	font-weight: bold;
 	position: absolute;
 	top: 0;
-  }
+	display: flex;
+	justify-content: center; /* Center horizontally */
+	align-items: center; /* Center vertically */
+}
 
-  .body {
-	top: 12%;
-	position: absolute;
-	display: block;
-	height: 80%;
-	width: 100%;
-	background-color: #ffffff;
-  }
+.body {
+top: 10%;
+bottom: 10%;
+position: absolute;
+display: flex; /* Enable flexbox for the .body container */
+align-items: flex-start; /* Align items to the top of the container */
+justify-content: center; /* Center content horizontally */
+height: 90%;
+width: 100%;
+background-color: #ffffff;
+gap: 20px; /* Add spacing between the video and the buttons */
+overflow: hidden; /* Prevent internal scrollbars */
+}
   
-  .footer {
-	width: 100%;
-	height: 10%; /* Adjust the height as needed */
-	background-color: #00e1ff;
-	position: absolute;
-	bottom: 0;
-  }
+.body video {
+padding-left: 10px; /* Add padding to the left of the video */
+padding-top: 25px;
+}
 
-  .User_interface {
-	top:0%;
-	height: 3%;
-	width: 100%;
-	display: block;
+.footer {
+    width: 100%;
+    height: 100px; /* Adjust the height as needed */
+    background-color: #009ee0;
+    position: absolute;
+    bottom: 0;
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-between; /* Push content to the edges */
+    align-items: center; /* Center text vertically */
+    padding: 0 20px; /* Add padding to ensure proper spacing from edges */
+    box-sizing: border-box; /* Ensure padding doesn't affect total width */
+}
+
+.footer-text-left {
+    color: white;
+    font-size: 26px; /* Adjust text size as needed */
+    font-weight: bold;
+    text-align: left; /* Align text to the left */
+}
+
+.footer-text-right {
+    color: white;
+    font-size: 26px; /* Adjust text size as needed */
+    font-weight: bold;
+    text-align: right; /* Align text to the right */
+}
+
+
+.User_interface {
+top:0%;
+height: 3%;
+width: 100%;
+display: flex; /* Use flexbox for layout */
+flex-direction: column; /* Stack children vertically */
+align-items: center; /* Center buttons horizontally */
+gap: 30px; /* Add spacing between buttons */
+padding: 30px; /* Add some padding to the entire interface */
 	/*border: 1px solid green;*/
-  }
+}
   
-  .back-to-home {
-	position: absolute;
-	top: 10px;
-	left: 10px;
-	padding: 10px 20px;
-	background-color: #000000;
-	color: #ffffff;
-	text-decoration: none;
-	border-radius: 5px;
-	font-weight: bold;
-  }
-  
-  .back-to-home:hover {
-	background-color: #0056b3;
-  }
+.button-group {
+display: flex;
+flex-direction: column;
+align-items: center; /* Center heading and buttons horizontally */
+gap: 10px; /* Add spacing between buttons and the heading */
+}
 
-  .button {
-	min-width: 200px;
-	padding: 1% 1%;
-	background-color: #000000;
-	color: #ffffff;
-	text-decoration: none;
-	border-radius: 10px;
-	font-weight: bold;
-	align-items: center;
-	text-align: center;
-	margin: 3px 3px;
-	display: inline-block;
+.button-group h2 {
+font-size: 22px; /* Style for the headings */
+margin-bottom: 2px; /* Add spacing between heading and buttons */
+color: #000000; /* Adjust text color as needed */
+text-align: center; /* Ensure the heading text is centered */
+}
+
+.button {
+width: 300px; /* Set a fixed width */
+height: 100px; /* Set a fixed height */
+padding: 0; /* Remove padding to ensure consistency */
+background-color: #2a2929e6;
+color: #ffffff;
+text-decoration: none;
+border-radius: 15px;
+font-size: 25px;
+font-weight: bold;
+align-items: center;
+text-align: center;
+display: flex; /* Use flexbox to center text vertically and horizontally */
+justify-content: center; /* Center text horizontally */
+}
+
+.button:hover {
+background-color: #0056b3;
   }
-  
-  .button:hover {
-	background-color: #0056b3;
-  }
+  button[disabled] {
+    background-color: #aaa; /* Greyed-out background */
+    color: #ccc; /* Faded text */
+    cursor: not-allowed; /* Unclickable cursor */
+    opacity: 0.5; /* Reduced opacity */
+}
+
+

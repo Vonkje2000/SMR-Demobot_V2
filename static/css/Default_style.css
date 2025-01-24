@@ -1,0 +1,67 @@
+#reset-modal {
+    display: none; /* Hidden by default */
+    position: fixed;
+    z-index: 1000; /* Ensure it appears above other content */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
+    align-items: center;
+    justify-content: center;
+}
+
+#reset-modal .modal-content {
+    background-color: #fff;
+    padding: 70px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+#reset-modal .modal-content p {
+    margin: 0 0 30px; /* Add 10px spacing between text and button */
+    font-size: 24px; /* Set font size for the status text */
+    font-weight: bold; /* Make the status text bold */
+}
+
+#reset-modal .modal-content button {
+    padding: 50px 80px;
+    background-color: #ff4c4c;
+    color: white;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 26px; /* Set font size for the reset button */
+}
+
+#reset-modal .modal-content button:hover {
+    background-color: #cc0000;
+}
+
+#reset-button:active {
+    background-color: #cc0000; /* Darker red */
+    transform: scale(0.95); /* Slight shrink effect */
+    transition: background-color 0.2s ease, transform 0.2s ease;
+}
+
+.fullscreen-button {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 30px 40px;
+    background-color: #000000;
+    color: #ffffff;
+    text-decoration: none;
+    border-radius: 15px;
+    font-weight: bold;
+    font-size: 18px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .fullscreen-button:hover {
+    background-color: #0056b3;
+  }

@@ -1,16 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+  <link rel="shortcut icon" href="static/images/Tab_Icon_1.png">
 
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rock_Paper_Scissor</title>
   <link rel="stylesheet" href="static/css/RPS_style.css">
+  <link rel="stylesheet" href="static/css/Default_style.css">
 </head>
 
 <body>
   <div class="header">
     <h1>Welcome to the Rock-Paper-Scissor game!</h1>
+    <a id="fullscreen-button" class="fullscreen-button" style="display: none;">Fullscreen</a>
   </div>
 
   <div class="instructions-container">
@@ -40,7 +43,10 @@
     </div>
   </div>
 
-  <div class="footer"></div>
+  <div class="footer">
+    <div class="footer-text-left">Smart Manufacturing & Robotics Delft</div>
+    <div class="footer-text-right">Promo Bot</div>
+  </div>
   <a href="index.html" class="back-to-home">Back to home</a>
 
   <div id="result-image-container" class="result-image-container"></div>
@@ -53,6 +59,14 @@
   <!-- Placeholder for the image -->
   <div id="image-container" class="image-container"></div>
 
+
+  <div id="reset-modal" class="modal">
+		<div class="modal-content">
+			<p id="reset-status">Promo Bot has been stopped, press and hold the Reset button to bring it back to life.</p>
+			<button id="reset-button">Hold to Reset</button>
+	</div>
+
   <script src="static/scripts/RPS_script.js"></script>
+  <script src="static/scripts/Default_Script.js"></script>
 </body>
 </html>

@@ -1,32 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="shortcut icon" href="static/images/favicon.ico">
+<link rel="shortcut icon" href="static/images/Tab_Icon_1.png">
 
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Main_Menu</title>
 	<link rel="stylesheet" href="static/css/main_style.css">
+	<link rel="stylesheet" href="static/css/Default_style.css">
 </head>
 
 <div class="header">
 	<h1>Main Menu</h1>
+	<a id="fullscreen-button" class="fullscreen-button" style="display: none;">Fullscreen</a>
 </div>
 
-<div class="body">
-	<div class="User_interface">
-		<a href="tictactoe" class="button">Tic Tac Toe</a>
-		<a href="AI_voice_chat" class="button">AI Voice Chat</a>
-		<a href="Maze_game" class="button">Maze</a>
-		<a href="rockpaperscissors" class="button">Rock Paper Scisors</a>
-		<a href="Dance" class="button">Dance</a>
-		<a href="Machine_vision" class="button">Machine vision</a>
+<div class="body"> <!--- #TODO# Remove controls for finished product-->
+	<div id="reset-modal" class="modal">
+		<div class="modal-content">
+			<p id="reset-status">Promo Bot has been stopped, press and hold the Reset button to bring it back to life.</p>
+			<button id="reset-button">Hold to Reset</button>
+		</div>
 	</div>
+	
+	<video controls autoplay width="1250" >
+		<source
+		src="static\videos\Comp1.mp4" type="video/mp4" id="video">
+		Welcome to SMR Delft
+	</video>
+
+	<div class="User_interface">
+		<div class="button-group">
+			<h2>Select a Mini Game:</h2>
+			<a href="rockpaperscissors" class="button">Rock Paper Scisors</a>
+			<a href="tictactoe" class="button">Tic Tac Toe</a>
+			<a href="Maze_game" class="button">Maze</a>
+		</div>
+		<div class="button-group">
+			<h2>Interact with Promobot:</h2>
+			<a href="AI_voice_chat" id="ai-button" class="button">AI Voice Chat</a>
+		<!----<a href="Machine_vision" class="button">Machine vision</a>-->
+			<a href="Dance" class="button">Dance</a>
+		</div>
 </div>
 
-<div class="footer"></div>
-<a href="index.html" class="back-to-home" id="Home_button">Back to home</a>
+<div class="footer">
+	<div class="footer-text-left">Smart Manufacturing & Robotics Delft</div>
+	<div class="footer-text-right">Promo Bot</div>
+</div>
+
 <script src="static/scripts/main_page.js"></script>
+<script src="static/scripts/Default_Script.js"></script>
 <script>setup()</script>
 </body>
 

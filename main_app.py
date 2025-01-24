@@ -35,6 +35,7 @@ def internet_status():
 
 @app.route('/')
 @app.route('/index.html')
+@app.route('/index')
 def index():
 	return render_template('main.html')
 
@@ -43,6 +44,8 @@ app.add_url_rule('/API', view_func=Main_AI_new_UI.post_api, methods=['POST', 'GE
 
 app.add_url_rule('/Maze_game', view_func=joystick_server.joystick_index, methods=['GET'])
 app.add_url_rule('/joystick', view_func=joystick_server.joystick, methods=['POST'])
+app.add_url_rule('/Maze_game/cleanup', view_func=joystick_server.maze_cleanup, methods=['POST'])
+app.add_url_rule('/Maze_game/reset', view_func=joystick_server.maze_reset, methods=['POST'])
 
 app.add_url_rule('/tictactoe', view_func=tictactoe.tictactoe_index, methods=['GET'])
 app.add_url_rule('/tictactoe/move/<type>', view_func=tictactoe.make_move, methods=['POST'])

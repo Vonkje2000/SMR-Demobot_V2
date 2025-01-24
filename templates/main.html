@@ -7,6 +7,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Main_Menu</title>
 	<link rel="stylesheet" href="static/css/main_style.css">
+	<link rel="stylesheet" href="static/css/Default_style.css">
 </head>
 
 <div class="header">
@@ -15,6 +16,13 @@
 </div>
 
 <div class="body"> <!--- #TODO# Remove controls for finished product-->
+	<div id="reset-modal" class="modal">
+		<div class="modal-content">
+			<p id="reset-status">Promo Bot has been stopped, press and hold the Reset button to bring it back to life.</p>
+			<button id="reset-button">Hold to Reset</button>
+		</div>
+	</div>
+	
 	<video controls autoplay width="1250" >
 		<source
 		src="static\videos\Comp1.mp4" type="video/mp4" id="video">
@@ -42,6 +50,7 @@
 </div>
 
 <script src="static/scripts/main_page.js"></script>
+<script src="static/scripts/Default_Script.js"></script>
 <script>setup()</script>
 </body>
 

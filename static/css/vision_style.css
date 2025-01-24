@@ -5,13 +5,67 @@
 }
 
 body {
+    overflow: hidden; /* Prevent scrolling */
     height: 100%;
     display: block;
     background-color: #ffffff;
+
 }
 
 html {
     height: 100%;
+}
+
+h1 {
+    text-align: center;
+    margin: 10px 0;
+    color: #333;
+}
+
+.main-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    padding: 30px;
+    padding-top: 110px;
+    height: calc(100vh - 50px); /* Use the remaining height minus the title */
+    box-sizing: border-box;
+}
+
+/* Main video section */
+.main-video {
+    flex: 3; /* Takes up more space */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%; /* Stretch to fit container */
+}
+
+.main-video img {
+    width: 100%;
+    max-height: 100%;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    object-fit: cover; /* Ensures no stretching */
+}
+
+/* Sidebar for smaller videos */
+.sidebar {
+    flex: 1; /* Takes up less space */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    height: 100%; /* Stretch to fit container */
+}
+
+.sidebar img {
+    width: 100%;
+    height: calc((100% - 20px) / 3); /* Divide height by the number of images */
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    object-fit: cover; /* Ensures no stretching */
 }
 
 .header {
@@ -117,26 +171,5 @@ html {
   }
   
   .back-to-home:hover {
-    background-color: #0056b3;
-  }
-
-  .fullscreen-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 30px 40px;
-    background-color: #000000;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 15px;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .fullscreen-button:hover {
     background-color: #0056b3;
   }

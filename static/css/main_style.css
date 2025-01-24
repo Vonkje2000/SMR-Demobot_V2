@@ -122,8 +122,6 @@ justify-content: center; /* Center text horizontally */
 .button:hover {
 background-color: #0056b3;
   }
-
-
   button[disabled] {
     background-color: #aaa; /* Greyed-out background */
     color: #ccc; /* Faded text */
@@ -131,23 +129,4 @@ background-color: #0056b3;
     opacity: 0.5; /* Reduced opacity */
 }
 
-.fullscreen-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    padding: 30px 40px;
-    background-color: #000000;
-    color: #ffffff;
-    text-decoration: none;
-    border-radius: 15px;
-    font-weight: bold;
-    font-size: 18px;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .fullscreen-button:hover {
-    background-color: #0056b3;
-  }
+

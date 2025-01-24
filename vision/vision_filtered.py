@@ -47,26 +47,22 @@ def apply_edges(frame):
     return cv2.Canny(gray, 25, 150)
 
 def apply_thermal(frame):
-    # Convert the frame to grayscale to simulate heat intensities
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    # Normalize the grayscale image to enhance contrast
     normalized_gray = cv2.normalize(gray, None, 0, 255, cv2.NORM_MINMAX)
-    # Invert the grayscale image to reverse the intensity mapping
     inverted_gray = cv2.bitwise_not(normalized_gray)
-    # Apply the thermal color map
     thermal_frame = cv2.applyColorMap(inverted_gray, cv2.COLORMAP_JET)
     return thermal_frame
 
 #TODO Replace the 1-5 for the names of the filters so that every body can understand what each filter does
 def apply_filter(filter_id, frame):
     # Apply the selected filter
-    if filter_id == 1:  # People detection
+    if filter_id == "detection":  # People detection
         return detect_people(frame)
-    elif filter_id == 2:  # only show the line
+    elif filter_id == "edges":  # only show the line
         return apply_edges(frame)
-    elif filter_id == 3:  # thermal pallets filter
+    elif filter_id == "thermal":  # thermal pallets filter
          return apply_thermal(frame)
-    elif filter_id == 4:  # bold edge and soft blur with other
+    elif filter_id == "cartoon":  # bold edge and soft blur with other
         return apply_cartoon(frame)
 
 #TODO THIS IS A MEMORY LEAK IT NEVER STOPS TAKING PICTURES

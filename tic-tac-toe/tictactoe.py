@@ -68,14 +68,14 @@ def robot_moves(square, player):
 		#print(f"Moving to X box: {square_positions [10]}")
 		k1.JMOVE_TRANS(*above_square_positions[10])
 		k1.JMOVE_TRANS(*square_positions [10])
-		# turn on the magnet #TODO
+		magnetcontroller.magnet_ON()
 		k1.JMOVE_TRANS(*above_square_positions[10])
 		#print("Picking up an X tile.")
 	elif player == 'O':
 		#print(f"Moving to O box: {square_positions [11]}")
 		k1.JMOVE_TRANS(*above_square_positions[11])
 		k1.JMOVE_TRANS(*square_positions [11])
-		# turn on the magnet #TODO
+		magnetcontroller.magnet_ON()
 		k1.JMOVE_TRANS(*above_square_positions[11])
 		#print("Picking up an O tile.")
 
@@ -87,13 +87,14 @@ def robot_moves(square, player):
 	#print(f"Placing tile on square {square}: {square_positions[square]}")
 	k1.JMOVE_TRANS(*square_positions[square])
 
-	# magnet off #TODO
-	#print("Gripper opened. Tile placed.")
+	# magnet off
+	magnetcontroller.magnet_OFF()
 
 	# 5. Return to the safe position
 	#print(f"Returning to safe position: {square_positions[9]}")
 	k1.JMOVE_TRANS(*square_positions[9])
-	#time.sleep(4)# Wait 5 seconds (adjust this based on the robot's speed)) #TODO
+	
+	time.sleep(1.5)  # Adjust based on your robot's speed and movements #TODO
 	
 	robot_is_moving = False
 
@@ -102,6 +103,8 @@ def clean_up_board(previous_board):
 	while robot_is_moving == True:
 		time.sleep(.01)
 	robot_is_moving = True
+
+	magnetcontroller = Robot_Hand()
 
 	k1 = Kawasaki_1()
 	k1.SPEED(20)
@@ -128,8 +131,8 @@ def clean_up_board(previous_board):
 			#print(f"Picking up tile '{tile}' from square {square}: {square_positions[square]}")
 			k1.JMOVE_TRANS(*square_positions[square])
 
-			# Close the gripper to pick up the tile #TODO
-			print("Gripper closed. Tile picked up.")
+			# Close the gripper to pick up the tile
+			magnetcontroller.magnet_ON()
 
 			# Return to the safe position
 			k1.JMOVE_TRANS(*square_positions[9])
@@ -139,21 +142,21 @@ def clean_up_board(previous_board):
 				#print(f"returning to X box: {square_positions [10]}")
 				k1.JMOVE_TRANS(*above_square_positions[10])
 				k1.JMOVE_TRANS(*square_positions [10])
-				# Open the gripper to release the tile #TODO
+				magnetcontroller.magnet_OFF()
 				print(f"Tile '{tile}' returned to its box.")
 				k1.JMOVE_TRANS(*above_square_positions[10])
 			elif tile == 'O':
 				#print(f"returning to O box: {square_positions [11]}")
 				k1.JMOVE_TRANS(*above_square_positions[11])
 				k1.JMOVE_TRANS(*square_positions [11])
-				# Open the gripper to release the tile #TODO
+				magnetcontroller.magnet_OFF()
 				print(f"Tile '{tile}' returned to its box.")
 				k1.JMOVE_TRANS(*above_square_positions[11])
 
 			# Return to the safe position
 			k1.JMOVE_TRANS(*square_positions[9])
 
-	time.sleep(1.5)  # Adjust based on your robot's speed and movements
+	time.sleep(1.5)  # Adjust based on your robot's speed and movements #TODO
 	robot_is_moving = False
 
 def reset_game(level=0):
@@ -261,4 +264,3 @@ def cleanup():
 	
 
 reset_game(0)
-#start_game()	#TODO make this a saperate cal that gets run after the page is loaded

@@ -259,7 +259,7 @@ class Kawasaki_2(Kawasaki_arm, metaclass=Singleton):
 		super().__init__(ip, port, Test_mode)
 
 class Robot_Hand(metaclass=Singleton):
-	def __init__(self, port:str = "COM8", Test_mode:bool=False) -> None:
+	def __init__(self, port:str = "COM3", Test_mode:bool=False) -> None:
 		if not isinstance(port, str):
 			raise TypeError("port must be a string")
 		if not isinstance(Test_mode, bool):

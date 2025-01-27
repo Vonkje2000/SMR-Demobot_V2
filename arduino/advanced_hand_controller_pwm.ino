@@ -48,60 +48,68 @@ void setup() {
 	}
 }
 
-String receive_buffer = "";
 uint8_t led_update_bit = 0;
 
 volatile uint8_t pause_state = false;
 
 void loop() {
-	receive_buffer =  Serial.readStringUntil('\n');
+	char last_received = '\0';
+	String receive_buffer = "";
 
-	if (digitalRead(pause_button)) {
-		pause_state = true;
+	while(last_received != '\n'){
+		if (Serial.available()){
+			last_received = Serial.read();
+			if (last_received != '\n'){
+				receive_buffer += last_received;
+			}
+		}
 	}
+	//Serial.println(receive_buffer);		//for debugging
 
-    if (receive_buffer.length() == 5) {
-        //for (uint8_t i = 0; i < 5; i++) { Serial.println(receive_buffer[i]); }	// for debugging only
+	if (receive_buffer != ""){
+    	if (receive_buffer.length() == 5) {
+        	//for (uint8_t i = 0; i < 5; i++) { Serial.println(receive_buffer[i]); }	// for debugging only
 
-        uint8_t legal_input = 1; //checks if the 5 character input is a legal input for the convertion.
-        for (uint8_t i = 0; i < 5; i++) {
-            if (receive_buffer[i] < '0' || receive_buffer[i] > '9') {
-                legal_input = 0;
-            }
-        }
+        	uint8_t legal_input = 1; //checks if the 5 character input is a legal input for the convertion.
+        	for (uint8_t i = 0; i < 5; i++) {
+            	if (receive_buffer[i] < '0' || receive_buffer[i] > '9') {
+            	    legal_input = 0;
+            	}
+        	}
 
-        if (legal_input) {
-            set_servos(
-                20 * (receive_buffer[0] - '0'),
-                20 * (receive_buffer[1] - '0'),
-                20 * (receive_buffer[2] - '0'),
-                20 * (receive_buffer[3] - '0'),
-                20 * (receive_buffer[4] - '0')
-            );
-        }
-    } else if (receive_buffer != "") {
-		if(receive_buffer.equals("pause_state")){
-			if (pause_state){
-				Serial.println("TRUE");
-				pause_state = false;
+        	if (legal_input) {
+            	set_servos(
+            	    20 * (receive_buffer[0] - '0'),
+            	    20 * (receive_buffer[1] - '0'),
+            	    20 * (receive_buffer[2] - '0'),
+            	    20 * (receive_buffer[3] - '0'),
+            	    20 * (receive_buffer[4] - '0')
+            	);
+        	}
+    	} else if (receive_buffer != "") {
+			if(receive_buffer.equals("pause_state")){
+				if (pause_state){
+					Serial.println("TRUE");
+					pause_state = false;
+				}
+				else {
+					Serial.println("FALSE");
+				}
+			}
+			else if(receive_buffer.equals("magnet ON")){
+				digitalWrite(Magnet_pin, 1);
+				digitalWrite(Magnet_PWM, 1);
+			}
+			else if(receive_buffer.equals("magnet OFF")){
+				digitalWrite(Magnet_pin, 0);
+				digitalWrite(Magnet_PWM, 0);
 			}
 			else {
-				Serial.println("FALSE");
+				//Serial.println(receive_buffer.length());
+        		Serial.println(receive_buffer);
 			}
-		}
-		else if(receive_buffer.equals("magnet ON")){
-			digitalWrite(Magnet_pin, 1);
-			digitalWrite(Magnet_PWM, 1);
-		}
-		else if(receive_buffer.equals("magnet OFF")){
-			digitalWrite(Magnet_pin, 0);
-			digitalWrite(Magnet_PWM, 0);
-		}
-		else {
-			//Serial.println(receive_buffer.length());
-        	Serial.println(receive_buffer);
-		}
-    }
+    	}
+	}
 
 	if (bitRead(millis(), 11) == led_update_bit){
 		FastLED.show();

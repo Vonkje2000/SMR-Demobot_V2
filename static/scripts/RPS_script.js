@@ -146,6 +146,3 @@ async function fetchImage() {
 	timerElement.style.display = 'none';
 }
 
-document.addEventListener('contextmenu', function (e) {
-  e.preventDefault();
-});

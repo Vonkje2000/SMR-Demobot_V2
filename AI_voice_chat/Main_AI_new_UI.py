@@ -37,8 +37,8 @@ def post_api():
 			start_listening()
 		if Language != None:
 			webpage_selected_language = Language
-			if (webpage_selected_language == "Dutch"):
-				webpage_selected_language = "Nederlands"
+			if (webpage_selected_language == "English"):
+				webpage_selected_language = "English"
 			print(Language)
 		return jsonify({"status": "success"})
 	if request.method == 'GET':

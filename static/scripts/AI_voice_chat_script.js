@@ -142,12 +142,8 @@ var inactivityTime = function () {
     }
 };
 
-document.addEventListener('contextmenu', function (e) {
-    e.preventDefault();
-});
-
 function setup(){
-	dutch_button()
+	english_button()
 
 	document.getElementsByClassName("question")[0].style.visibility = "hidden";
 	document.getElementsByClassName("AI_response")[0].style.visibility = "hidden";

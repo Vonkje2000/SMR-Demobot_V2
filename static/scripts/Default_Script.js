@@ -33,16 +33,16 @@ function cancelResetTimer() {
     clearTimeout(resetTimer); // Clear the timer if the button is released early
     console.log("Reset canceled."); // TEST LOG
 }
+//// //// Commenting this out keeps the function intact but prevents it from running. - TODO
+// // Trigger the reset modal when the game is paused (test logic)
+// function testPauseTrigger() {
+//     isPaused = true; // Simulate the game being paused
+//     console.log("Game is now paused."); // TEST LOG
 
-// Trigger the reset modal when the game is paused (test logic)
-function testPauseTrigger() {
-    isPaused = true; // Simulate the game being paused
-    console.log("Game is now paused."); // TEST LOG
-
-    if (isPaused) {
-        showResetModal(); // Show the reset modal
-    }
-}
+//     if (isPaused) {
+//         showResetModal(); // Show the reset modal
+//     }
+// }
 
 // Attach event listeners for holding the reset button
 document.addEventListener("DOMContentLoaded", () => {
@@ -58,8 +58,9 @@ document.addEventListener("DOMContentLoaded", () => {
     resetButton.addEventListener('touchend', cancelResetTimer); // For touch devices
 });
 
-// TEST: Simulate pause trigger after 5 seconds
-setTimeout(testPauseTrigger, 5000);
+/// Commenting this out prevents the modal from appearing after 5 seconds.
+// // TEST: Simulate pause trigger after 5 seconds
+// setTimeout(testPauseTrigger, 5000);
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -144,3 +145,61 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+ // Start checking the internet connection
+ checkInternetStatus();
+
+ function checkInternetStatus() {
+     const aiButton = document.getElementById('ai-button');
+ 
+     if (!aiButton) {
+         console.error("AI button not found. Check the element's ID.");
+         return;
+     }
+ 
+     async function updateButtonStatus() {
+         try {
+             const response = await fetch('/internet_status');
+             if (!response.ok) {
+                 throw new Error(`HTTP error! status: ${response.status}`);
+             }
+ 
+             const data = await response.json();
+ 
+             if (data.connected) {
+                 aiButton.removeAttribute('disabled'); // Enable button
+                 aiButton.href = "AI_voice_chat"; // Set proper link
+                 aiButton.style.pointerEvents = 'auto'; // Allow interaction
+                 aiButton.style.opacity = 1; // Full visibility
+             } else {
+                 aiButton.setAttribute('disabled', 'true'); // Disable button
+                 aiButton.href = "#"; // Block navigation
+                 aiButton.style.pointerEvents = 'none'; // Block interaction
+                 aiButton.style.opacity = 0.5; // Reduce visibility
+             }
+         } catch (error) {
+             console.error("Error checking internet status:", error);
+             // Fallback: Assume no internet if request fails
+             aiButton.setAttribute('disabled', 'true');
+             aiButton.href = "#";
+             aiButton.style.pointerEvents = 'none';
+             aiButton.style.opacity = 0.5;
+         }
+     }
+ 
+     // Initial check and set interval for periodic updates
+     updateButtonStatus();
+     setInterval(updateButtonStatus, 2000); // Poll every 2 seconds
+ }
+
+
+ document.addEventListener('contextmenu', function (e) {
+    e.preventDefault();
+});
+
+document.addEventListener("selectstart", function (e) {
+    e.preventDefault(); // Prevent text selection
+    console.log("Text selection disabled"); // Optional: Debug message
+});

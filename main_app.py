@@ -7,7 +7,7 @@ from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera, Int
 k1 = Kawasaki_1(Test_mode=True)
 k2 = Kawasaki_2(Test_mode=True)
 RH = Robot_Hand(Test_mode=True)
-Realsense = Intel_Camera(Test_Mode=True, Demo_Mode=False)
+Realsense = Intel_Camera(Test_Mode=False, Demo_Mode=False)
 id = Internet_detector()
 
 sys.path.insert(0, 'AI_voice_chat/')
@@ -63,7 +63,7 @@ app.add_url_rule('/rockpaperscissors/get_captured_image', view_func=RockPaperSci
 app.add_url_rule('/rockpaperscissors/game_result', view_func=RockPaperScissorsflask.get_game_result, methods=['GET'])
 
 app.add_url_rule('/Machine_vision', view_func=vision_filtered.vision_index, methods=['GET'])
-app.add_url_rule('/Machine_vision/video_feed/<int:filter_id>', view_func=vision_filtered.video_feed, methods=['GET'])
+app.add_url_rule('/Machine_vision/video_feed/<filter_id>', view_func=vision_filtered.video_feed, methods=['GET'])
 
 def main():
 	app.run(debug=False, use_reloader=False)

@@ -53,7 +53,6 @@ def apply_thermal(frame):
     thermal_frame = cv2.applyColorMap(inverted_gray, cv2.COLORMAP_JET)
     return thermal_frame
 
-#TODO Replace the 1-5 for the names of the filters so that every body can understand what each filter does
 def apply_filter(filter_id, frame):
     # Apply the selected filter
     if filter_id == "detection":  # People detection

@@ -2,6 +2,7 @@ flask
 flask_socketio
 fer
 logging
+Cython
 opencv-python
 deepface
 tf_keras

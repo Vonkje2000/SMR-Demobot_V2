@@ -10,6 +10,8 @@ import time
 current_game = None
 x_player = None
 o_player = None
+x_tile_count = 5
+o_tile_count = 5
 current_letter = 'X'
 robot_is_moving = False
 
@@ -41,7 +43,7 @@ def robot_moves(square, player):
 	:param square: Integer (0-9) specifying the square on the Tic Tac Toe board.
 	:param player: String ('X' or 'O') specifying the current player.
 	"""
-	global robot_is_moving
+	global robot_is_moving, x_tile_count, o_tile_count
 	while robot_is_moving == True:
 		time.sleep(.01) 
 	robot_is_moving = True
@@ -50,10 +52,9 @@ def robot_moves(square, player):
 
 	k1 = Kawasaki_1()
 	k1.SPEED(20)
-	k1.TOOL(0, 0, 30, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
+	k1.TOOL(0, 0, 30, 0, 0, 0)               #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
 	
-	# Positions for placing tiles on the squares (slightly lower than "above" positions)
-	above_square_positions = {
+	# Positions for placing tiles on the square (slightly lower than "above" positions)
 		key: (x, y, z + 70, rx, ry, rz) for key, (x, y, z, rx, ry, rz) in square_positions.items()
 	}
 
@@ -65,19 +66,39 @@ def robot_moves(square, player):
 
 	# 2. Move to the appropriate storage box (X or O)
 	if player == 'X':
+		if x_tile_count <= 0:
+			print("no tiles left")
+			robot_is_moving = False
+			return
+		z_offset = 30 * (10 - x_tile_count) #TODO change the 70 into appropiate value
+		x_box = square_positions[10]
 		#print(f"Moving to X box: {square_positions [10]}")
 		k1.JMOVE_TRANS(*above_square_positions[10])
-		k1.JMOVE_TRANS(*square_positions [10])
-		magnetcontroller.magnet_ON()
+    
+		k1.JMOVE_TRANS(x_box[0], x_box[1], x_box[2] - z_offset, *x_box[3:])
+		# turn on the magnet #TODO
+    
 		k1.JMOVE_TRANS(*above_square_positions[10])
 		#print("Picking up an X tile.")
+		x_tile_count -= 1 
 	elif player == 'O':
+		if o_tile_count <= 0:
+			print("no tiles left")
+			robot_is_moving = False
+			return
+		z_offset = 30 * (10 - o_tile_count) #TODO change the 70 into appropiate value
+		o_box = square_positions[11]
 		#print(f"Moving to O box: {square_positions [11]}")
 		k1.JMOVE_TRANS(*above_square_positions[11])
-		k1.JMOVE_TRANS(*square_positions [11])
+    
+		k1.JMOVE_TRANS(o_box[0], o_box[1], o_box[2] - z_offset, *o_box[3:])
+		# turn on the magnet #TODO
+
 		magnetcontroller.magnet_ON()
+
 		k1.JMOVE_TRANS(*above_square_positions[11])
 		#print("Picking up an O tile.")
+		o_tile_count -= 1
 
 	# 3. Move to the square's "above" position
 	#print(f"Moving above square {square}: {above_square_positions[square]}")
@@ -99,7 +120,7 @@ def robot_moves(square, player):
 	robot_is_moving = False
 
 def clean_up_board(previous_board):
-	global robot_is_moving
+	global robot_is_moving, x_tile_count, o_tile_count
 	while robot_is_moving == True:
 		time.sleep(.01)
 	robot_is_moving = True
@@ -139,18 +160,22 @@ def clean_up_board(previous_board):
 
 			# Move to the appropriate storage box
 			if tile == 'X':
-				#print(f"returning to X box: {square_positions [10]}")
+				print(f"returning to X box: {square_positions [10]}")
+				z_offset = 30 * (5 - x_tile_count) #TODO adjust the height
+				x_box = square_positions[10]
 				k1.JMOVE_TRANS(*above_square_positions[10])
-				k1.JMOVE_TRANS(*square_positions [10])
+				k1.JMOVE_TRANS(x_box[0],x_box[1],x_box[2] - z_offset, *x_box[3:])
 				magnetcontroller.magnet_OFF()
-				print(f"Tile '{tile}' returned to its box.")
+
 				k1.JMOVE_TRANS(*above_square_positions[10])
+				x_tile_count += 1
 			elif tile == 'O':
-				#print(f"returning to O box: {square_positions [11]}")
+				print(f"returning to O box: {square_positions [11]}")
+				z_offset = 30 * (5 - o_tile_count) #TODO adjust the height
+				o_box = square_positions[11]
 				k1.JMOVE_TRANS(*above_square_positions[11])
-				k1.JMOVE_TRANS(*square_positions [11])
+				k1.JMOVE_TRANS(o_box[0],o_box[1],o_box[2] - z_offset, *o_box[3:])
 				magnetcontroller.magnet_OFF()
-				print(f"Tile '{tile}' returned to its box.")
 				k1.JMOVE_TRANS(*above_square_positions[11])
 
 			# Return to the safe position

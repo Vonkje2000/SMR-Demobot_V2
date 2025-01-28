@@ -1,6 +1,7 @@
 import sys
 from flask import Flask, render_template, jsonify
 import logging
+import webbrowser
 
 from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera, Internet_detector
 
@@ -70,4 +71,5 @@ def main():
 
 if __name__ == "__main__":
 	#print(" * Running on http://127.0.0.1:5000")
+	webbrowser.open('http://127.0.0.1:5000')
 	main()

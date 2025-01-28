@@ -70,10 +70,6 @@ function drag(e) {
 	.catch(error => console.error('Error:', error));
 }
 
-document.addEventListener('contextmenu', function (e) {
-  e.preventDefault();
-});
-
 function stopDrag() {
   dragging = false;
   joystick.style.left = '50%';

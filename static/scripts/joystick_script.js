@@ -107,3 +107,23 @@ async function close_cleanup() {
 
   window.location.href="/index";
 }
+
+async function maze_restart() {
+	await fetch('/Maze_game/reset', {
+		method: 'POST',
+		headers: {
+		  'Content-Type': 'application/json'
+		},
+		body: JSON.stringify({message: 'Home button pressed'})
+	})
+	.then(response => {
+		if (!response.ok){
+			throw new Error('Network response was not ok');
+		}
+		return response.json();
+	})
+	.then(data => {
+		console.log('server response:', data);
+	})
+	.catch(error => console.error('Error sending start signal:', error));
+}

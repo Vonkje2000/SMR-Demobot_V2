@@ -124,8 +124,47 @@ def joystick_robot_setup():
 def joystick_robot_cleanup():
 	global robot_state
 	k1 = Kawasaki_1()
-	k1.SPEED(100)
+	magnetcontroller = Robot_Hand()
+	magnetcontroller.magnet_OFF()
+
 	k1.TOOL(0, 0, 180, 0, 0, 0)
-	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
-	# add all code for cleanup
+	magnetcontroller.magnet_ON()
+	k1.SPEED(10)
+
+	k1.JMOVE(89, -20, -120, 179, -9.3, 87.87)
+	k1.JMOVE( 90.244, -20.482, -82.901, 179.802, 103.231, 87.882)
+	k1.JMOVE(  3.742, -20.482, -82.901, 179.802, 103.231, 87.882)
+	k1.JMOVE(-89.187, -20.482, -82.901, 179.802, 103.231, 87.882)
+	k1.SPEED(10)
+	#boven houder
+	k1.LMOVE_TRANS(-277.729, 40.344, 99.820, 126.687, 178.880, 125.689)
+	sleep(1)
+	k1.SPEED(1)
+	k1.ACCEL(1)
+	# little bit in holder
+	k1.LMOVE_TRANS(-279.522, 45.289, -50.949, 126.654, 178.882, 125.655)
+	#against holder
+	k1.ACCEL(1)
+	k1.LMOVE_TRANS(-275.591, 45.061, -50.992, 126.745, 178.880, 125.724)
+	k1.ACCEL(1)
+	# Little bit down
+	k1.LMOVE_TRANS(-277.415, 47.533, -207.379, 126.735, 178.879, 125.740)
+	k1.ACCEL(1)
+	k1.LMOVE_TRANS(-277.330, 43.071, -207.581, 126.675, 178.880, 125.674)
+	k1.ACCEL(1)
+	# Last bit down and rotate
+	k1.LMOVE_TRANS(-277.996, 43.983, -264.391, 126.548, 178.876, 125.532)
+	k1.SPEED(3)
+	k1.ACCEL(1)
+	k1.JMOVE(-81.750, 20.021, -143.181, 177.132, 16.025, -8.809)
+	magnetcontroller.magnet_OFF()
+	# Back up without maze
+	k1.LMOVE(-81.813, 11.245, -142.974, 178.130, 24.996, -7.446)
+	k1.SPEED(10)
+	# Back to start position
+	k1.JMOVE(0, 11.245, -142.974, 178.130, 24.996, -7.446)
+	k1.JMOVE(67, 11, -90, 178, 74, -7)
+	k1.JMOVE(84, 0, -90, 180, 90, -98)
+	k1.TOOL(0, 0, 30, 0, 0, 0)
+	
 	robot_state = "done"

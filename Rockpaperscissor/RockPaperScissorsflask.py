@@ -88,8 +88,8 @@ def start_move():
 	k2 = Kawasaki_2()
 	counter = 0
 	while counter < 4:
-		k2.LMOVE(-22, -60, -111, -18, -46, -69) # low
-		k2.LMOVE_TRANS(-18, -52, -102, -21, -28, -66) # up
+		k2.LMOVE(-52, -54, -113, -12, -40, -73) # low
+		k2.LMOVE(-49, -45, -96, -6.5, -47, -78) # up
 		counter += 1
 
 	# Choose a random hand gesture for the robot
@@ -105,7 +105,7 @@ def start_move():
 	gesture()
 
 	# Move back to the lowest position
-	k2.LMOVE(-22, -60, -111, -18, -46, -69)
+	k2.LMOVE(-52, -54, -113, -12, -40, -73)
 
 	sleep(1)  # Wait for the robot to finish its movements
 
@@ -151,7 +151,7 @@ def RPS_robot_setup():
 	k2 = Kawasaki_2()
 	k2.SPEED(70)
 	k2.TOOL(0, 0, 40, 0, 0, 0)
-	k2.LMOVE_TRANS(-22, -60, -111, -18, -46, -69)
+	k2.LMOVE_TRANS(-52, -54, -113, -12, -40, -73)
 	Hand = Robot_Hand()
 	Hand.rock()
 	RPS_state = "none"

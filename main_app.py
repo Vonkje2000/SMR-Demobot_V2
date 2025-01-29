@@ -14,14 +14,14 @@ Realsense = Intel_Camera(Test_Mode=False, Demo_Mode=False)
 id = Internet_detector()
 
 if(RH.Test_mode == False):
-	RH.magnet_ON()
+	RH.magnet_OFF()
 	RH.rock()
 	RH.stop_state()
 	sleep(2)
 
 if(k1.Test_mode == False or k2.Test_mode == False):
 	k1.LMOVE(0,0,0,0,0,0)
-	k2.LMOVE(0,0,0,0,0,0)
+	k2.LMOVE(-52, -54, -113, -12, -40, -73)
 	sleep(4)
 
 sys.path.insert(0, 'AI_voice_chat/')

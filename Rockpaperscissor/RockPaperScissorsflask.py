@@ -31,7 +31,7 @@ def capture_result_image():
 		print("picture taken: " + str(attempt))
 		frame = camera.read()
 		
-		frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+		#frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 
 		# Perform YOLO detection
 		results = model.predict(frame, conf=0.4, save=False, show=False, verbose=False)

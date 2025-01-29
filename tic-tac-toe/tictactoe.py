@@ -108,7 +108,7 @@ def robot_moves(square, player):
 	k1.JMOVE_TRANS(*above_square_positions[square])
 
 	# 4. Move to the square's position to place the tile
-	k1.SPEED(1)
+	k1.SPEED(5)
 	k1.LMOVE_TRANS(*square_positions[square])
 	sleep(4)
 
@@ -170,6 +170,7 @@ def clean_up_board(previous_board):
 			sleep(4)
 			magnetcontroller.magnet_ON()
 			sleep(2)
+			k1.JMOVE_TRANS(*above_square_positions[square])
 
 			# Return to the safe position
 			k1.LMOVE_TRANS(*square_positions[9])

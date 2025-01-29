@@ -20,7 +20,7 @@ def thread_writer():
 	while True:
 		k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], base_rotation, shoulder_rotation)
 		#print("base_rotation : {0}, shoulder_rotation : {1}".format(base_rotation, shoulder_rotation))
-		sleep(4)
+		#sleep(4)
 		if(stop_thread):
 			break
 

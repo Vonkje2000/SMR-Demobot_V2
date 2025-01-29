@@ -2,7 +2,7 @@ from flask import request, jsonify, render_template
 import sys
 import os
 sys.path.append(os.path.abspath(r"C:/Users/.../SMR-Demobot_V2"))
-from Promobot_class import Kawasaki_1
+from Promobot_class import Kawasaki_1, Robot_Hand
 import threading
 from time import sleep
 
@@ -12,6 +12,7 @@ base_rotation = position_0_trans[4]
 shoulder_rotation = position_0_trans[5]
 
 stop_thread = True
+robot_state = "none"
 
 def thread_writer():
 	global stop_thread, base_rotation, shoulder_rotation
@@ -26,7 +27,10 @@ def thread_writer():
 t = threading.Thread(target=thread_writer)
 
 def joystick_index():
-	threading.Thread(target=joystick_robot_setup).start()
+	global robot_state
+	if (robot_state == "none"):
+		robot_state = "starting"
+		threading.Thread(target=joystick_robot_setup).start()
 	return render_template('joystick.html')
 
 def joystick():
@@ -41,13 +45,20 @@ def joystick():
 	return jsonify({"status": "success"})
 			
 def maze_cleanup():
-	global stop_thread
+	global stop_thread, robot_state
 	if (stop_thread == False):
 		stop_thread = True
 		t.join()
-	k1 = Kawasaki_1()
-	print("maze cleanup")
-	return jsonify({"status": "success"})
+
+	if (robot_state == "setup"):
+		robot_state = "cleaning"
+		threading.Thread(target=joystick_robot_cleanup).start()
+		return jsonify({"status": "busy"})
+	elif(robot_state == "done" or robot_state == "none"):
+		robot_state == "none"
+		return jsonify({"status": "success"})
+	
+	return jsonify({"status": "busy"})
 	  
 def maze_reset():
 	global stop_thread
@@ -64,11 +75,57 @@ def maze_reset():
 	return jsonify({"status": "success"})
 
 def joystick_robot_setup():
-	global stop_thread
+	global stop_thread, robot_state
 	k1 = Kawasaki_1()
-	k1.SPEED(100)
-	k1.TOOL(0, 0, 180, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
-	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])                     #X, Y, Z, Base, Shoulder, Elbow
+	magnetcontroller = Robot_Hand()
+	magnetcontroller.magnet_OFF()
+	k1.SPEED(40)
+	k1.TOOL(0, 0, 30, 0, 0, 0)
+	# add all code for pickup
+	k1.LMOVE(60, -32, -121, 164, 66, 53)
+	k1.LMOVE_TRANS(203, 147, 141, -91, 180, -91)
+	k1.LMOVE_TRANS(-230, 103, 141, 86, 180, -33)
+	k1.LMOVE_TRANS(-274, 41, -73, -42, 180, -133)
+	# above maze holder
+	k1.SPEED(1)
+	k1.LMOVE_TRANS(-274.814, 41.198, -97.167, -5.461, 179.994, -85.544)
+	sleep(1)
+	k1.LMOVE_TRANS(-274.604, 41.237, 96.516, 3.190, 179.995, -87.813)
+	k1.LMOVE_TRANS(-274.660, 41.242, -114.699, 29.057, 179.998, -61.943)
+	k1.SPEED(2)
+	# Rotate
+	k1.JMOVE(-81.459, 20.104, -143.202, 179.996, 16.693, 75.399)
+	magnetcontroller.magnet_ON()
+	k1.TOOL(0, 0, 180, 0, 0, 0)
+	# Slowly pulling out
+	k1.SPEED(2)
+	k1.LMOVE_TRANS(-276.102, 41.159, -239.034, 7.794, 179.993, 1.723)
+	k1.LMOVE_TRANS(-279.096, 40.890, -239.039, 21.514, 179.996, 15.448)
+	k1.LMOVE_TRANS(-279.106, 40.865, -194.347, 37.452, 179.997, 31.383)
+	k1.SPEED(3)
+	k1.LMOVE_TRANS(-275.919, 41.216, -194.351, 18.869, 179.996, 12.800)
+	k1.LMOVE_TRANS(-276.114, 44.940, 56.567, 7.294, 179.993, 1.225)
+	# Above mazeholder
+	k1.JMOVE(0.123, -18, -90, 180, 108, 74)
+	k1.JMOVE(   65, -18, -90, 180, 108, 74)
+	k1.JMOVE(   65, -18, -90, 180,  72, 74)
+	# Maze pos
+	k1.JMOVE(77.601, -16.888, -130.994, 207.067, -28.680, 62.854)
+	sleep(1)
+	magnetcontroller.magnet_OFF()
+
+	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
+	
 	if (stop_thread == True):
 		stop_thread = False
 		t.start()
+	robot_state = "setup"
+
+def joystick_robot_cleanup():
+	global robot_state
+	k1 = Kawasaki_1()
+	k1.SPEED(100)
+	k1.TOOL(0, 0, 180, 0, 0, 0)
+	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
+	# add all code for cleanup
+	robot_state = "done"

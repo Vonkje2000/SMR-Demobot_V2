@@ -86,26 +86,36 @@ function stopDrag() {
   })
 }
 
+var home_button_pressed = false;
 async function close_cleanup() {
-	await fetch('/Maze_game/cleanup', {
-		method: 'POST',
-		headers: {
-		  'Content-Type': 'application/json'
-		},
-		body: JSON.stringify({message: 'Home button pressed'})
-	})
-	.then(response => {
-		if (!response.ok){
-			throw new Error('Network response was not ok');
-		}
-		return response.json();
-	})
-	.then(data => {
-		console.log('server response:', data);
-	})
-	.catch(error => console.error('Error sending start signal:', error));
+	if (home_button_pressed === true){
+		return;
+	}
+	home_button_pressed = true;
+	while (true){
+		var response = await fetch('/Maze_game/cleanup', {
+			method: 'POST',
+			headers: {
+			'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({message: 'Home button pressed'})
+		})
+		.then(response => {
+			if (!response.ok){
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.then(data => {
+			console.log('server response:', data);
+		})
+		.catch(error => console.error('Error sending start signal:', error));
 
-  window.location.href="/index";
+		if(response.status === "success"){
+			window.location.href="/index";
+			return
+		}
+	}
 }
 
 async function maze_restart() {

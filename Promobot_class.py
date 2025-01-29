@@ -350,11 +350,12 @@ class Robot_Hand(metaclass=Singleton):
 				return received
 		else:
 			print("Test_mode: " + data)
-			sleep(3)
 			return "TRUE"
 
 	def __del__(self):
 		if(self.Serial.is_open):
+			self.magnet_OFF()
+			sleep(3)
 			self.Serial.close()
 			#print("close serial {0}".format(self.Serial.port))
 

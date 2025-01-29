@@ -112,6 +112,25 @@ async function closeModal() {
 		closemodal_run_once = false;
 	}
 }
+
 function setup(){
 	document.getElementById('board').style.pointerEvents = 'none';
+}
+
+var home_button_pressed = false;
+async function close_cleanup() {
+	if (home_button_pressed === true){
+		return;
+	}
+	home_button_pressed = true;
+	while (true){
+		const response = await fetch(`/tictactoe/cleanup`, { method: 'GET' });
+		const data = await response.json();
+
+		console.log(data);
+		if(data.board === "cleanup"){
+			window.location.href="/index";
+			return
+		}
+	}
 }

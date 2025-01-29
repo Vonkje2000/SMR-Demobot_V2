@@ -146,3 +146,32 @@ async function fetchImage() {
 	timerElement.style.display = 'none';
 }
 
+
+var home_button_pressed = false;
+async function home_button(){
+	if (home_button_pressed === true){
+		return;
+	}
+	home_button_pressed = true;
+	while (true){
+		var response = await fetch('/rockpaperscissors/state', {
+			method: 'GET',
+			headers: {
+			  'Content-Type': 'application/json'
+			},
+		})
+		.then(response => {
+			if (!response.ok){
+				throw new Error('Network response was not ok');
+			}
+			return response.json();
+		})
+		.catch(error => console.error('Error sending start signal:', error));
+		//console.log(response)
+	
+		if(response.status === "none"){
+			window.location.href="/index";
+			return
+		}
+	}
+}

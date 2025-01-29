@@ -114,7 +114,4 @@ async function closeModal() {
 }
 function setup(){
 	document.getElementById('board').style.pointerEvents = 'none';
-	//if(document.getElementById("players").textContent === ''){
-	//	start_game('EASY',  'EASY MODE');
-	//}
 }

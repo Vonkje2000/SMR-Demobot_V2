@@ -90,7 +90,7 @@ html {
 .cell.taken {
     cursor: not-allowed;
 	pointer-events: none;
-	background-color: #00e1ff;
+	background-color: #009ee0;
 	color: #ffffff;
 	font-size: 48px;
 	font-weight: bold;

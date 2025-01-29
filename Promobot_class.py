@@ -265,15 +265,15 @@ class Robot_Hand(metaclass=Singleton):
 		if not isinstance(Test_mode, bool):
 			raise TypeError("Test_mode must be a bool")
 		self.Test_mode = Test_mode
-		self.Serial = serial.Serial()
-		self.Serial.port = port
-		self.Serial.baudrate = 9600
-		self.Serial.bytesize = 8
-		self.Serial.parity = "N"
-		self.Serial.stopbits = 1
-		self.Serial.timeout = None
 		if self.Test_mode == False:
 			try:
+				self.Serial = serial.Serial()
+				self.Serial.port = port
+				self.Serial.baudrate = 9600
+				self.Serial.bytesize = 8
+				self.Serial.parity = "N"
+				self.Serial.stopbits = 1
+				self.Serial.timeout = None
 				self.Serial.open()
 			except:
 				if sys.platform == "win32":
@@ -350,6 +350,7 @@ class Robot_Hand(metaclass=Singleton):
 				return received
 		else:
 			print("Test_mode: " + data)
+			sleep(3)
 			return "TRUE"
 
 	def __del__(self):

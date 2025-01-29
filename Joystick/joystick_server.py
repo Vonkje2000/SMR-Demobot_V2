@@ -14,25 +14,19 @@ shoulder_rotation = position_0_trans[5]
 stop_thread = True
 
 def thread_writer():
-	global stop_thread
+	global stop_thread, base_rotation, shoulder_rotation
 	k1 = Kawasaki_1()
 	while True:
 		k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], base_rotation, shoulder_rotation)
 		#print("base_rotation : {0}, shoulder_rotation : {1}".format(base_rotation, shoulder_rotation))
+		sleep(4)
 		if(stop_thread):
 			break
 
 t = threading.Thread(target=thread_writer)
 
 def joystick_index():
-	global stop_thread
-	k1 = Kawasaki_1()
-	k1.SPEED(100)
-	k1.TOOL(0, 0, 180, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
-	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])                     #X, Y, Z, Base, Shoulder, Elbow
-	if (stop_thread == True):
-		stop_thread = False
-		t.start()
+	threading.Thread(target=joystick_robot_setup).start()
 	return render_template('joystick.html')
 
 def joystick():
@@ -57,14 +51,24 @@ def maze_cleanup():
 	  
 def maze_reset():
 	global stop_thread
-	if (stop_thread == True):
-		stop_thread = False
+	if (stop_thread == False):
+		stop_thread = True
 		t.join()
 	k1 = Kawasaki_1()
 	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
 	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5] + 90)
 	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
-	if (stop_thread == False):
-		stop_thread = True
+	if (stop_thread == True):
+		stop_thread = False
 		t.start()
 	return jsonify({"status": "success"})
+
+def joystick_robot_setup():
+	global stop_thread
+	k1 = Kawasaki_1()
+	k1.SPEED(100)
+	k1.TOOL(0, 0, 180, 0, 0, 0)                                                 #X, Z, Y because Z is the same direction as the tool, so it changed from straight up position
+	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])                     #X, Y, Z, Base, Shoulder, Elbow
+	if (stop_thread == True):
+		stop_thread = False
+		t.start()

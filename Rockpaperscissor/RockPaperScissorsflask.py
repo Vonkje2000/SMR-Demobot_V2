@@ -3,8 +3,9 @@ import threading
 import sys
 import cv2
 import random
-import time
+from time import sleep
 from ultralytics import YOLO
+import threading
 sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
 from Promobot_class import Kawasaki_2, Robot_Hand, Intel_Camera
 
@@ -14,6 +15,8 @@ model = YOLO('Rockpaperscissor/best.pt', verbose=False)
 # Resultaten en foto variabelen
 captured_image_path = None
 winner = "none"
+
+RPS_state = "none"
 
 def capture_result_image():
 	"""Capture up to 5 frames and detect gestures using YOLO."""
@@ -77,23 +80,20 @@ def determine_winner(robot_gesture:str, detected_gesture:str) -> str:
 
 def start_move():
 	"""Perform the robot and hand movements and determine the game result."""
+	global RPS_state
+	while (RPS_state != "none"):
+		sleep(0.1)
+	RPS_state = "busy"
 	# Initialize robot and hand
 	k2 = Kawasaki_2()
-	Hand = Robot_Hand()
-	#k2.SPEED(50)
-	#k2.TOOL(0, 0, 40, 0, 0, 0)
-	Hand.rock()  # Start with a rock gesture
 	counter = 0
 	while counter < 4:
-		#TODO change to normal LMOVE becoause sometimes the trans calculations fucks up and it gives an error
-		#TODO change the positions to the right positions for the RPS game
-		#TODO For some reason it starts moving after 4 seconds
-		k2.LMOVE_TRANS(-380, 70, 220, 170, 103, -180)  # X, Y, Z, Base, Shoulder, Elbow
-		k2.LMOVE_TRANS(-350, 60, 400, 170, 72, -180)
+		k2.LMOVE(-22, -60, -111, -18, -46, -69) # low
+		k2.LMOVE_TRANS(-18, -52, -102, -21, -28, -66) # up
 		counter += 1
-	#time.sleep(0.7)
 
 	# Choose a random hand gesture for the robot
+	Hand = Robot_Hand()
 	if random.randint(1, 100) == 1:
 		robot_gesture = 'pistol'  # Special case
 		gesture = Hand.pistol
@@ -105,10 +105,9 @@ def start_move():
 	gesture()
 
 	# Move back to the lowest position
-	#TODO change this one also
-	k2.LMOVE_TRANS(-380, 70, 220, 170, 103, -180)
+	k2.LMOVE(-22, -60, -111, -18, -46, -69)
 
-	time.sleep(1)  # Wait for the robot to finish its movements
+	sleep(1)  # Wait for the robot to finish its movements
 
 	# Capture and present the result along with YOLO detection
 	detected_gesture = capture_result_image()
@@ -119,9 +118,13 @@ def start_move():
 		winner = determine_winner(robot_gesture, detected_gesture)
 	else:
 		winner = "none"
+	
+	RPS_state = "none"
 
 def start_signal():
 	"""Start the robot movements when the button is pressed."""
+	Hand = Robot_Hand()
+	Hand.rock()  # Start with a rock gesture
 	threading.Thread(target=start_move).start()  # Start de robotbeweging in een aparte thread
 	return jsonify({"status": "move_started"})
 
@@ -135,13 +138,20 @@ def get_game_result():
 	return jsonify({"result": str(winner)})
 
 def RPS_index():
-	k2 = Kawasaki_2()
-	k2.SPEED(50)
-	k2.TOOL(0, 0, 40, 0, 0, 0)
-	#TODO change to normal LMOVE becoause sometimes the trans calculations fucks up and it gives an error
-	#TODO change the positions to the right positions for the RPS game
-	k2.LMOVE_TRANS(-350, 60, 400, 170, 72, -180)
-	Hand = Robot_Hand()
-	Hand.rock()
+	threading.Thread(target=RPS_robot_setup).start()
 	return render_template('RPS.html')
 
+def GET_RPS_state():
+	global RPS_state
+	return jsonify({"status": RPS_state})
+
+def RPS_robot_setup():
+	global RPS_state
+	RPS_state = "busy"
+	k2 = Kawasaki_2()
+	k2.SPEED(70)
+	k2.TOOL(0, 0, 40, 0, 0, 0)
+	k2.LMOVE_TRANS(-22, -60, -111, -18, -46, -69)
+	Hand = Robot_Hand()
+	Hand.rock()
+	RPS_state = "none"

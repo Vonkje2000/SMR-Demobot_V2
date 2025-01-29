@@ -4,7 +4,7 @@ import sys
 import os
 sys.path.append(os.path.abspath(r"../SMR-Demobot_V2/"))
 from Promobot_class import Kawasaki_1, Robot_Hand
-import time
+from time import sleep
 
 # Store the game state globally for simplicity
 current_game = None
@@ -45,7 +45,7 @@ def robot_moves(square, player):
 	"""
 	global robot_is_moving, x_tile_count, o_tile_count
 	while robot_is_moving == True:
-		time.sleep(.01) 
+		sleep(.01) 
 	robot_is_moving = True
 	
 	magnetcontroller = Robot_Hand()
@@ -81,10 +81,11 @@ def robot_moves(square, player):
 
 		k1.JMOVE_TRANS(*above_square_positions[10])
 		k1.SPEED(1)
-		k1.JMOVE_TRANS(x_box[0], x_box[1], x_box[2] - z_offset, *x_box[3:])
+		k1.LMOVE_TRANS(x_box[0], x_box[1], x_box[2] - z_offset, *x_box[3:])
+		sleep(2)
 		magnetcontroller.magnet_ON()
-		time.sleep(2)
-		k1.JMOVE_TRANS(*above_square_positions[10])
+		sleep(4)
+		k1.LMOVE_TRANS(*above_square_positions[10])
 		x_tile_count -= 1 
 	elif player == 'O':
 		if o_tile_count <= 0:
@@ -95,10 +96,11 @@ def robot_moves(square, player):
 		o_box = square_positions[11]
 		
 		k1.JMOVE_TRANS(*above_square_positions[11])
-		k1.JMOVE_TRANS(o_box[0], o_box[1], o_box[2] - z_offset, *o_box[3:])
+		k1.LMOVE_TRANS(o_box[0], o_box[1], o_box[2] - z_offset, *o_box[3:])
+		sleep(2)
 		magnetcontroller.magnet_ON()
-		time.sleep(2)
-		k1.JMOVE_TRANS(*above_square_positions[11])
+		sleep(4)
+		k1.LMOVE_TRANS(*above_square_positions[11])
 		o_tile_count -= 1
 
 	# 3. Move to the square's "above" position
@@ -107,24 +109,32 @@ def robot_moves(square, player):
 
 	# 4. Move to the square's position to place the tile
 	k1.SPEED(1)
-	k1.JMOVE_TRANS(*square_positions[square])
+	k1.LMOVE_TRANS(*square_positions[square])
+	sleep(4)
 
 	magnetcontroller.magnet_OFF()
-	time.sleep(2)
-	k1.JMOVE_TRANS(*aside_square_positions[square])
+	sleep(2)
+	k1.LMOVE_TRANS(*aside_square_positions[square])
+
+	k1.SPEED(20)
+	k1.LMOVE_TRANS(*above_square_positions[square])
 
 	# 5. Return to the safe position
-	k1.SPEED(20)
 	k1.JMOVE_TRANS(*square_positions[9])
 	
-	time.sleep(0.5)  # Adjust based on your robot's speed and movements #TODO
+	sleep(0.5)  # Adjust based on your robot's speed and movements #TODO
 	
 	robot_is_moving = False
 
 def clean_up_board(previous_board):
 	global robot_is_moving, x_tile_count, o_tile_count
+	#board is empty do not start the connection with robot and arduino to save time
+	if(previous_board == [' ',' ',' ',' ',' ',' ',' ',' ',' ']):
+		#print("board clear")
+		return
+
 	while robot_is_moving == True:
-		time.sleep(.01)
+		sleep(.01)
 	robot_is_moving = True
 
 	magnetcontroller = Robot_Hand()
@@ -156,46 +166,50 @@ def clean_up_board(previous_board):
 
 			# Move to the square to pick up the tile
 			k1.SPEED(1)
-			k1.JMOVE_TRANS(*square_positions[square])
-
+			k1.LMOVE_TRANS(*square_positions[square])
+			sleep(4)
 			magnetcontroller.magnet_ON()
-			time.sleep(2)
+			sleep(2)
 
 			# Return to the safe position
-			k1.JMOVE_TRANS(*square_positions[9])
+			k1.LMOVE_TRANS(*square_positions[9])
 			k1.SPEED(20)
 
 			# Move to the appropriate storage box
 			if tile == 'X':
-				z_offset = 7 * (5 - x_tile_count)
+				z_offset = 7 * (4 - x_tile_count)
 				x_box = square_positions[10]
+				x_box_down = x_box[0],x_box[1],x_box[2] - z_offset, *x_box[3:]
 
 				k1.JMOVE_TRANS(*above_square_positions[10])
 				k1.SPEED(1)
-				k1.JMOVE_TRANS(x_box[0],x_box[1],x_box[2] - z_offset, *x_box[3:])
+				k1.LMOVE_TRANS(*x_box_down)
+				sleep(4)
 				magnetcontroller.magnet_OFF()
-				time.sleep(2)
-				k1.JMOVE_TRANS(*aside_square_positions[x_box[0],x_box[1],x_box[2] - z_offset, *x_box[3:]])
-				k1.SPEED(20)
-				k1.JMOVE_TRANS(*above_square_positions[10])
+				sleep(2)
+				k1.LMOVE_TRANS(x_box_down[0] - 10,x_box_down[1] - 10,*x_box[2:])
+				k1.LMOVE_TRANS(*above_square_positions[10])
 				x_tile_count += 1
 			elif tile == 'O':
-				z_offset = 7 * (5 - o_tile_count)
+				z_offset = 7 * (4 - o_tile_count)
 				o_box = square_positions[11]
+				o_box_down = o_box[0],o_box[1],o_box[2] - z_offset, *o_box[3:]
 				
 				k1.JMOVE_TRANS(*above_square_positions[11])
 				k1.SPEED(1)
-				k1.JMOVE_TRANS(o_box[0],o_box[1],o_box[2] - z_offset, *o_box[3:])
+				k1.LMOVE_TRANS(*o_box_down)
+				sleep(4)
 				magnetcontroller.magnet_OFF()
-				time.sleep(2)
-				k1.JMOVE_TRANS(*aside_square_positions[o_box[0],o_box[1],o_box[2] - z_offset, *o_box[3:]])
-				k1.SPEED(20)
-				k1.JMOVE_TRANS(*above_square_positions[11])
+				sleep(2)
+				k1.LMOVE_TRANS(o_box_down[0] - 10,o_box_down[1] - 10,*o_box[2:])
+				k1.LMOVE_TRANS(*above_square_positions[11])
+			
+			k1.SPEED(20)
 
 			# Return to the safe position
 			k1.JMOVE_TRANS(*square_positions[9])
 
-	time.sleep(1.5)
+	sleep(1.5)
 	robot_is_moving = False
 
 def reset_game(level=0):
@@ -218,10 +232,16 @@ def start_game():
 		move = x_player.get_move(current_game)
 		current_game.make_move(move, current_letter)
 		robot_moves(move, current_letter)
-		time.sleep(2) # for testing without a robot arm
+		sleep(2) # for testing without a robot arm
 		current_letter = 'O'  # Switch to human's turn
 
+One_time_flag = False	# TODO TEST THIS
 def tictactoe_index():
+	global One_time_flag
+	if (One_time_flag == False):
+		One_time_flag = True
+		reset_game(0)
+		
 	return render_template('Tic_tac_toe_index1.html')  # Render the frontend
 
 def make_move(type):
@@ -245,7 +265,7 @@ def make_move(type):
 	
 	# # Trigger the robot to pick up and place the tile
 	robot_moves(move, current_letter)
-	#time.sleep(2) # for testing without a robot arm
+	#sleep(2) # for testing without a robot arm
 
 	# Make the move and check for winner
 	
@@ -297,9 +317,7 @@ def cleanup():
 	clean_up_board(previous_board)
 	reset_game(0)
 
-	return jsonify({
-		'board':'cleanup'
-		})
+	return jsonify({'board':'cleanup'})
 	
 
-reset_game(0)
+#reset_game(0)	#TODO IF TEST THIS WORKS REMOVE

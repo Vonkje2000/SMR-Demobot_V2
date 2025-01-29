@@ -2,14 +2,27 @@ import sys
 from flask import Flask, render_template, jsonify
 import logging
 import webbrowser
+import os
+from time import sleep
 
 from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera, Internet_detector
 
 k1 = Kawasaki_1(Test_mode=True)
 k2 = Kawasaki_2(Test_mode=True)
-RH = Robot_Hand(Test_mode=True)
+RH = Robot_Hand(Test_mode=True)		# remove delay for testing in __send
 Realsense = Intel_Camera(Test_Mode=False, Demo_Mode=False)
 id = Internet_detector()
+
+if(RH.Test_mode == False):
+	RH.magnet_ON()
+	RH.rock()
+	RH.stop_state()
+	sleep(2)
+
+if(k1.Test_mode == False or k2.Test_mode == False):
+	k1.LMOVE(0,0,0,0,0,0)
+	k2.LMOVE(0,0,0,0,0,0)
+	sleep(4)
 
 sys.path.insert(0, 'AI_voice_chat/')
 import Main_AI_new_UI
@@ -21,6 +34,8 @@ sys.path.insert(0, 'Rockpaperscissor/')
 import RockPaperScissorsflask
 sys.path.insert(0, 'vision/')
 import vision_filtered
+
+import util_class
 
 app = Flask(__name__)
 #logging.getLogger('werkzeug').disabled = True
@@ -62,14 +77,20 @@ app.add_url_rule('/rockpaperscissors', view_func=RockPaperScissorsflask.RPS_inde
 app.add_url_rule('/rockpaperscissors/start_robot', view_func=RockPaperScissorsflask.start_signal, methods=['POST'])
 app.add_url_rule('/rockpaperscissors/get_captured_image', view_func=RockPaperScissorsflask.get_captured_image, methods=['GET'])
 app.add_url_rule('/rockpaperscissors/game_result', view_func=RockPaperScissorsflask.get_game_result, methods=['GET'])
+app.add_url_rule('/rockpaperscissors/state', view_func=RockPaperScissorsflask.GET_RPS_state, methods=['GET'])
 
 app.add_url_rule('/Machine_vision', view_func=vision_filtered.vision_index, methods=['GET'])
 app.add_url_rule('/Machine_vision/video_feed/<filter_id>', view_func=vision_filtered.video_feed, methods=['GET'])
+
+app.add_url_rule('/util/webpage', view_func=util_class.util_page, methods=['GET'])
+app.add_url_rule('/util/webcam', view_func=util_class.util_video_feed, methods=['GET'])
 
 def main():
 	app.run(debug=False, use_reloader=False)
 
 if __name__ == "__main__":
 	#print(" * Running on http://127.0.0.1:5000")
-	webbrowser.open('http://127.0.0.1:5000')
+	webbrowser.WindowsDefault().open(url="http://127.0.0.1:5000")		# easier to use
+	#os.popen("\"C:/Program Files/Mozilla Firefox/firefox.exe\" --kiosk --private-window \"http://127.0.0.1:5000\"")		#looks better
+	#os.popen("\"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe\" --app=\"http://127.0.0.1:5000\"")		#looks better after pressing F11
 	main()

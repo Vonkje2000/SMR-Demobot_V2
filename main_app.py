@@ -95,4 +95,5 @@ if __name__ == "__main__":
 	webbrowser.WindowsDefault().open(url="http://127.0.0.1:5000")		# easier to use
 	#os.popen("\"C:/Program Files/Mozilla Firefox/firefox.exe\" --kiosk --private-window \"http://127.0.0.1:5000\"")		#looks better
 	#os.popen("\"C:/Program Files (x86)/Google/Chrome/Application/chrome.exe\" --app=\"http://127.0.0.1:5000\"")		#looks better after pressing F11
+	#os.popen("\"C:/Program Files/Google/Chrome/Application/chrome.exe\" --app=\"http://127.0.0.1:5000\"")				#looks better after pressing F11	#chrome sometimes installs in a different place
 	main()

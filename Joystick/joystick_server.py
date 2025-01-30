@@ -6,7 +6,7 @@ from Promobot_class import Kawasaki_1, Robot_Hand
 import threading
 from time import sleep
 
-position_0_trans = [620, 20, 100, 0, 90, 0]
+position_0_trans = [529, 58, 145, 0, 90, 180]
 
 base_rotation = position_0_trans[4]
 shoulder_rotation = position_0_trans[5]
@@ -88,9 +88,6 @@ def joystick_robot_setup():
 	k1.LMOVE_TRANS(-274, 41, -73, -42, 180, -133)
 	# above maze holder
 	k1.SPEED(1)
-	k1.LMOVE_TRANS(-274.814, 41.198, -97.167, -5.461, 179.994, -85.544)
-	sleep(1)
-	k1.LMOVE_TRANS(-274.604, 41.237, 96.516, 3.190, 179.995, -87.813)
 	k1.LMOVE_TRANS(-274.660, 41.242, -114.699, 29.057, 179.998, -61.943)
 	k1.SPEED(2)
 	# Rotate
@@ -111,9 +108,6 @@ def joystick_robot_setup():
 	k1.JMOVE(   65, -18, -90, 180,  72, 74)
 	# Maze pos
 	k1.JMOVE(77.601, -16.888, -130.994, 207.067, -28.680, 62.854)
-	sleep(1)
-	magnetcontroller.magnet_OFF()
-
 	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
 	
 	if (stop_thread == True):

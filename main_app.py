@@ -10,7 +10,7 @@ from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera, Int
 k1 = Kawasaki_1(Test_mode=True)
 k2 = Kawasaki_2(Test_mode=True)
 RH = Robot_Hand(Test_mode=True)		# remove delay for testing in __send
-Realsense = Intel_Camera(Test_Mode=False, Demo_Mode=False)
+Realsense = Intel_Camera(Test_Mode=True, Demo_Mode=False)
 id = Internet_detector()
 
 if(RH.Test_mode == False):
@@ -20,7 +20,9 @@ if(RH.Test_mode == False):
 	sleep(2)
 
 if(k1.Test_mode == False or k2.Test_mode == False):
+	k1.SPEED(10)
 	k1.LMOVE(60, -32, -121, 180, 66, 90)
+	k2.SPEED(20)
 	k2.LMOVE(-52, -54, -113, -12, -40, -73)
 	sleep(4)
 

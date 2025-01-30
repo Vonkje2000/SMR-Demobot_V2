@@ -20,7 +20,7 @@ if(RH.Test_mode == False):
 	sleep(2)
 
 if(k1.Test_mode == False or k2.Test_mode == False):
-	k1.LMOVE(0,0,0,0,0,0)
+	k1.LMOVE(60, -32, -121, 180, 66, 90)
 	k2.LMOVE(-52, -54, -113, -12, -40, -73)
 	sleep(4)
 

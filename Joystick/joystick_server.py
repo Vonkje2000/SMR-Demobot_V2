@@ -20,11 +20,11 @@ def thread_writer():
 	while True:
 		k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], base_rotation, shoulder_rotation)
 		#print("base_rotation : {0}, shoulder_rotation : {1}".format(base_rotation, shoulder_rotation))
-		#sleep(4)
+		sleep(0.5)
 		if(stop_thread):
 			break
 
-t = threading.Thread(target=thread_writer)
+t = None
 
 def joystick_index():
 	global robot_state
@@ -45,37 +45,48 @@ def joystick():
 	return jsonify({"status": "success"})
 			
 def maze_cleanup():
-	global stop_thread, robot_state
-	if (stop_thread == False):
-		stop_thread = True
-		t.join()
+	global stop_thread, robot_state, t
+	if(robot_state != "done" and robot_state != "none"):
+		while(robot_state != "setup"):
+			sleep(0.1)
 
-	if (robot_state == "setup"):
+		if (stop_thread == False):
+			stop_thread = True
+			while (t.is_alive()):
+				t.join()
+
 		robot_state = "cleaning"
 		threading.Thread(target=joystick_robot_cleanup).start()
-		return jsonify({"status": "busy"})
-	elif(robot_state == "done" or robot_state == "none"):
+	
+		while(not(robot_state == "done" or robot_state == "none")):
+			sleep(0.1)
+	
+	if(robot_state == "done" or robot_state == "none"):
 		robot_state == "none"
 		return jsonify({"status": "success"})
 	
 	return jsonify({"status": "busy"})
 	  
 def maze_reset():
-	global stop_thread
+	global stop_thread, t
 	if (stop_thread == False):
 		stop_thread = True
-		t.join()
+		while (t.is_alive()):
+			t.join()
 	k1 = Kawasaki_1()
 	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
-	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5] + 90)
+	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5] + 120)
+	sleep(3)
 	k1.JMOVE_TRANS(position_0_trans[0], position_0_trans[1], position_0_trans[2], position_0_trans[3], position_0_trans[4], position_0_trans[5])
+	sleep(2)
 	if (stop_thread == True):
 		stop_thread = False
+		t = threading.Thread(target=thread_writer)
 		t.start()
 	return jsonify({"status": "success"})
 
 def joystick_robot_setup():
-	global stop_thread, robot_state
+	global stop_thread, robot_state, t
 	k1 = Kawasaki_1()
 	magnetcontroller = Robot_Hand()
 	magnetcontroller.magnet_OFF()
@@ -112,6 +123,7 @@ def joystick_robot_setup():
 	
 	if (stop_thread == True):
 		stop_thread = False
+		t = threading.Thread(target=thread_writer)
 		t.start()
 	robot_state = "setup"
 

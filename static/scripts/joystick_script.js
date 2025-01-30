@@ -88,9 +88,9 @@ function stopDrag() {
 
 var home_button_pressed = false;
 async function close_cleanup() {
-	if (home_button_pressed === true){
-		return;
-	}
+	//if (home_button_pressed === true){
+	//	return;
+	//}
 	home_button_pressed = true;
 	while (true){
 		var response = await fetch('/Maze_game/cleanup', {
@@ -100,16 +100,10 @@ async function close_cleanup() {
 			},
 			body: JSON.stringify({message: 'Home button pressed'})
 		})
-		.then(response => {
-			if (!response.ok){
-				throw new Error('Network response was not ok');
-			}
-			return response.json();
-		})
-		.then(data => {
-			console.log('server response:', data);
-		})
+		.then(response => response.json())
 		.catch(error => console.error('Error sending start signal:', error));
+
+		console.log(response.status)
 
 		if(response.status === "success"){
 			window.location.href="/index";

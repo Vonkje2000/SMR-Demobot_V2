@@ -57,22 +57,28 @@ class Kawasaki_arm(object):
 
 	def HERE(self):
 		pos = self.__send_to_arm("HERE JT")
+		if(self.Test_mode==True):
+			return [0, 0, 0, 0, 0, 0]
+
 		pos = pos.replace(" ", "")
 		split = pos.split(",")
 		pos_array = []
 		for x in range(len(split)):
 			pos_array.append(float(split[x])) 
-		print(pos_array)
+
 		return pos_array
 
 	def HERE_TRANS(self):
 		pos = self.__send_to_arm("HERE POS")
+		if(self.Test_mode==True):
+			return [0, 0, 0, 0, 0, 0]
+		
 		pos = pos.replace(" ", "")
 		split = pos.split(",")
 		pos_array = []
 		for x in range(len(split)):
 			pos_array.append(float(split[x])) 
-		print(pos_array)
+
 		return pos_array
 
 	def CP(self, value:bool):
@@ -241,6 +247,7 @@ class Kawasaki_arm(object):
 			self.socket_connection.send(data.encode('utf-8'))
 			return self.__receive_from_arm()
 		else:
+			sleep(1)
 			print("Test_mode: " + data)
 
 	def __receive_from_arm(self):
@@ -349,6 +356,7 @@ class Robot_Hand(metaclass=Singleton):
 				print(received)
 				return received
 		else:
+			sleep(1)
 			print("Test_mode: " + data)
 			return "TRUE"
 
@@ -360,7 +368,7 @@ class Robot_Hand(metaclass=Singleton):
 			#print("close serial {0}".format(self.Serial.port))
 
 class Intel_Camera(metaclass=Singleton):
-	def __init__(self, cameranumbr:int = 0, Demo_Mode:bool=False,Test_Mode:bool=False) -> None:
+	def __init__(self, cameranumbr:int = 0, Demo_Mode:bool=False, Test_Mode:bool=False) -> None:
 		if not isinstance(cameranumbr, int):
 			raise TypeError("Camera number must be an int")
 		if not isinstance(Demo_Mode, bool):

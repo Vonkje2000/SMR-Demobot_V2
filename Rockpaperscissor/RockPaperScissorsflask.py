@@ -149,7 +149,7 @@ def RPS_robot_setup():
 	global RPS_state
 	RPS_state = "busy"
 	k2 = Kawasaki_2()
-	k2.SPEED(70)
+	k2.SPEED(70)	#test with max speed
 	k2.TOOL(0, 0, 40, 0, 0, 0)
 	k2.LMOVE(-52, -54, -113, -12, -40, -73)
 	Hand = Robot_Hand()

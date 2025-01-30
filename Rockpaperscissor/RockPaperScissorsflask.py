@@ -47,8 +47,8 @@ def capture_result_image():
 					cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
 					cv2.putText(frame, f"{label} {conf:.2f}", (x1, y1 - 10),
 								cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
-					captured_image_path = "Rockpaperscissor/image.jpg"  # Pas dit pad aan
-					cv2.imwrite(captured_image_path, frame)  # Bewaar de afbeelding
+		captured_image_path = "Rockpaperscissor/image.jpg"  # Pas dit pad aan
+		cv2.imwrite(captured_image_path, frame)  # Bewaar de afbeelding
 					#cv2.imshow("Detection Result", frame)
 					#cv2.waitKey(1)
 		
@@ -151,7 +151,7 @@ def RPS_robot_setup():
 	k2 = Kawasaki_2()
 	k2.SPEED(70)
 	k2.TOOL(0, 0, 40, 0, 0, 0)
-	k2.LMOVE_TRANS(-52, -54, -113, -12, -40, -73)
+	k2.LMOVE(-52, -54, -113, -12, -40, -73)
 	Hand = Robot_Hand()
 	Hand.rock()
 	RPS_state = "none"

@@ -68,6 +68,8 @@ document.getElementById('language-switch').addEventListener('click', function() 
   }
 });
 
+var show_image_allways = true;	//set false to only show picture when a gesture is detected
+
 async function fetchImage() {
   console.log('Fetching image...');
 
@@ -91,7 +93,7 @@ async function fetchImage() {
     image_path = '/static/images/draw.png';
   }
 
-  if(image_path !== '') {
+  if(image_path !== '' || show_image_allways) {
   await fetch('/rockpaperscissors/get_captured_image') // Gebruik localhost of 127.0.0.1   get_captured_image
     .then(response => {
       if (!response.ok) {

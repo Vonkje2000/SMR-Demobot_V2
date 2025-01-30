@@ -93,12 +93,20 @@ class Kawasaki_arm(object):
 		if not isinstance(ACCEL, float|int):
 			raise TypeError("Acceleration must be a float or an int")
 		ACCEL = round(ACCEL)
+		if ACCEL <= 0:
+			raise ValueError("ACCEL value to LOW minimum value 1")
+		if ACCEL > 100:
+			raise ValueError("ACCEL value to HIGH maximum value 100")
 		self.__send_to_arm("ACCEL {0}".format(ACCEL))
 
 	def ACCEL_ALWAYS(self, ACCEL:float|int):
 		if not isinstance(ACCEL, float|int):
 			raise TypeError("Acceleration must be a float or an int")
 		ACCEL = round(ACCEL)
+		if ACCEL <= 0:
+			raise ValueError("ACCEL value to LOW minimum value 1")
+		if ACCEL > 100:
+			raise ValueError("ACCEL value to HIGH maximum value 100")
 		self.__send_to_arm("ACCEL {0} ALWAYS".format(ACCEL))
 
 	def DECEL(self, DECEL:float|int):

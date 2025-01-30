@@ -2,16 +2,22 @@
 function update_board(boardState) {
 	var cells = document.getElementsByClassName("cell")
 	for (let i = 0; i < 9; i++) {
-		if (boardState !== undefined && (boardState[i] === 'X' || boardState[i] === 'O')) {
-			cells[i].classList.add('taken');
+		if (boardState !== undefined && boardState[i] === 'X') {
+			cells[i].classList.add('taken_x');
+			cells[i].textContent = boardState[i];
+		}
+		else if (boardState !== undefined && boardState[i] === 'O') {
+			cells[i].classList.add('taken_o');
 			cells[i].textContent = boardState[i];
 		}
 		else if (boardState !== undefined && (boardState[i] === '-')) {
-			cells[i].classList.add('taken');
+			cells[i].classList.add('disabled');
 			cells[i].textContent = ' ';
 		}
 		else{
-			cells[i].classList.remove('taken');
+			cells[i].classList.remove('disabled');
+			cells[i].classList.remove('taken_o');
+			cells[i].classList.remove('taken_x');
 			cells[i].textContent = ' ';
 		}
 	}
@@ -42,7 +48,12 @@ async function start_game(restart, mode_text) {
 async function player_move(i){
 	document.getElementById('board').style.pointerEvents = 'none';
 	const cell = document.getElementsByClassName("cell")[i];
-	cell.classList.add('taken');
+	if(current_letter == 'X'){
+		cell.classList.add('taken_x');
+	}
+	else{
+		cell.classList.add('taken_o');
+	}
 	cell.textContent = current_letter;
 	
 	await move("make",i);

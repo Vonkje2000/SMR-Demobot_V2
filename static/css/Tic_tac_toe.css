@@ -87,7 +87,23 @@ html {
     font-size: 24px;
     cursor: pointer;
 }
-.cell.taken {
+.cell.taken_o {
+    cursor: not-allowed;
+	pointer-events: none;
+	background-color: #00e09e;
+	color: #ffffff;
+	font-size: 48px;
+	font-weight: bold;
+}
+.cell.taken_x {
+    cursor: not-allowed;
+	pointer-events: none;
+	background-color: #009ee0;
+	color: #ffffff;
+	font-size: 48px;
+	font-weight: bold;
+}
+.cell.disabled {
     cursor: not-allowed;
 	pointer-events: none;
 	background-color: #ffffff;

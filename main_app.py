@@ -9,7 +9,7 @@ from Promobot_class import Kawasaki_1, Kawasaki_2, Robot_Hand, Intel_Camera, Int
 
 k1 = Kawasaki_1(Test_mode=True)
 k2 = Kawasaki_2(Test_mode=True)
-RH = Robot_Hand(Test_mode=True)		# remove delay for testing in __send
+RH = Robot_Hand(Test_mode=True)		# add a way to read the button state in a thread and in that thread react to a press by sending the stop command	# add a PAUSE without trying to get a response or with a timeout and add a timeout to the read function in kawasaki class
 Realsense = Intel_Camera(Test_Mode=True, Demo_Mode=False)
 id = Internet_detector()
 

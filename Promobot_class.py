@@ -376,7 +376,7 @@ class Robot_Hand(metaclass=Singleton):
 			#print("close serial {0}".format(self.Serial.port))
 
 class Intel_Camera(metaclass=Singleton):
-	def __init__(self, cameranumbr:int = 0, Demo_Mode:bool=False, Test_Mode:bool=False) -> None:
+	def __init__(self, cameranumbr:int = 1, Demo_Mode:bool=False, Test_Mode:bool=False) -> None:
 		if not isinstance(cameranumbr, int):
 			raise TypeError("Camera number must be an int")
 		if not isinstance(Demo_Mode, bool):

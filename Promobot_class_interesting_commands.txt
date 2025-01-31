@@ -1,0 +1,60 @@
+ACCURACY distance ALWAYS
+	distance must be grater than 1 mm
+	handy voor CP (continues path)
+
+BRAKE
+	now the front program is paused and BRAKE stops the movement directly and skips this movement to go to the next one
+
+BREAK
+	Robot will wait until done to go further. This will work a lot better than the WAIT_UNTIL_DONE.
+	This also fucks with the CP controll so please read the Manual
+
+DRIVE joint number, displacement, speed
+	Moves a single joint of the Robot
+
+DRAW X-translation, Y-translation, Z-translation, X-rotation, Y-rotation, Z-rotation, speed
+	move the robot in lineair movement from the current pose and at specified speed based on the base coordinates
+
+TDRAW X-translation, Y-translation, Z-translation, X-rotation, Y-rotation, Z-rotation, speed
+	move the robot in lineair movement from the current pose and at specified speed based on the base coordinates
+
+Look if C1MOVE, C2MOVE and XMOVE can be used without pose variables otherwise add global usable pose variables that can be overwritten
+	use EXISTJOINT(joint displaement name) and EXISTTRANS(transformation value name) to check if they exist
+
+BSPEED speed
+	Can add speed to the speed by overcompensating for the screen set speed
+
+RIGHTY and LEFTY
+	gives more controll over the base rotation (JT0) with pose translations
+
+ABOVE and BELOW
+	gives more controll over elbow arm with pose translations
+
+UWRIST and DWRIST
+	gives more controll over the wrist with pose translations
+
+IFPWPRINT
+	to put custom text on teachpendant to show the last recieved command
+
+SETHOME and SET2HOME accuracy, joint displacement values
+	to set the HOME and HOME2 position from code
+
+ULIMIT and LLIMIT
+
+WEIGHT load mass, center of gravity location X, center of gravity location Y, center of gravity location Z, inertia moment ab. X, inertia moment ab. Y, inertia moment ab. Z
+	sets the mass data of the tool and work
+
+TPLIGHT
+	to turn on the background light of the TP for 600 seconds
+
+system switches
+	ABS.SPEED
+		might give more controll over speed
+
+might be able to use EXISTINTEGER, EXISTCHAR, EXISTREAL and EXISTPGM to check if all the global variables exist before the AUTOSTART.pc starts running
+
+ERRORS and ERROR
+	gives back the error codeand number no known use case but it is interesting for figuring out stuff with error codes
+
+TOOL tool1 and TOOL NULL
+	add an option to the TOOL command to use the tool numbers that you can configure on the TP instead of giving the rotation point

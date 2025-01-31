@@ -5,7 +5,6 @@ import cv2
 import random
 from time import sleep
 from ultralytics import YOLO
-import threading
 sys.path.insert(0, '/Users/basti/Documents/GitHub/SMR-Demobot_V2')
 from Promobot_class import Kawasaki_2, Robot_Hand, Intel_Camera
 
@@ -85,6 +84,8 @@ def start_move():
 		sleep(0.1)
 	RPS_state = "busy"
 	# Initialize robot and hand
+	Hand = Robot_Hand()
+	Hand.rock()  # Start with a rock gesture
 	k2 = Kawasaki_2()
 	counter = 0
 	while counter < 4:
@@ -123,9 +124,8 @@ def start_move():
 
 def start_signal():
 	"""Start the robot movements when the button is pressed."""
-	Hand = Robot_Hand()
-	Hand.rock()  # Start with a rock gesture
-	threading.Thread(target=start_move).start()  # Start de robotbeweging in een aparte thread
+	start_move()	#thread gave an issue with the last test
+	#threading.Thread(target=start_move).start()  # Start de robotbeweging in een aparte thread
 	return jsonify({"status": "move_started"})
 
 def get_captured_image():

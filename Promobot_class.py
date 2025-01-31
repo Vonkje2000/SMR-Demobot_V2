@@ -389,6 +389,7 @@ class Intel_Camera(metaclass=Singleton):
 			self.camera = cv2.VideoCapture(cameranumbr)
 		else:
 			print("Test Mode: Camera initialized")
+		self.frame = cv2.imread("test_image.jpg")
 		self.lock = threading.Lock()
 		self.t = threading.Thread(target=self.__reader)
 		self.t.daemon = True
@@ -397,12 +398,7 @@ class Intel_Camera(metaclass=Singleton):
 	def __reader(self):
 		while True:
 			if self.Test_Mode == False:
-				with self.lock:
-					ret, frame = self.camera.read()
-				if not ret:
-					break
-			else:
-				frame = cv2.imread("test_image.jpg")
+				self.__take_picture()
 			if self.Demo_Mode == True:
 				frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
 				cv2.imshow("Live Feed", frame)
@@ -412,14 +408,15 @@ class Intel_Camera(metaclass=Singleton):
 		cv2.destroyAllWindows()
 	
 	def read(self):
+		return self.frame
+
+	def __take_picture(self):
 		if self.Test_Mode == False:
 			with self.lock:
 				ret, frame = self.camera.read()
 			if not ret:
-				return None
-			return frame
-		else:
-			return cv2.imread("test_image.jpg")
+				return
+			self.frame = frame
 		
 class Internet_detector(metaclass=Singleton):
 	def __init__(self, ip:str = "8.8.8.8") -> None:

@@ -8,7 +8,6 @@ import sys
 import os
 sys.path.append(os.path.abspath(r"../SMR-Demobot_V2/"))
 from Promobot_class import Intel_Camera, Kawasaki_2
-Realsense = Intel_Camera()
 
 # Initialize Flask app and SocketIO
 app = Flask(__name__)
@@ -68,6 +67,7 @@ def apply_filter(filter_id, frame):
 #TODO THIS IS A MEMORY LEAK IT NEVER STOPS TAKING PICTURES
 #IT ALSO STARTS MY FANS INSTANTLY
 def generate_frames(filter_id):
+	Realsense = Intel_Camera()
 	while True:
 		frame = Realsense.read()
 		frame = apply_filter(filter_id, frame)

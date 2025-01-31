@@ -22,8 +22,8 @@ def capture_result_image():
 	global captured_image_path
 	detected_gesture = None
 	#print("Starting gesture detection...")
-	if cv2.getWindowProperty("Detection Result", cv2.WND_PROP_VISIBLE) == 1:
-		cv2.destroyWindow("Detection Result")
+	#if cv2.getWindowProperty("Detection Result", cv2.WND_PROP_VISIBLE) == 1:
+	#	cv2.destroyWindow("Detection Result")
 
 	camera = Intel_Camera()
 	for attempt in range(5):
